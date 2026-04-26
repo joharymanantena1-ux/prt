@@ -166,7 +166,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
               className="relative z-10"
             >
-              <div className="relative w-64 h-80 sm:w-72 sm:h-96 md:w-[300px] md:h-[400px]">
+              <div className="relative w-72 h-[440px] sm:w-80 sm:h-[500px] md:w-[340px] md:h-[540px] lg:w-[380px] lg:h-[580px]">
                 {/* Thin gradient border */}
                 <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-primary/60 via-accent/30 to-primary/10" />
                 <div className="relative h-full rounded-[calc(1.5rem-1px)] overflow-hidden shadow-2xl">
@@ -174,7 +174,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                   <img
                     src={developerPortrait}
                     alt="Johary Manantena - Développeur Full-Stack"
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
               </div>

@@ -145,12 +145,17 @@
     box-shadow: var(--shadow-glow);
   }
 
-  /* Full-screen section layout */
+  /* Full-height section layout — natural page scroll, no overflow trapping */
   .section-container {
-    @apply min-h-screen w-full flex-shrink-0 flex items-start justify-center
-           px-4 sm:px-6 md:px-8 lg:px-12 overflow-y-auto overflow-x-hidden;
+    @apply min-h-screen w-full flex items-start justify-center
+           px-4 sm:px-6 md:px-8 lg:px-12;
     padding-top: clamp(5rem, 10vh, 7rem);
     padding-bottom: clamp(3rem, 6vh, 5rem);
+  }
+
+  /* Offset anchor scroll so content clears the fixed navbar */
+  .scroll-section {
+    scroll-margin-top: 4.5rem;
   }
 
   .section-content {
@@ -252,18 +257,31 @@
 .devicon-react-original.colored,
 .devicon-typescript-plain.colored,
 .devicon-javascript-plain.colored,
+.devicon-angularjs-plain.colored,
+.devicon-vuejs-plain.colored,
+.devicon-tailwindcss-plain.colored,
+.devicon-bootstrap-plain.colored,
+.devicon-flutter-plain.colored,
 .devicon-laravel-plain.colored,
+.devicon-symfony-original.colored,
+.devicon-codeigniter-plain.colored,
+.devicon-django-plain.colored,
 .devicon-spring-plain.colored,
 .devicon-nodejs-plain.colored,
 .devicon-python-plain.colored,
+.devicon-csharp-plain.colored,
+.devicon-cplusplus-plain.colored,
+.devicon-perl-plain.colored,
 .devicon-mysql-plain.colored,
 .devicon-postgresql-plain.colored,
+.devicon-oracle-original.colored,
 .devicon-firebase-plain.colored,
 .devicon-git-plain.colored,
 .devicon-docker-plain.colored,
 .devicon-linux-plain.colored,
-.devicon-symfony-original.colored,
-.devicon-tailwindcss-plain.colored {
+.devicon-bash-plain.colored,
+.devicon-wordpress-plain.colored,
+.devicon-numpy-original.colored {
   font-size: 1.25rem;
   line-height: 1;
 }

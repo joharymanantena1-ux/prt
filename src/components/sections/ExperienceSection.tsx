@@ -4,6 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const experiences = [
   {
+    title: "Développeur – Freelance On-site",
+    company: "Regard Beauty",
+    period: "Avr 2026 – Présent",
+    current: true,
+    description:
+      "Mission freelance à temps plein en présentiel : développement et maintenance d'applications internes, collaboration directe avec les équipes métier.",
+  },
+  {
     title: "Projet SaaS – Gestion des Écoles",
     company: "Levitation",
     companyUrl: "https://levitation.mg",
