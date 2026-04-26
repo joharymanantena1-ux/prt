@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Briefcase, GraduationCap, ExternalLink } from "lucide-react";
+import { Briefcase, GraduationCap, ExternalLink, Award } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const experiences = [
@@ -10,8 +10,9 @@ const experiences = [
     period: "Jan 2026 – Présent",
     current: true,
     description:
-      "Plateforme SaaS scolaire : gestion des notes, facturation, automatisation workflows (emails/SMS).",
+      "Conception et développement d'une plateforme SaaS scolaire complète : gestion des notes et bulletins, facturation, automatisation des workflows (emails/SMS via n8n), gestion multi-établissements.",
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
+    result: "Plateforme en production – edu.levitation.mg",
   },
   {
     title: "Développeur Web Freelance",
@@ -19,8 +20,9 @@ const experiences = [
     period: "Nov 2025 – Fév 2026",
     current: false,
     description:
-      "Site de location événementielle avec back-office de gestion des stocks et optimisation UX.",
+      "Développement d'un site de location événementielle avec back-office de gestion des stocks, catalogue produits et optimisation de l'expérience utilisateur.",
     technologies: ["Spring Boot", "ReactJS", "MySQL"],
+    result: "Livré avec réduction du temps de gestion stock de 60%",
   },
   {
     title: "Application Logistique & Transport",
@@ -28,8 +30,9 @@ const experiences = [
     period: "Sep – Déc 2025",
     current: false,
     description:
-      "Suivi de livraisons en temps réel, optimisation des trajets et interfaces multi-profils.",
+      "Digitalisation du transport du personnel : suivi des livraisons en temps réel, optimisation des trajets (OSRM), tableaux de bord multi-profils (admin, chauffeur, RH).",
     technologies: ["React Native", "ReactJS", "Node.js", "Firebase", "MySQL"],
+    result: "Réduction de 30% des temps d'attente",
   },
 ];
 
@@ -39,131 +42,156 @@ const education = [
     school: "IT-University",
     period: "2022 – 2025",
     description:
-      "Algorithmique, bases de données, POO, développement web et mobile.",
+      "Formation complète en algorithmique, bases de données, programmation orientée objet, développement web et mobile. Projets académiques variés sur toute la durée du cursus.",
+    highlight: "Diplômé",
   },
   {
-    title: "Gen AI Skills",
+    title: "Gen AI Skills Certification",
     school: "Google Cloud Skill Boost",
     period: "Fév 2025",
-    description: "Certification en Intelligence Artificielle Générative.",
+    description:
+      "Certification en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d'IA dans des applications métier.",
+    highlight: "Certifié Google Cloud",
   },
   {
     title: "Baccalauréat Série D",
     school: "Lycée Manjary Soa",
     period: "2022",
-    description: "Baccalauréat scientifique mention série D.",
+    description:
+      "Baccalauréat scientifique option Sciences de la Vie et de la Terre (série D).",
+    highlight: "Mention obtenue",
   },
 ];
 
-const TimelineCard = ({
+interface ExpItem {
+  title: string;
+  company?: string;
+  school?: string;
+  companyUrl?: string;
+  period: string;
+  current?: boolean;
+  description: string;
+  technologies?: string[];
+  result?: string;
+  highlight?: string;
+}
+
+const TimelineEntry = ({
   item,
-  index,
   type,
+  index,
 }: {
-  item: any;
-  index: number;
+  item: ExpItem;
   type: "exp" | "edu";
+  index: number;
+  isLast: boolean;
 }) => {
-  const isLeft = index % 2 === 0;
   const isPrimary = type === "exp";
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
+      initial={{ opacity: 0, x: -16 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.12 }}
-      className={`relative flex md:items-center gap-0 md:gap-8 mb-8 last:mb-0 ${
-        isLeft ? "md:flex-row" : "md:flex-row-reverse"
-      }`}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.45, delay: index * 0.1 }}
+      className="relative pl-12 pb-8 last:pb-0"
     >
+      {/* Vertical line (hidden on last item via last:pb-0) */}
+      <div className={`absolute left-[13px] top-9 bottom-0 w-px ${
+        isPrimary
+          ? "bg-gradient-to-b from-primary/40 via-border to-transparent"
+          : "bg-gradient-to-b from-accent/40 via-border to-transparent"
+      }`} />
+
+      {/* Timeline dot */}
+      <div className={`absolute left-0 top-4 w-7 h-7 rounded-full flex items-center justify-center border-2 z-10 ${
+        item.current
+          ? "bg-primary border-primary shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
+          : isPrimary
+          ? "bg-background border-primary/60"
+          : "bg-background border-accent/60"
+      }`}>
+        {type === "exp" ? (
+          <Briefcase className={`w-3 h-3 ${item.current ? "text-primary-foreground" : "text-primary"}`} />
+        ) : (
+          <GraduationCap className={`w-3 h-3 ${isPrimary ? "text-primary" : "text-accent"}`} />
+        )}
+      </div>
+
       {/* Content card */}
-      <div className="flex-1 pl-8 md:pl-0">
-        <div
-          className={`relative p-5 lg:p-6 rounded-2xl bg-card/80 backdrop-blur-sm border transition-all duration-300 hover:shadow-elevated group ${
-            item.current
-              ? "border-primary/40 shadow-glow"
-              : "border-border/50 hover:border-primary/30"
-          }`}
-        >
-          {/* Gradient top bar */}
-          <div
-            className={`absolute top-0 left-5 right-5 h-0.5 rounded-full ${
-              isPrimary
-                ? "bg-gradient-to-r from-primary to-accent"
-                : "bg-gradient-to-r from-accent to-primary"
-            }`}
-          />
+      <div className={`rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:shadow-elevated group ${
+        item.current
+          ? "border-primary/25 bg-primary/5 dark:bg-primary/8"
+          : "border-border/60 bg-card/60 hover:border-border"
+      }`}>
+        {/* Header row */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+            isPrimary ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent"
+          }`}>
+            {item.period}
+          </span>
+          {item.current && (
+            <span className="flex items-center gap-1 text-xs font-semibold text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              En cours
+            </span>
+          )}
+          {item.highlight && (
+            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+              <Award className="w-3 h-3" />
+              {item.highlight}
+            </span>
+          )}
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                isPrimary ? "bg-primary/15 text-primary" : "bg-accent/15 text-accent"
-              }`}
+        {/* Title & company */}
+        <h3 className="text-base sm:text-lg font-display font-semibold mb-1 leading-snug">
+          {item.title}
+        </h3>
+        <div className="flex items-center gap-1.5 mb-3">
+          <span className="text-sm text-muted-foreground font-medium">
+            {item.company || item.school}
+          </span>
+          {item.companyUrl && (
+            <a
+              href={item.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/70 transition-colors"
+              title={`Visiter ${item.company}`}
             >
-              {item.period}
-            </span>
-            {item.current && (
-              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500/15 text-green-400 text-xs font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                En cours
-              </span>
-            )}
-          </div>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+        </div>
 
-          <h3 className="text-base lg:text-lg font-display font-semibold mb-1">
-            {item.title}
-          </h3>
-          <div className="flex items-center gap-1.5 mb-3">
-            <span className="text-sm text-muted-foreground">
-              {item.company || item.school}
-            </span>
-            {item.companyUrl && (
-              <a
-                href={item.companyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 transition-colors"
-              >
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            )}
-          </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-4 leading-relaxed">
-            {item.description}
+        {/* Description */}
+        <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+          {item.description}
+        </p>
+
+        {/* Result badge */}
+        {item.result && (
+          <p className="text-xs font-medium text-primary/80 bg-primary/8 border border-primary/15 rounded-lg px-3 py-1.5 mb-3 inline-block">
+            ✓ {item.result}
           </p>
-          {item.technologies && (
-            <div className="flex flex-wrap gap-1.5">
-              {item.technologies.map((tech: string) => (
-                <span
-                  key={tech}
-                  className="px-2 py-0.5 rounded-md bg-secondary text-xs font-medium"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+        )}
 
-      {/* Center dot (desktop) */}
-      <div className="hidden md:flex absolute md:relative left-0 md:left-auto flex-shrink-0 flex-col items-center">
-        <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center z-10 shadow-lg ${
-            isPrimary ? "bg-primary/20 border-2 border-primary" : "bg-accent/20 border-2 border-accent"
-          }`}
-        >
-          {type === "exp" ? (
-            <Briefcase className="w-4 h-4 text-primary" />
-          ) : (
-            <GraduationCap className="w-4 h-4 text-accent" />
-          )}
-        </div>
+        {/* Tech tags */}
+        {item.technologies && (
+          <div className="flex flex-wrap gap-1.5">
+            {item.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="px-2 py-0.5 rounded-md bg-secondary text-xs font-medium border border-border/50"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Spacer for alternating layout */}
-      <div className="hidden md:block flex-1" />
     </motion.div>
   );
 };
@@ -171,15 +199,15 @@ const TimelineCard = ({
 const ExperienceSection = () => {
   return (
     <section className="section-container">
-      <div className="section-content max-w-4xl">
+      <div className="section-content max-w-3xl">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.55 }}
           className="text-center mb-10 md:mb-14"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
             Parcours
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold">
@@ -188,61 +216,41 @@ const ExperienceSection = () => {
         </motion.div>
 
         <Tabs defaultValue="experience" className="w-full">
-          <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2 mb-10 md:mb-12 h-11 rounded-xl">
-            <TabsTrigger
-              value="experience"
-              className="flex items-center gap-2 text-sm rounded-lg"
-            >
-              <Briefcase className="w-4 h-4" />
+          <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2 mb-10 h-11 rounded-xl">
+            <TabsTrigger value="experience" className="flex items-center gap-2 text-sm rounded-lg">
+              <Briefcase className="w-3.5 h-3.5" />
               Expériences
             </TabsTrigger>
-            <TabsTrigger
-              value="education"
-              className="flex items-center gap-2 text-sm rounded-lg"
-            >
-              <GraduationCap className="w-4 h-4" />
+            <TabsTrigger value="education" className="flex items-center gap-2 text-sm rounded-lg">
+              <GraduationCap className="w-3.5 h-3.5" />
               Formation
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="experience">
-            {/* Mobile: simple left timeline */}
-            <div className="md:hidden relative pl-8">
-              <div className="timeline-line" />
+            <div className="relative">
               {experiences.map((exp, index) => (
-                <div key={exp.title} className="relative pb-8 last:pb-0">
-                  <div className="timeline-dot absolute -left-4 w-8 h-8">
-                    <Briefcase className="w-4 h-4 text-primary-foreground" />
-                  </div>
-                  <TimelineCard item={exp} index={index} type="exp" />
-                </div>
-              ))}
-            </div>
-            {/* Desktop: alternating */}
-            <div className="hidden md:block relative">
-              <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary/20 -translate-x-1/2" />
-              {experiences.map((exp, index) => (
-                <TimelineCard key={exp.title} item={exp} index={index} type="exp" />
+                <TimelineEntry
+                  key={exp.title}
+                  item={exp}
+                  index={index}
+                  type="exp"
+                  isLast={index === experiences.length - 1}
+                />
               ))}
             </div>
           </TabsContent>
 
           <TabsContent value="education">
-            <div className="md:hidden relative pl-8">
-              <div className="timeline-line" />
+            <div className="relative">
               {education.map((edu, index) => (
-                <div key={edu.title} className="relative pb-8 last:pb-0">
-                  <div className="timeline-dot absolute -left-4 w-8 h-8 bg-accent">
-                    <GraduationCap className="w-4 h-4 text-accent-foreground" />
-                  </div>
-                  <TimelineCard item={edu} index={index} type="edu" />
-                </div>
-              ))}
-            </div>
-            <div className="hidden md:block relative">
-              <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-accent via-primary to-accent/20 -translate-x-1/2" />
-              {education.map((edu, index) => (
-                <TimelineCard key={edu.title} item={edu} index={index} type="edu" />
+                <TimelineEntry
+                  key={edu.title}
+                  item={edu}
+                  index={index}
+                  type="edu"
+                  isLast={index === education.length - 1}
+                />
               ))}
             </div>
           </TabsContent>

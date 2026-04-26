@@ -1,128 +1,127 @@
 import { motion } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
-import { Code2, Layout, Settings, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Monitor, Server, Database, Terminal, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
 
-const skillCategories = [
+interface Skill {
+  name: string;
+  devicon: string | null;
+  fallback?: string;
+}
+
+interface Category {
+  title: string;
+  color: "primary" | "accent";
+  Icon: React.ComponentType<{ className?: string }>;
+  skills: Skill[];
+}
+
+const categories: Category[] = [
   {
-    title: "Langages & Programmation",
+    title: "Frontend",
     color: "primary",
-    icon: Code2,
+    Icon: Monitor,
     skills: [
-      { name: "JavaScript / TypeScript", level: 75 },
-      { name: "Java", level: 80 },
-      { name: "PHP", level: 90 },
-      { name: "Python", level: 50 },
-      { name: "SQL", level: 90 },
+      { name: "React / Next.js", devicon: "devicon-react-original" },
+      { name: "TypeScript", devicon: "devicon-typescript-plain" },
+      { name: "JavaScript", devicon: "devicon-javascript-plain" },
+      { name: "Tailwind CSS", devicon: "devicon-tailwindcss-plain" },
+      { name: "React Native", devicon: "devicon-react-original" },
     ],
   },
   {
-    title: "Frameworks & Frontend",
+    title: "Backend",
     color: "accent",
-    icon: Layout,
+    Icon: Server,
     skills: [
-      { name: "React / Next.js", level: 85 },
-      { name: "React Native", level: 75 },
-      { name: "Laravel", level: 80 },
-      { name: "Spring Boot", level: 60 },
-      { name: "Symfony", level: 65 },
+      { name: "PHP / Laravel", devicon: "devicon-laravel-plain" },
+      { name: "Java / Spring Boot", devicon: "devicon-spring-plain" },
+      { name: "Node.js", devicon: "devicon-nodejs-plain" },
+      { name: "Symfony", devicon: "devicon-symfony-original" },
+      { name: "Python", devicon: "devicon-python-plain" },
+    ],
+  },
+  {
+    title: "Bases de données",
+    color: "primary",
+    Icon: Database,
+    skills: [
+      { name: "MySQL", devicon: "devicon-mysql-plain" },
+      { name: "PostgreSQL", devicon: "devicon-postgresql-plain" },
+      { name: "Firebase", devicon: "devicon-firebase-plain" },
     ],
   },
   {
     title: "DevOps & Outils",
-    color: "primary",
-    icon: Settings,
+    color: "accent",
+    Icon: Terminal,
     skills: [
-      { name: "MySQL / PostgreSQL", level: 90 },
-      { name: "Git / GitHub", level: 90 },
-      { name: "Docker", level: 70 },
-      { name: "API REST / n8n", level: 80 },
-      { name: "Firebase", level: 80 },
+      { name: "Git / GitHub", devicon: "devicon-git-plain" },
+      { name: "Docker", devicon: "devicon-docker-plain" },
+      { name: "Linux", devicon: "devicon-linux-plain" },
+      { name: "API REST", devicon: null, fallback: "REST" },
+      { name: "n8n", devicon: null, fallback: "n8n" },
     ],
   },
 ];
 
 const softSkills = [
-  { label: "Analyse des besoins", icon: Target },
-  { label: "Architecture logicielle", icon: Layers },
-  { label: "Travail en équipe", icon: Users },
-  { label: "Résolution de problèmes", icon: Zap },
-  { label: "Autonomie", icon: Rocket },
-  { label: "Adaptabilité", icon: RefreshCw },
-  { label: "Communication", icon: MessageSquare },
-  { label: "Rigueur", icon: CheckCircle2 },
+  { label: "Analyse des besoins", Icon: Target },
+  { label: "Architecture logicielle", Icon: Layers },
+  { label: "Travail en équipe", Icon: Users },
+  { label: "Résolution de problèmes", Icon: Zap },
+  { label: "Autonomie", Icon: Rocket },
+  { label: "Adaptabilité", Icon: RefreshCw },
+  { label: "Communication", Icon: MessageSquare },
+  { label: "Rigueur", Icon: CheckCircle2 },
 ];
 
-// Circular progress SVG component
-const CircularProgress = ({
-  level,
-  color,
-  delay,
-}: {
-  level: number;
-  color: string;
-  delay: number;
-}) => {
-  const [animated, setAnimated] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+const TechChip = ({ skill }: { skill: Skill }) => (
+  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary/50 border border-border/40 hover:border-border hover:bg-secondary transition-all duration-200 group cursor-default">
+    {skill.devicon ? (
+      <i className={`${skill.devicon} colored text-xl flex-shrink-0 w-5 text-center`} />
+    ) : (
+      <span className="w-5 h-5 flex items-center justify-center text-[9px] font-bold text-muted-foreground bg-muted rounded flex-shrink-0">
+        {skill.fallback?.slice(0, 4)}
+      </span>
+    )}
+    <span className="text-xs sm:text-sm font-medium leading-none">{skill.name}</span>
+  </div>
+);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setAnimated(true);
-      },
-      { threshold: 0.3 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const radius = 18;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = animated
-    ? circumference - (level / 100) * circumference
-    : circumference;
-  const strokeColor = color === "primary" ? "hsl(175 80% 50%)" : "hsl(280 70% 60%)";
+const CategoryCard = ({ category, index }: { category: Category; index: number }) => {
+  const isPrimary = category.color === "primary";
+  const { Icon } = category;
 
   return (
-    <div ref={ref} className="flex-shrink-0">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <circle
-          cx="22"
-          cy="22"
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3"
-          className="text-border/40"
-        />
-        <circle
-          cx="22"
-          cy="22"
-          r={radius}
-          fill="none"
-          stroke={strokeColor}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          transform="rotate(-90 22 22)"
-          style={{
-            transition: `stroke-dashoffset 1s ease ${delay}s`,
-            filter: `drop-shadow(0 0 4px ${strokeColor}60)`,
-          }}
-        />
-        <text
-          x="22"
-          y="26"
-          textAnchor="middle"
-          fontSize="9"
-          fontWeight="600"
-          fill={strokeColor}
-        >
-          {level}%
-        </text>
-      </svg>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      className="card-floating p-5 lg:p-6 flex flex-col gap-4"
+    >
+      {/* Card header */}
+      <div className="flex items-center gap-3">
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+          isPrimary ? "bg-primary/15 text-primary" : "bg-accent/15 text-accent"
+        }`}>
+          <Icon className="w-4 h-4" />
+        </div>
+        <div>
+          <h3 className="text-sm font-display font-bold leading-none mb-1">{category.title}</h3>
+          <div className={`h-0.5 w-6 rounded-full ${isPrimary ? "bg-primary" : "bg-accent"}`} />
+        </div>
+        <span className="ml-auto text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+          {category.skills.length}
+        </span>
+      </div>
+
+      {/* Skills chips grid */}
+      <div className="flex flex-wrap gap-2">
+        {category.skills.map((skill) => (
+          <TechChip key={skill.name} skill={skill} />
+        ))}
+      </div>
+    </motion.div>
   );
 };
 
@@ -131,102 +130,54 @@ const SkillsSection = () => {
     <section className="section-container">
       <div className="section-content">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.55 }}
           className="text-center mb-10 md:mb-14"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
             Expertise
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold mb-3">
             Compétences
           </h2>
-          <p className="text-base lg:text-lg text-muted-foreground max-w-xl mx-auto">
-            Un stack moderne et polyvalent, enrichi en continu.
+          <p className="text-base text-muted-foreground max-w-xl mx-auto">
+            Un stack moderne et polyvalent, enrichi continuellement.
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 mb-10 md:mb-12">
-          {skillCategories.map((category, catIndex) => (
-            <motion.div
-              key={category.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: catIndex * 0.1 }}
-              className="card-floating p-5 lg:p-6 group hover:shadow-glow transition-shadow duration-500"
-            >
-              {/* Card header */}
-              <div className="flex items-center gap-3 mb-5">
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    category.color === "primary" ? "bg-primary/15 text-primary" : "bg-accent/15 text-accent"
-                  }`}
-                >
-                  <category.icon className="w-5 h-5 pointer-events-none" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-display font-semibold leading-tight">
-                    {category.title}
-                  </h3>
-                  <div
-                    className={`w-8 h-0.5 mt-1 rounded-full ${
-                      category.color === "primary" ? "bg-primary" : "bg-accent"
-                    }`}
-                  />
-                </div>
-              </div>
-
-              {/* Skills list */}
-              <div className="space-y-3">
-                {category.skills.map((skill, skillIndex) => (
-                  <div key={skill.name} className="flex items-center gap-3">
-                    <CircularProgress
-                      level={skill.level}
-                      color={category.color}
-                      delay={catIndex * 0.1 + skillIndex * 0.08}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs sm:text-sm font-medium truncate">
-                          {skill.name}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+        {/* Tech categories grid */}
+        <div className="grid sm:grid-cols-2 gap-4 lg:gap-5 mb-10 md:mb-12">
+          {categories.map((category, index) => (
+            <CategoryCard key={category.title} category={category} index={index} />
           ))}
         </div>
 
         {/* Soft skills */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center"
+          transition={{ duration: 0.5, delay: 0.25 }}
         >
-          <h3 className="text-lg lg:text-xl font-display font-semibold mb-5">
-            Soft Skills
-          </h3>
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-            {softSkills.map((skill, index) => (
-              <motion.span
-                key={skill.label}
-                initial={{ opacity: 0, scale: 0.8 }}
+          <div className="text-center mb-5">
+            <h3 className="text-lg font-display font-semibold">Soft Skills</h3>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5">
+            {softSkills.map(({ label, Icon }, index) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, scale: 0.88 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.08, y: -2 }}
-                transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
-                className="skill-tag text-xs sm:text-sm flex items-center gap-1.5 cursor-default group"
+                whileHover={{ scale: 1.06, y: -2 }}
+                transition={{ duration: 0.28, delay: 0.3 + index * 0.04 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-border transition-all duration-200"
               >
-                <skill.icon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
-                {skill.label}
-              </motion.span>
+                <Icon className="w-3.5 h-3.5 text-primary" />
+                {label}
+              </motion.div>
             ))}
           </div>
         </motion.div>
