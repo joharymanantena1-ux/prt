@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Monitor, Server, Database, Terminal, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
 
 interface Skill {
@@ -86,28 +86,32 @@ const softSkills = [
 ];
 
 const TechChip = ({ skill }: { skill: Skill }) => (
-  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary/50 border border-border/40 hover:border-border hover:bg-secondary transition-all duration-200 group cursor-default">
+  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary/50 border border-border/40 hover:border-border hover:bg-secondary transition-colors duration-200 group cursor-default">
     {skill.devicon ? (
-      <i className={`${skill.devicon} colored text-xl flex-shrink-0 w-5 text-center`} />
+      <i className={`${skill.devicon} colored text-xl flex-shrink-0 w-5 text-center`} aria-hidden="true" />
     ) : (
-      <span className="w-5 h-5 flex items-center justify-center text-[9px] font-bold text-muted-foreground bg-muted rounded flex-shrink-0">
+      <span
+        aria-hidden="true"
+        className="w-6 h-5 flex items-center justify-center text-[10px] font-bold text-muted-foreground bg-muted rounded flex-shrink-0"
+      >
         {skill.fallback?.slice(0, 4)}
       </span>
     )}
-    <span className="text-xs sm:text-sm font-medium leading-none">{skill.name}</span>
+    <span className="text-sm font-medium leading-none">{skill.name}</span>
   </div>
 );
 
 const CategoryCard = ({ category, index }: { category: Category; index: number }) => {
+  const reduce = useReducedMotion();
   const isPrimary = category.color === "primary";
   const { Icon } = category;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={reduce ? false : { opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      transition={reduce ? { duration: 0 } : { duration: 0.5, delay: index * 0.08 }}
       className="card-floating p-5 lg:p-6 flex flex-col gap-4"
     >
       {/* Card header */}
@@ -137,14 +141,15 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
 };
 
 const SkillsSection = () => {
+  const reduce = useReducedMotion();
   return (
     <section className="section-container">
       <div className="section-content">
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={reduce ? false : { opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.55 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.55 }}
           className="text-center mb-10 md:mb-14"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
@@ -167,10 +172,10 @@ const SkillsSection = () => {
 
         {/* Soft skills */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={reduce ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.25 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.25 }}
         >
           <div className="text-center mb-5">
             <h3 className="text-lg font-display font-semibold">Soft Skills</h3>
@@ -179,14 +184,13 @@ const SkillsSection = () => {
             {softSkills.map(({ label, Icon }, index) => (
               <motion.div
                 key={label}
-                initial={{ opacity: 0, scale: 0.88 }}
+                initial={reduce ? false : { opacity: 0, scale: 0.88 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.06, y: -2 }}
-                transition={{ duration: 0.28, delay: 0.3 + index * 0.04 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-border transition-all duration-200"
+                transition={reduce ? { duration: 0 } : { duration: 0.28, delay: 0.3 + index * 0.04 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-primary/40 transition-colors duration-200"
               >
-                <Icon className="w-3.5 h-3.5 text-primary" />
+                <Icon className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
                 {label}
               </motion.div>
             ))}

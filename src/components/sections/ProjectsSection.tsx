@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Globe } from "lucide-react";
+import { Github, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { useMotionPreset } from "@/hooks/useMotionPreset";
 
 // ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
 const professionalProjects = [
@@ -377,168 +378,272 @@ const academicProjects = [
   },
 ];
 
-// ─── CATEGORY COLORS ──────────────────────────────────────────────────────────
+// ─── CATEGORY COLORS (theme-aware, AA in both light & dark) ──────────────────
+// Brand pairs are token-based (always safe). Hue accents use text-{c}-700 (light)
+// / text-{c}-300 (dark) so they never collapse below 4.5:1 on their tinted bg.
 const categoryColors: Record<string, string> = {
-  SaaS:       "bg-primary/20 text-primary border-primary/30",
-  Startup:    "bg-violet-500/20 text-violet-300 border-violet-500/30",
-  Mobile:     "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-  Automation: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-  Entreprise: "bg-orange-500/20 text-orange-300 border-orange-500/30",
-  ERP:        "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  CRM:        "bg-pink-500/20 text-pink-300 border-pink-500/30",
-  Cloud:      "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  Java:       "bg-orange-500/20 text-orange-300 border-orange-500/30",
-  "C#":       "bg-violet-500/20 text-violet-300 border-violet-500/30",
-  Flutter:    "bg-sky-500/20 text-sky-300 border-sky-500/30",
-  Web:        "bg-primary/20 text-primary border-primary/30",
-  PHP:        "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-  Algo:       "bg-teal-500/20 text-teal-300 border-teal-500/30",
-  Géomatique: "bg-green-500/20 text-green-300 border-green-500/30",
-  Jeu:        "bg-pink-500/20 text-pink-300 border-pink-500/30",
-  "C++":      "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-  Réseaux:    "bg-slate-500/20 text-slate-300 border-slate-500/30",
-  Framework:  "bg-secondary text-muted-foreground border-border/50",
+  // brand teal
+  SaaS:       "bg-primary/10 text-primary border-primary/30",
+  Web:        "bg-primary/10 text-primary border-primary/30",
+  Cloud:      "bg-primary/10 text-primary border-primary/30",
+  // brand purple
+  Startup:    "bg-accent/10 text-accent border-accent/30",
+  "C#":       "bg-accent/10 text-accent border-accent/30",
+  Jeu:        "bg-accent/10 text-accent border-accent/30",
+  CRM:        "bg-accent/10 text-accent border-accent/30",
+  PHP:        "bg-accent/10 text-accent border-accent/30",
+  // safe theme-aware hues (700 light / 300 dark)
+  Mobile:     "bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30",
+  Flutter:    "bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30",
+  Automation: "bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+  Géomatique: "bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+  Algo:       "bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+  Entreprise: "bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30",
+  ERP:        "bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30",
+  Java:       "bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30",
+  "C++":      "bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/30",
+  Réseaux:    "bg-secondary text-secondary-foreground border-border/50",
+  Framework:  "bg-secondary text-secondary-foreground border-border/50",
 };
 const getCategoryColor = (c: string) => categoryColors[c] ?? categoryColors["Framework"];
 
-// ─── PROFESSIONAL PROJECT CARD (carousel) ────────────────────────────────────
-const ProfessionalCard = ({ project, index }: { project: any; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 16 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.35, delay: (index % 6) * 0.06 }}
-    className="flex-shrink-0 w-[280px] sm:w-[300px] card-floating overflow-hidden group hover:-translate-y-1 transition-transform duration-300"
+// Shared badge — 12px floor (MASTER §2), AA both themes
+const CategoryBadge = ({ category }: { category: string }) => (
+  <span
+    className={`absolute top-2 left-2 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getCategoryColor(
+      category,
+    )}`}
   >
-    <div className="relative aspect-video overflow-hidden">
-      <img
-        src={project.image}
-        alt={project.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-      />
-      <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-60`} />
-      <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
-      <span className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getCategoryColor(project.category)}`}>
-        {project.category}
-      </span>
-      <div className="absolute top-3 right-3 flex gap-1.5">
-        {project.githubUrl && (
-          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-            className="p-1.5 rounded-full bg-card/80 backdrop-blur-sm hover:bg-foreground hover:text-background transition-all duration-200"
-            title="Code source" aria-label="Code source">
-            <Github className="w-3.5 h-3.5" />
-          </a>
-        )}
-        {project.liveUrl && (
-          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-            className="p-1.5 rounded-full bg-card/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-            title="Voir le site" aria-label="Voir le site">
-            <Globe className="w-3.5 h-3.5" />
-          </a>
-        )}
-      </div>
-    </div>
-    <div className="p-4">
-      <h3 className="text-sm font-display font-semibold mb-1.5 line-clamp-1">{project.title}</h3>
-      <p className="text-xs text-muted-foreground mb-3 line-clamp-2 leading-relaxed">{project.description}</p>
-      <div className="flex flex-wrap gap-1">
-        {project.technologies.slice(0, 4).map((tech: string) => (
-          <span key={tech} className="px-1.5 py-0.5 rounded-md bg-secondary text-[10px] font-medium border border-border/40">{tech}</span>
-        ))}
-        {project.technologies.length > 4 && (
-          <span className="px-1.5 py-0.5 rounded-md bg-secondary text-[10px] text-muted-foreground">+{project.technologies.length - 4}</span>
-        )}
-      </div>
-    </div>
-  </motion.div>
+    {category}
+  </span>
 );
+
+// Reusable 44px icon link with FR aria-label + focus-visible ring
+const IconLink = ({
+  href,
+  label,
+  variant = "neutral",
+  children,
+}: {
+  href: string;
+  label: string;
+  variant?: "neutral" | "primary";
+  children: ReactNode;
+}) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={label}
+    title={label}
+    className={`inline-flex items-center justify-center min-h-11 min-w-11 rounded-full bg-card/80 backdrop-blur-sm cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+      variant === "primary"
+        ? "text-primary hover:bg-primary hover:text-primary-foreground"
+        : "hover:bg-foreground hover:text-background"
+    }`}
+  >
+    {children}
+  </a>
+);
+
+// ─── PROFESSIONAL PROJECT CARD (carousel) ────────────────────────────────────
+const ProfessionalCard = ({ project, index }: { project: any; index: number }) => {
+  const { reduce } = useMotionPreset();
+  return (
+    <motion.article
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
+      className="flex-shrink-0 w-[260px] sm:w-[300px] card-floating overflow-hidden group hover:-translate-y-1 transition-transform duration-300"
+    >
+      <div className="relative aspect-video overflow-hidden">
+        <img
+          src={project.image}
+          alt={project.title}
+          width={800}
+          height={450}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-60`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+        <CategoryBadge category={project.category} />
+        <div className="absolute top-2 right-2 flex gap-1.5">
+          {project.githubUrl && (
+            <IconLink href={project.githubUrl} label={`Code source de ${project.title}`}>
+              <Github className="w-4 h-4" aria-hidden="true" />
+            </IconLink>
+          )}
+          {project.liveUrl && (
+            <IconLink href={project.liveUrl} label={`Voir le site de ${project.title}`} variant="primary">
+              <Globe className="w-4 h-4" aria-hidden="true" />
+            </IconLink>
+          )}
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="text-base font-display font-semibold mb-1.5 line-clamp-1">{project.title}</h3>
+        <p className="text-sm text-muted-foreground dark:text-foreground/80 mb-3 line-clamp-2 leading-relaxed">
+          {project.description}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          {project.technologies.slice(0, 4).map((tech: string) => (
+            <span key={tech} className="px-1.5 py-0.5 rounded-md bg-secondary text-xs font-medium border border-border/40">{tech}</span>
+          ))}
+          {project.technologies.length > 4 && (
+            <span className="px-1.5 py-0.5 rounded-md bg-secondary text-xs text-muted-foreground">+{project.technologies.length - 4}</span>
+          )}
+        </div>
+      </div>
+    </motion.article>
+  );
+};
 
 // ─── ACADEMIC PROJECT CARD (grid, compact with image) ───────────────────────
-const AcademicCard = ({ project, index }: { project: any; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3, delay: (index % 12) * 0.04 }}
-    className="card-floating overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300"
-  >
-    <div className="relative h-28 overflow-hidden">
-      <img
-        src={project.image}
-        alt={project.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-      />
-      <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-50`} />
-      <div className="absolute inset-0 bg-gradient-to-t from-card/70 to-transparent" />
-      <span className={`absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[9px] font-semibold border ${getCategoryColor(project.category)}`}>
-        {project.category}
-      </span>
-      <div className="absolute top-2 right-2 flex gap-1">
-        {project.githubUrl && (
-          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-            className="p-1 rounded-full bg-card/70 backdrop-blur-sm hover:bg-foreground hover:text-background transition-all"
-            title="Code source" aria-label="Code source">
-            <Github className="w-3 h-3" />
-          </a>
-        )}
-        {project.liveUrl && (
-          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-            className="p-1 rounded-full bg-card/70 backdrop-blur-sm text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-            title="Voir le site" aria-label="Voir le site">
-            <Globe className="w-3 h-3" />
-          </a>
-        )}
+const AcademicCard = ({ project, index }: { project: any; index: number }) => {
+  const { reduce } = useMotionPreset();
+  return (
+    <motion.article
+      initial={reduce ? false : { opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={reduce ? { duration: 0 } : { duration: 0.3, delay: (index % 12) * 0.04 }}
+      className="card-floating overflow-hidden group hover:-translate-y-1 transition-transform duration-300"
+    >
+      <div className="relative h-28 overflow-hidden">
+        <img
+          src={project.image}
+          alt={project.title}
+          width={800}
+          height={224}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-50`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-card/70 to-transparent" />
+        <CategoryBadge category={project.category} />
+        <div className="absolute top-2 right-2 flex gap-1">
+          {project.githubUrl && (
+            <IconLink href={project.githubUrl} label={`Code source de ${project.title}`}>
+              <Github className="w-4 h-4" aria-hidden="true" />
+            </IconLink>
+          )}
+          {project.liveUrl && (
+            <IconLink href={project.liveUrl} label={`Voir le site de ${project.title}`} variant="primary">
+              <Globe className="w-4 h-4" aria-hidden="true" />
+            </IconLink>
+          )}
+        </div>
       </div>
-    </div>
-    <div className="p-3">
-      <h3 className="text-xs font-display font-semibold mb-1 line-clamp-1">{project.title}</h3>
-      <p className="text-[11px] text-muted-foreground mb-2 line-clamp-2 leading-relaxed">{project.description}</p>
-      <div className="flex flex-wrap gap-1">
-        {project.technologies.slice(0, 3).map((tech: string) => (
-          <span key={tech} className="px-1.5 py-0.5 rounded bg-secondary text-[9px] font-medium border border-border/40">{tech}</span>
-        ))}
-        {project.technologies.length > 3 && (
-          <span className="px-1.5 py-0.5 rounded bg-secondary text-[9px] text-muted-foreground">+{project.technologies.length - 3}</span>
-        )}
+      <div className="p-3">
+        <h3 className="text-sm font-display font-semibold mb-1 line-clamp-1">{project.title}</h3>
+        <p className="text-sm text-muted-foreground dark:text-foreground/80 mb-2 line-clamp-2 leading-relaxed">
+          {project.description}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          {project.technologies.slice(0, 3).map((tech: string) => (
+            <span key={tech} className="px-1.5 py-0.5 rounded bg-secondary text-xs font-medium border border-border/40">{tech}</span>
+          ))}
+          {project.technologies.length > 3 && (
+            <span className="px-1.5 py-0.5 rounded bg-secondary text-xs text-muted-foreground">+{project.technologies.length - 3}</span>
+          )}
+        </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.article>
+  );
+};
 
-// ─── DRAG-SCROLL CAROUSEL (professional only) ────────────────────────────────
-const DragScrollCarousel = ({ projects }: { projects: any[] }) => {
+// ─── ACCESSIBLE CAROUSEL (professional only) ─────────────────────────────────
+// rAF-throttled pointer drag + keyboard (←/→/Home/End) + region role/aria + controls.
+const AccessibleCarousel = ({ projects }: { projects: any[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const startScroll = useRef(0);
+  const rafId = useRef<number | null>(null);
 
-  const onMouseDown = useCallback((e: React.MouseEvent) => {
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (!scrollRef.current) return;
     isDragging.current = true;
-    startX.current = e.pageX - (scrollRef.current?.offsetLeft ?? 0);
-    scrollLeft.current = scrollRef.current?.scrollLeft ?? 0;
-    if (scrollRef.current) scrollRef.current.style.cursor = "grabbing";
+    startX.current = e.pageX - scrollRef.current.offsetLeft;
+    startScroll.current = scrollRef.current.scrollLeft;
+    scrollRef.current.setPointerCapture(e.pointerId);
   }, []);
-  const onMouseLeave = useCallback(() => {
+
+  const stop = useCallback(() => {
     isDragging.current = false;
-    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
   }, []);
-  const onMouseUp = useCallback(() => {
-    isDragging.current = false;
-    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
-  }, []);
-  const onMouseMove = useCallback((e: React.MouseEvent) => {
+
+  // rAF-throttled scroll write (one update per frame max)
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging.current || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    scrollRef.current.scrollLeft = scrollLeft.current - (x - startX.current) * 1.5;
+    const pageX = e.pageX;
+    if (rafId.current != null) return;
+    rafId.current = requestAnimationFrame(() => {
+      rafId.current = null;
+      if (!scrollRef.current) return;
+      const x = pageX - scrollRef.current.offsetLeft;
+      scrollRef.current.scrollLeft = startScroll.current - (x - startX.current) * 1.5;
+    });
   }, []);
+
+  const scrollByCards = useCallback((dir: 1 | -1) => {
+    scrollRef.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
+  }, []);
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!scrollRef.current) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); scrollByCards(1); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); scrollByCards(-1); }
+      else if (e.key === "Home") { e.preventDefault(); scrollRef.current.scrollTo({ left: 0, behavior: "smooth" }); }
+      else if (e.key === "End") { e.preventDefault(); scrollRef.current.scrollTo({ left: scrollRef.current.scrollWidth, behavior: "smooth" }); }
+    },
+    [scrollByCards],
+  );
 
   return (
-    <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide select-none drag-scroll"
-      onMouseDown={onMouseDown} onMouseLeave={onMouseLeave}
-      onMouseUp={onMouseUp} onMouseMove={onMouseMove}>
-      {projects.map((p, i) => <ProfessionalCard key={p.title} project={p} index={i} />)}
-      <div className="flex-shrink-0 w-4" />
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        role="region"
+        aria-roledescription="carrousel"
+        aria-label="Projets professionnels — faites défiler avec les flèches gauche et droite"
+        tabIndex={0}
+        onPointerDown={onPointerDown}
+        onPointerUp={stop}
+        onPointerLeave={stop}
+        onPointerMove={onPointerMove}
+        onKeyDown={onKeyDown}
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide select-none cursor-grab active:cursor-grabbing rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        {projects.map((p, i) => <ProfessionalCard key={p.title} project={p} index={i} />)}
+        <div className="flex-shrink-0 w-4" aria-hidden="true" />
+      </div>
+
+      {/* right-edge scroll affordance */}
+      <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background to-transparent" aria-hidden="true" />
+
+      {/* prev / next controls (44px, FR labels) */}
+      <div className="mt-3 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => scrollByCards(-1)}
+          aria-label="Projet précédent"
+          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-full border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <ChevronLeft className="w-5 h-5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollByCards(1)}
+          aria-label="Projet suivant"
+          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-full border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <ChevronRight className="w-5 h-5" aria-hidden="true" />
+        </button>
+      </div>
     </div>
   );
 };
@@ -550,6 +655,7 @@ const INITIAL_LIMIT = 10;
 
 // ─── SECTION ─────────────────────────────────────────────────────────────────
 const ProjectsSection = () => {
+  const { reduce } = useMotionPreset();
   const [activeFilter, setActiveFilter] = useState("Tous");
   const [showAll, setShowAll] = useState(false);
 
@@ -569,10 +675,10 @@ const ProjectsSection = () => {
       <div className="section-content">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
+          initial={reduce ? false : { opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.55 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.55 }}
           className="text-center mb-10 md:mb-12"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
@@ -586,10 +692,10 @@ const ProjectsSection = () => {
 
         {/* ── Projets professionnels — carousel horizontal ── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={reduce ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.45 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.45 }}
           className="mb-12"
         >
           <div className="flex items-center gap-3 mb-5">
@@ -597,15 +703,15 @@ const ProjectsSection = () => {
             <h3 className="text-base font-display font-semibold">Projets Professionnels</h3>
             <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">{professionalProjects.length}</span>
           </div>
-          <DragScrollCarousel projects={professionalProjects} />
+          <AccessibleCarousel projects={professionalProjects} />
         </motion.div>
 
         {/* ── Projets académiques — grille filtrée ── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={reduce ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.45, delay: 0.1 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.45, delay: 0.1 }}
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1.5 h-5 rounded-full bg-gradient-to-b from-accent to-primary flex-shrink-0" />
@@ -614,36 +720,40 @@ const ProjectsSection = () => {
           </div>
 
           {/* Filtres */}
-          <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide mb-5">
-            {filterCategories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => { setActiveFilter(cat); setShowAll(false); }}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
-                  activeFilter === cat
-                    ? "bg-accent text-accent-foreground shadow-sm"
-                    : "bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
-              >
-                {cat}
-                {cat !== "Tous" && (
-                  <span className="ml-1.5 opacity-60">
-                    {academicProjects.filter(p => p.category === cat).length}
-                  </span>
-                )}
-              </button>
-            ))}
+          <div role="group" aria-label="Filtrer les projets par catégorie" className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide mb-5">
+            {filterCategories.map((cat) => {
+              const active = activeFilter === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => { setActiveFilter(cat); setShowAll(false); }}
+                  className={`flex-shrink-0 inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                    active
+                      ? "bg-accent text-accent-foreground shadow-sm"
+                      : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+                  }`}
+                >
+                  {cat}
+                  {cat !== "Tous" && (
+                    <span className="ml-1.5 opacity-70">
+                      {academicProjects.filter((p) => p.category === cat).length}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Grille responsive */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeFilter + String(showAll)}
-              initial={{ opacity: 0 }}
+              initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
+              exit={reduce ? { opacity: 1 } : { opacity: 0 }}
+              transition={reduce ? { duration: 0 } : { duration: 0.18 }}
               className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4"
             >
               {displayed.map((project, index) => (
@@ -657,8 +767,9 @@ const ProjectsSection = () => {
             <div className="flex justify-center mt-6">
               <button
                 type="button"
+                aria-expanded={showAll}
                 onClick={() => setShowAll((v) => !v)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-border/60 bg-secondary/50 hover:bg-secondary text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-200"
+                className="inline-flex items-center gap-2 min-h-11 px-5 rounded-full border border-primary/50 bg-secondary/50 hover:bg-primary hover:text-primary-foreground text-sm font-medium text-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {showAll ? (
                   <>Voir moins</>

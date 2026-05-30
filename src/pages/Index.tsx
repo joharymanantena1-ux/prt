@@ -28,11 +28,13 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
 
-  // Determine active section based on scroll position (no automatic navigation)
+  // Determine active section based on scroll position (rAF-throttled — one read per frame)
   useEffect(() => {
     if (isLoading) return;
+    let ticking = false;
 
-    const handleScroll = () => {
+    const compute = () => {
+      ticking = false;
       // The section whose top is closest to 40% from the top of the viewport is "active"
       const trigger = window.scrollY + window.innerHeight * 0.4;
       let active = 0;
@@ -41,6 +43,13 @@ const Index = () => {
         if (el && el.offsetTop <= trigger) active = index;
       });
       setCurrentSection(active);
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(compute);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -53,6 +62,12 @@ const Index = () => {
     const el = document.getElementById(sections[index].id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }, []);
+
+  // Id-based navigation so sections can navigate without brittle magic indices
+  const goToId = useCallback(
+    (id: string) => navigateToSection(sections.findIndex((s) => s.id === id)),
+    [navigateToSection],
+  );
 
   if (isLoading) return <LoadingScreen onComplete={() => setIsLoading(false)} />;
 
@@ -68,24 +83,32 @@ const Index = () => {
       {sections.map(({ id, component: Component }) => (
         <div id={id} key={id} className="scroll-section">
           <Suspense fallback={<SectionLoader />}>
-            <Component onNavigate={navigateToSection} />
+            <Component onNavigate={goToId} />
           </Suspense>
         </div>
       ))}
 
-      {/* Mobile dots — navigate on click only, never auto-trigger */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden flex gap-1.5 bg-card/80 backdrop-blur-sm px-3 py-2 rounded-full border border-border/50">
-        {sections.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => navigateToSection(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              currentSection === index ? "bg-primary w-5" : "bg-muted-foreground/40 w-2"
-            }`}
-            aria-label={`Aller à la section ${index + 1}`}
-          />
-        ))}
+      {/* Mobile dots — navigate on click only, never auto-trigger. 44px hit area, FR labels. */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-header md:hidden flex gap-0.5 bg-card/80 backdrop-blur-sm px-2 py-1 rounded-full border border-border/50">
+        {sections.map(({ id, name }, index) => {
+          const active = currentSection === index;
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => navigateToSection(index)}
+              aria-label={`Aller à : ${name}`}
+              aria-current={active ? "true" : undefined}
+              className="flex items-center justify-center min-h-11 min-w-11 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <span
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  active ? "bg-primary w-5" : "bg-muted-foreground/40 w-2"
+                }`}
+              />
+            </button>
+          );
+        })}
       </div>
     </div>
   );

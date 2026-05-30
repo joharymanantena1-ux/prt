@@ -1,13 +1,15 @@
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowDown, Download, Github, Linkedin, Mail, Globe, Code2, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import developerPortrait from "@/assets/developer-portrait.png";
 
 interface HeroSectionProps {
-  onNavigate: (index: number) => void;
+  /** Navigate to a section by its id (e.g. "projets", "contact"). */
+  onNavigate: (id: string) => void;
 }
 
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
+  const reduce = useReducedMotion();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [4, -4]);
@@ -16,6 +18,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const springRotateY = useSpring(rotateY, { stiffness: 100, damping: 28 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reduce) return; // respect prefers-reduced-motion — no 3D tilt
     const rect = e.currentTarget.getBoundingClientRect();
     mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
@@ -93,23 +96,23 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           >
             <Button
               size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 shadow-sm"
-              onClick={() => onNavigate(4)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 shadow-sm cursor-pointer"
+              onClick={() => onNavigate("projets")}
             >
               Voir mes projets
             </Button>
             <Button
               variant="outline"
               size="lg"
-              className="font-semibold px-7"
-              onClick={() => onNavigate(5)}
+              className="border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground font-semibold px-7 cursor-pointer"
+              onClick={() => onNavigate("contact")}
             >
               Me contacter
             </Button>
             <Button
               variant="outline"
               size="lg"
-              className="border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground font-semibold px-7 gap-2"
+              className="border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground font-semibold px-7 gap-2 cursor-pointer"
               asChild
             >
               <a
@@ -135,10 +138,10 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-xl bg-secondary/60 hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-110 border border-border/50"
-                aria-label={label}
+                className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-xl bg-secondary/60 hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border border-border/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label={`${label} (nouvel onglet)`}
               >
-                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
               </a>
             ))}
           </motion.div>
@@ -162,8 +165,8 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             {/* Portrait with subtle 3D tilt */}
             <motion.div
               style={{ rotateX: springRotateX, rotateY: springRotateY, perspective: 1000 }}
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              animate={reduce ? undefined : { y: [0, -8, 0] }}
+              transition={reduce ? undefined : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
               className="relative z-10"
             >
               <div className="relative w-72 h-[440px] sm:w-80 sm:h-[500px] md:w-[340px] md:h-[540px] lg:w-[380px] lg:h-[580px]">
@@ -173,7 +176,10 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent z-10 pointer-events-none" />
                   <img
                     src={developerPortrait}
-                    alt="Johary Manantena - Développeur Full-Stack"
+                    alt="Portrait de Johary Manantena, développeur full-stack"
+                    width={380}
+                    height={580}
+                    decoding="async"
                     className="w-full h-full object-cover object-center"
                   />
                 </div>
@@ -185,14 +191,14 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.85, duration: 0.5 }}
-              className="absolute -left-4 sm:-left-10 top-1/4 bg-card/95 border border-border/60 rounded-2xl px-3 sm:px-4 py-2.5 shadow-elevated backdrop-blur-sm z-20"
+              className="absolute -left-2 sm:-left-10 top-1/4 bg-card/95 border border-border/60 rounded-2xl px-3 sm:px-4 py-2.5 shadow-elevated backdrop-blur-sm z-20"
             >
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
-                  <Code2 className="w-4 h-4 text-primary" />
+                  <Code2 className="w-4 h-4 text-primary" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Expérience</p>
+                  <p className="text-xs text-muted-foreground leading-none mb-1">Expérience</p>
                   <p className="text-sm font-bold leading-none">3+ ans</p>
                 </div>
               </div>
@@ -203,15 +209,15 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.05, duration: 0.5 }}
-              className="absolute -right-4 sm:-right-10 bottom-1/4 bg-card/95 border border-border/60 rounded-2xl px-3 sm:px-4 py-2.5 shadow-elevated backdrop-blur-sm z-20"
+              className="absolute -right-2 sm:-right-10 bottom-1/4 bg-card/95 border border-border/60 rounded-2xl px-3 sm:px-4 py-2.5 shadow-elevated backdrop-blur-sm z-20"
             >
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-accent/15 flex items-center justify-center flex-shrink-0">
-                  <Layers className="w-4 h-4 text-accent" />
+                  <Layers className="w-4 h-4 text-accent" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Projets</p>
-                  <p className="text-sm font-bold leading-none">17+</p>
+                  <p className="text-xs text-muted-foreground leading-none mb-1">Projets</p>
+                  <p className="text-sm font-bold leading-none">30+</p>
                 </div>
               </div>
             </motion.div>
@@ -228,15 +234,16 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
       >
         <motion.button
           type="button"
-          onClick={() => onNavigate(1)}
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors group"
+          onClick={() => onNavigate("apropos")}
+          animate={reduce ? undefined : { y: [0, 6, 0] }}
+          transition={reduce ? undefined : { duration: 2, repeat: Infinity }}
+          aria-label="Défiler vers la section À propos"
+          className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors group cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 px-2 py-1"
         >
-          <span className="text-[10px] font-medium tracking-widest uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+          <span className="text-xs font-medium tracking-widest uppercase opacity-70 group-hover:opacity-100 transition-opacity">
             Scroll
           </span>
-          <ArrowDown className="w-4 h-4" />
+          <ArrowDown className="w-4 h-4" aria-hidden="true" />
         </motion.button>
       </motion.div>
     </section>

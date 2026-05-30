@@ -2,29 +2,56 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-09ET3KDENS"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Perf: preconnect to font + asset origins before they are requested -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <title>Johary Manantena | Développeur Full-Stack</title>
+    <meta
+      name="description"
+      content="Portfolio de Johary Manantena, développeur web full-stack (React, Node.js, TypeScript, Laravel, Spring Boot). Disponible pour missions freelance."
+    />
+    <meta name="author" content="Johary Manantena" />
+    <meta
+      name="keywords"
+      content="développeur full-stack, React, Node.js, TypeScript, Laravel, Spring Boot, portfolio, freelance"
+    />
+
+    <meta property="og:title" content="Johary Manantena | Développeur Full-Stack" />
+    <meta
+      property="og:description"
+      content="Applications web modernes et performantes — front, back et mobile."
+    />
+    <meta property="og:type" content="website" />
+    <!-- TODO: set your production domain, then add:
+         <meta property="og:url" content="https://votre-domaine.com" />
+         <meta property="og:image" content="https://votre-domaine.com/og-image.png" />  (1200×630, in /public)
+         <link rel="canonical" href="https://votre-domaine.com" /> -->
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/devicon@2.16.0/devicon.min.css" />
+
+    <!-- RGPD / CNIL — Google Consent Mode v2: analytics DENIED by default.
+         The in-app cookie banner calls gtag('consent','update', …) on user opt-in. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-09ET3KDENS');
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
+      });
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JM | Développeur Full-Stack</title>
-    <meta name="description" content="Portfolio d'JM, développeur web full-stack passionné. Création d'applications React, Node.js et TypeScript. Disponible pour freelance à Paris." />
-    <meta name="author" content="JM" />
-    <meta name="keywords" content="développeur full-stack, React, Node.js, TypeScript, portfolio, freelance, Paris, développeur web" />
-    
-    <meta property="og:title" content="JM | Développeur Full-Stack" />
-    <meta property="og:description" content="Portfolio d'JM, développeur web full-stack. Applications modernes et performantes." />
-    <meta property="og:type" content="website" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@JM_dev" />
-    
-    <link rel="canonical" href="https://JM-dev.com" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/devicon@2.16.0/devicon.min.css" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-09ET3KDENS"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', 'G-09ET3KDENS', { anonymize_ip: true });
+    </script>
   </head>
 
   <body>

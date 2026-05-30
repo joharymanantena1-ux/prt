@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Briefcase, GraduationCap, ExternalLink, Award } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Briefcase, GraduationCap, ExternalLink, Award, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const experiences = [
@@ -92,16 +92,16 @@ const TimelineEntry = ({
   item: ExpItem;
   type: "exp" | "edu";
   index: number;
-  isLast: boolean;
 }) => {
+  const reduce = useReducedMotion();
   const isPrimary = type === "exp";
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -16 }}
+      initial={reduce ? false : { opacity: 0, x: -16 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, delay: index * 0.1 }}
+      transition={reduce ? { duration: 0 } : { duration: 0.45, delay: index * 0.1 }}
       className="relative pl-12 pb-8 last:pb-0"
     >
       {/* Vertical line (hidden on last item via last:pb-0) */}
@@ -140,8 +140,8 @@ const TimelineEntry = ({
             {item.period}
           </span>
           {item.current && (
-            <span className="flex items-center gap-1 text-xs font-semibold text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="flex items-center gap-1 text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
               En cours
             </span>
           )}
@@ -166,10 +166,11 @@ const TimelineEntry = ({
               href={item.companyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:text-primary/70 transition-colors"
+              className="inline-flex items-center justify-center p-2 -m-1 rounded-md text-primary hover:text-primary/70 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label={`Visiter le site de ${item.company} (nouvel onglet)`}
               title={`Visiter ${item.company}`}
             >
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3 h-3" aria-hidden="true" />
             </a>
           )}
         </div>
@@ -181,8 +182,9 @@ const TimelineEntry = ({
 
         {/* Result badge */}
         {item.result && (
-          <p className="text-xs font-medium text-primary/80 bg-primary/8 border border-primary/15 rounded-lg px-3 py-1.5 mb-3 inline-block">
-            ✓ {item.result}
+          <p className="flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/8 border border-primary/15 rounded-lg px-3 py-1.5 mb-3 w-fit">
+            <Check className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+            {item.result}
           </p>
         )}
 
@@ -205,14 +207,15 @@ const TimelineEntry = ({
 };
 
 const ExperienceSection = () => {
+  const reduce = useReducedMotion();
   return (
     <section className="section-container">
       <div className="section-content max-w-3xl">
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={reduce ? false : { opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.55 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.55 }}
           className="text-center mb-10 md:mb-14"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
@@ -243,7 +246,6 @@ const ExperienceSection = () => {
                   item={exp}
                   index={index}
                   type="exp"
-                  isLast={index === experiences.length - 1}
                 />
               ))}
             </div>
@@ -257,7 +259,6 @@ const ExperienceSection = () => {
                   item={edu}
                   index={index}
                   type="edu"
-                  isLast={index === education.length - 1}
                 />
               ))}
             </div>
