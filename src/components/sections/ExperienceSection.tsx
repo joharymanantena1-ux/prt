@@ -15,12 +15,12 @@ const experiences = [
     title: "Projet SaaS – Gestion des Écoles",
     company: "Levitation",
     companyUrl: "https://levitation.mg",
-    period: "Jan 2026 – Présent",
-    current: true,
+    period: "Jan 2026 – Mai 2026",
+    current: false,
     description:
       "Conception et développement d'une plateforme SaaS scolaire complète : gestion des notes et bulletins, facturation, automatisation des workflows (emails/SMS via n8n), gestion multi-établissements.",
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
-    result: "Plateforme en production – edu.levitation.mg",
+    result: "Plateforme livrée en production – edu.levitation.mg",
   },
   {
     title: "Développeur Web Freelance",
@@ -134,7 +134,7 @@ const TimelineEntry = ({
       }`}>
         {/* Header row */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+          <span className={`font-mono text-xs font-medium px-2.5 py-1 rounded-md ${
             isPrimary ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent"
           }`}>
             {item.period}
