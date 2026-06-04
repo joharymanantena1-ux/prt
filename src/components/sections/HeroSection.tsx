@@ -3,6 +3,9 @@ import { ArrowDown, Download, Github, Linkedin, Mail, Globe } from "lucide-react
 import { Button } from "@/components/ui/button";
 import CountUp from "@/components/motion/CountUp";
 import MagneticButton from "@/components/motion/MagneticButton";
+import { useT } from "@/i18n";
+import developerPortraitAvif from "@/assets/developer-portrait.avif";
+import developerPortraitWebp from "@/assets/developer-portrait.webp";
 import developerPortrait from "@/assets/developer-portrait.png";
 
 interface HeroSectionProps {
@@ -10,14 +13,14 @@ interface HeroSectionProps {
   onNavigate: (id: string) => void;
 }
 
-const stats: { k: string; to?: number; suffix?: string; text?: string }[] = [
-  { k: "Expérience", to: 3, suffix: "+ ans" },
-  { k: "Projets", to: 30, suffix: "+" },
-  { k: "Statut", text: "Freelance" },
-];
-
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const reduce = useReducedMotion();
+  const { t } = useT();
+  const stats: { label: string; to?: number; suffix?: string; text?: string }[] = [
+    { label: t("hero.statExp"), to: 3, suffix: t("hero.statExpSuffix") },
+    { label: t("hero.statProjects"), to: 30, suffix: "+" },
+    { label: t("hero.statStatus"), text: t("hero.statStatusValue") },
+  ];
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [5, -5]);
@@ -66,11 +69,11 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             transition={{ delay: 0.15, duration: 0.5 }}
             className="flex items-center gap-3 justify-center lg:justify-start"
           >
-            <span className="kicker !text-primary">Full-stack engineer</span>
+            <span className="kicker !text-primary">{t("hero.role")}</span>
             <span className="h-px w-8 bg-border hidden sm:block" aria-hidden="true" />
             <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
-              Disponible
+              {t("hero.available")}
             </span>
           </motion.div>
 
@@ -82,7 +85,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           >
             <h1 className="font-display font-bold leading-[0.92] tracking-tight">
               <span className="block text-2xl sm:text-3xl md:text-4xl text-muted-foreground font-medium mb-1">
-                Bonjour, je suis
+                {t("hero.greeting")}
               </span>
               <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl">Johary</span>
               <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-gradient">Manantena</span>
@@ -95,8 +98,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             transition={{ delay: 0.35, duration: 0.5 }}
             className="text-base text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed"
           >
-            Je conçois et développe des applications web et mobile modernes —
-            de l'architecture backend jusqu'à l'interface finale.
+            {t("hero.lead")}
           </motion.p>
 
           {/* CTAs */}
@@ -112,7 +114,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 shadow-sm cursor-pointer"
                 onClick={() => onNavigate("projets")}
               >
-                Voir mes projets
+                {t("hero.ctaProjects")}
               </Button>
             </MagneticButton>
             <MagneticButton>
@@ -122,7 +124,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 cursor-pointer"
                 onClick={() => onNavigate("contact")}
               >
-                Me contacter
+                {t("hero.ctaContact")}
               </Button>
             </MagneticButton>
             <MagneticButton>
@@ -138,7 +140,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                   rel="noopener noreferrer"
                 >
                   <Download className="w-4 h-4" />
-                  Mon CV
+                  {t("hero.ctaCV")}
                 </a>
               </Button>
             </MagneticButton>
@@ -192,15 +194,20 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               className="relative z-10"
             >
               <div className="relative h-[440px] sm:h-[500px] md:h-[540px] lg:h-[580px] rounded-md overflow-hidden border border-border bg-card shadow-elevated">
-                {/* portrait */}
-                <img
-                  src={developerPortrait}
-                  alt="Portrait de Johary Manantena, développeur full-stack"
-                  width={380}
-                  height={580}
-                  decoding="async"
-                  className="w-full h-full object-cover object-center"
-                />
+                {/* portrait — AVIF (15KB) → WebP (28KB) → PNG fallback, eager + high priority */}
+                <picture>
+                  <source srcSet={developerPortraitAvif} type="image/avif" />
+                  <source srcSet={developerPortraitWebp} type="image/webp" />
+                  <img
+                    src={developerPortrait}
+                    alt="Portrait de Johary Manantena, développeur full-stack"
+                    width={380}
+                    height={580}
+                    decoding="async"
+                    fetchPriority="high"
+                    className="w-full h-full object-cover object-center"
+                  />
+                </picture>
 
                 {/* animated scan line — pure transform, GPU-cheap, off when reduced */}
                 {!reduce && (
@@ -233,11 +240,11 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
         transition={{ delay: 0.9, duration: 0.5 }}
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden sm:flex items-center gap-6 px-5 py-2.5 rounded-md bg-card/80 backdrop-blur-sm border border-border/60"
       >
-        {stats.map(({ k, to, suffix, text }, i) => (
-          <div key={k} className="flex items-center gap-6">
+        {stats.map(({ label, to, suffix, text }, i) => (
+          <div key={label} className="flex items-center gap-6">
             {i > 0 && <span className="h-6 w-px bg-border" aria-hidden="true" />}
             <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground leading-none mb-1">{k}</span>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground leading-none mb-1">{label}</span>
               <span className="font-display text-sm font-bold leading-none">
                 {typeof to === "number" ? <CountUp to={to} suffix={suffix} /> : text}
               </span>
@@ -258,11 +265,11 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           onClick={() => onNavigate("apropos")}
           animate={reduce ? undefined : { y: [0, 6, 0] }}
           transition={reduce ? undefined : { duration: 2, repeat: Infinity }}
-          aria-label="Défiler vers la section À propos"
+          aria-label={t("hero.scrollAria")}
           className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors group cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 px-2 py-1"
         >
           <span className="font-mono text-[10px] tracking-widest uppercase opacity-70 group-hover:opacity-100 transition-opacity">
-            Scroll
+            {t("hero.scroll")}
           </span>
           <ArrowDown className="w-4 h-4" aria-hidden="true" />
         </motion.button>

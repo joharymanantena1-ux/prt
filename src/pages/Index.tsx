@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import LoadingScreen from "@/components/LoadingScreen";
 import ScrollProgress from "@/components/motion/ScrollProgress";
+import { useT } from "@/i18n";
 
 const HeroSection = lazy(() => import("@/components/sections/HeroSection"));
 const AboutSection = lazy(() => import("@/components/sections/AboutSection"));
@@ -17,17 +18,19 @@ const SectionLoader = () => (
 );
 
 const sections = [
-  { id: "accueil",    name: "Accueil",      component: HeroSection },
-  { id: "apropos",    name: "À propos",     component: AboutSection },
-  { id: "parcours",   name: "Parcours",     component: ExperienceSection },
-  { id: "competences",name: "Compétences",  component: SkillsSection },
-  { id: "projets",    name: "Projets",      component: ProjectsSection },
-  { id: "contact",    name: "Contact",      component: ContactSection },
+  { id: "accueil",    navKey: "nav.home",     component: HeroSection },
+  { id: "apropos",    navKey: "nav.about",    component: AboutSection },
+  { id: "parcours",   navKey: "nav.journey",  component: ExperienceSection },
+  { id: "competences",navKey: "nav.skills",   component: SkillsSection },
+  { id: "projets",    navKey: "nav.projects", component: ProjectsSection },
+  { id: "contact",    navKey: "nav.contact",  component: ContactSection },
 ];
 
 const Index = () => {
+  const { t } = useT();
   const [isLoading, setIsLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
+  const sectionNames = sections.map((s) => t(s.navKey));
 
   // Determine active section based on scroll position (rAF-throttled — one read per frame)
   useEffect(() => {
@@ -79,7 +82,7 @@ const Index = () => {
         currentSection={currentSection}
         totalSections={sections.length}
         onNavigate={navigateToSection}
-        sectionNames={sections.map((s) => s.name)}
+        sectionNames={sectionNames}
       />
 
       {sections.map(({ id, component: Component }) => (
@@ -92,14 +95,14 @@ const Index = () => {
 
       {/* Mobile dots — navigate on click only, never auto-trigger. 44px hit area, FR labels. */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-header md:hidden flex gap-0.5 bg-card/80 backdrop-blur-sm px-2 py-1 rounded-full border border-border/50">
-        {sections.map(({ id, name }, index) => {
+        {sections.map(({ id }, index) => {
           const active = currentSection === index;
           return (
             <button
               key={id}
               type="button"
               onClick={() => navigateToSection(index)}
-              aria-label={`Aller à : ${name}`}
+              aria-label={`${t("nav.goTo")} : ${sectionNames[index]}`}
               aria-current={active ? "true" : undefined}
               className="flex items-center justify-center min-h-11 min-w-11 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >

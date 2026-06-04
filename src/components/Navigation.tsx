@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/i18n";
 
 interface NavigationProps {
   currentSection: number;
@@ -17,6 +18,7 @@ const Navigation = ({
   sectionNames,
 }: NavigationProps) => {
   const reduce = useReducedMotion();
+  const { t, lang, setLang } = useT();
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -68,7 +70,7 @@ const Navigation = ({
             <a
               href="#accueil"
               className="text-xl md:text-2xl font-display font-bold rounded-md cursor-pointer transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              aria-label="Retour à l'accueil"
+              aria-label={t("nav.backHome")}
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate(0);
@@ -79,7 +81,7 @@ const Navigation = ({
             </a>
 
             {/* Desktop navigation */}
-            <nav className="hidden lg:flex items-center gap-1" aria-label="Navigation principale">
+            <nav className="hidden lg:flex items-center gap-1" aria-label={t("nav.mainNav")}>
               {sectionNames.map((name, index) => {
                 const active = currentSection === index;
                 return (
@@ -108,11 +110,22 @@ const Navigation = ({
             </nav>
 
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setLang(lang === "fr" ? "en" : "fr")}
+                aria-label={t("nav.switchLang")}
+                className="inline-flex items-center justify-center min-h-11 min-w-11 px-2 rounded-md font-mono text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <span className={lang === "fr" ? "text-primary" : ""}>FR</span>
+                <span className="mx-0.5 opacity-40" aria-hidden="true">/</span>
+                <span className={lang === "en" ? "text-primary" : ""}>EN</span>
+              </button>
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                aria-label={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
+                aria-label={isDark ? t("nav.lightMode") : t("nav.darkMode")}
                 className="rounded-xl hover:bg-secondary/60 w-11 h-11 cursor-pointer"
               >
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -123,7 +136,7 @@ const Navigation = ({
                 size="icon"
                 className="lg:hidden rounded-xl hover:bg-secondary/60 w-11 h-11 cursor-pointer"
                 onClick={() => setIsMenuOpen(true)}
-                aria-label="Ouvrir le menu"
+                aria-label={t("nav.openMenu")}
                 aria-expanded={isMenuOpen}
                 aria-controls="mobile-menu"
               >
@@ -152,7 +165,7 @@ const Navigation = ({
               id="mobile-menu"
               role="dialog"
               aria-modal="true"
-              aria-label="Menu de navigation"
+              aria-label={t("nav.mainNav")}
               initial={reduce ? false : { x: "100%" }}
               animate={{ x: 0 }}
               exit={reduce ? { opacity: 0 } : { x: "100%" }}
@@ -160,13 +173,13 @@ const Navigation = ({
               className="absolute right-0 top-0 bottom-0 w-72 bg-card/95 backdrop-blur-xl border-l border-border/50 p-6 flex flex-col"
             >
               <div className="flex items-center justify-between mb-8">
-                <span className="font-display font-bold text-lg text-gradient">Menu</span>
+                <span className="font-display font-bold text-lg text-gradient">{t("nav.menu")}</span>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="rounded-xl w-11 h-11 cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
-                  aria-label="Fermer le menu"
+                  aria-label={t("nav.closeMenu")}
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -206,7 +219,7 @@ const Navigation = ({
         animate={{ opacity: 1, x: 0 }}
         transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.8 }}
         className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-header hidden md:flex flex-col gap-1"
-        aria-label="Navigation par section"
+        aria-label={t("nav.sectionNav")}
       >
         {Array.from({ length: totalSections }).map((_, index) => {
           const active = currentSection === index;
@@ -216,7 +229,7 @@ const Navigation = ({
               key={index}
               type="button"
               onClick={() => onNavigate(index)}
-              aria-label={`Aller à : ${name}`}
+              aria-label={`${t("nav.goTo")} : ${name}`}
               aria-current={active ? "true" : undefined}
               className="flex items-center justify-center min-h-11 min-w-11 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >

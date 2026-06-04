@@ -40,7 +40,14 @@ const SectionHeading = ({
         className={`kicker !text-primary inline-flex items-center gap-2 ${centered ? "justify-center" : ""}`}
       >
         <span>{index}</span>
-        <span className="h-px w-6 bg-primary/50" aria-hidden="true" />
+        <motion.span
+          aria-hidden="true"
+          initial={reduce ? false : { scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.15, ease: EASE }}
+          className="h-px w-6 bg-primary/50 origin-left"
+        />
         <span>{label}</span>
       </motion.span>
 

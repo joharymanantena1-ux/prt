@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
+import { useT } from "@/i18n";
 
 // ── Config (env-sourced — keeps PII/endpoint out of the committed source) ──────
 // Set in `.env.local` (see .env.example):
@@ -21,6 +22,7 @@ type FormState = "idle" | "loading" | "success" | "error";
 
 const ContactSection = () => {
   const { reduce, pop } = useMotionPreset();
+  const { t } = useT();
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [consent, setConsent] = useState(false);
   const [formState, setFormState] = useState<FormState>("idle");
@@ -58,9 +60,9 @@ const ContactSection = () => {
   };
 
   const contactItems = [
-    { icon: Mail, label: "Email", value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
-    { icon: Phone, label: "Téléphone", value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
-    { icon: MapPin, label: "Localisation", value: "Alasora, Antananarivo", href: null, breakClass: "break-words" },
+    { icon: Mail, label: t("contact.infoEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
+    { icon: Phone, label: t("contact.infoPhone"), value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
+    { icon: MapPin, label: t("contact.infoLocation"), value: t("contact.locationValue"), href: null, breakClass: "break-words" },
   ];
 
   const socialLinks = [
@@ -76,9 +78,9 @@ const ContactSection = () => {
       <div className="section-content max-w-5xl">
         <SectionHeading
           index="05"
-          label="Contact"
-          title="Travaillons ensemble"
-          description="Un projet en tête ? Contactez-moi pour toute collaboration ou mission freelance."
+          label={t("contact.label")}
+          title={t("contact.title")}
+          description={t("contact.desc")}
           className="mb-10 md:mb-14"
         />
 
@@ -101,9 +103,9 @@ const ContactSection = () => {
                   <div className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center">
                     <CheckCircle2 className="w-8 h-8 text-success" aria-hidden="true" />
                   </div>
-                  <h3 className="text-xl font-display font-semibold">Message envoyé !</h3>
+                  <h3 className="text-xl font-display font-semibold">{t("contact.successTitle")}</h3>
                   <p className="text-foreground/80 text-sm max-w-xs">
-                    Merci pour votre message. Je vous répondrai dans les plus brefs délais.
+                    {t("contact.successMsg")}
                   </p>
                 </motion.div>
               ) : (
@@ -118,13 +120,13 @@ const ContactSection = () => {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
-                        Nom
+                        {t("contact.name")}
                       </label>
                       <Input
                         id="name"
                         name="name"
                         autoComplete="name"
-                        placeholder="Votre nom"
+                        placeholder={t("contact.namePh")}
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -134,14 +136,14 @@ const ContactSection = () => {
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
-                        Email
+                        {t("contact.email")}
                       </label>
                       <Input
                         id="email"
                         name="email"
                         type="email"
                         autoComplete="email"
-                        placeholder="vous@email.com"
+                        placeholder={t("contact.emailPh")}
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         required
@@ -153,12 +155,12 @@ const ContactSection = () => {
 
                   <div>
                     <label htmlFor="subject" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
-                      Sujet
+                      {t("contact.subject")}
                     </label>
                     <Input
                       id="subject"
                       name="subject"
-                      placeholder="Objet de votre message"
+                      placeholder={t("contact.subjectPh")}
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                       required
@@ -169,12 +171,12 @@ const ContactSection = () => {
 
                   <div>
                     <label htmlFor="message" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
-                      Message
+                      {t("contact.message")}
                     </label>
                     <Textarea
                       id="message"
                       name="message"
-                      placeholder="Décrivez votre projet..."
+                      placeholder={t("contact.messagePh")}
                       rows={4}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -198,8 +200,7 @@ const ContactSection = () => {
                       className="mt-1 h-4 w-4 cursor-pointer rounded border-border accent-[hsl(var(--primary))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     />
                     <label id="consent-desc" htmlFor="consent" className="text-xs leading-relaxed text-foreground cursor-pointer">
-                      J'accepte que mes informations (nom et email) soient utilisées uniquement pour
-                      répondre à ma demande. Aucune donnée n'est partagée à des tiers.
+                      {t("contact.consent")}
                     </label>
                   </div>
 
@@ -212,7 +213,7 @@ const ContactSection = () => {
                         className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-xl px-4 py-3"
                       >
                         <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                        Erreur d'envoi. Vérifiez votre connexion ou écrivez-moi directement par email.
+                        {t("contact.errorMsg")}
                       </motion.div>
                     )}
                   </div>
@@ -230,12 +231,12 @@ const ContactSection = () => {
                         ) : (
                           <span aria-hidden="true" className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                         )}
-                        Envoi en cours…
+                        {t("contact.sending")}
                       </>
                     ) : (
                       <>
                         <Send className="w-4 h-4" aria-hidden="true" />
-                        Envoyer le message
+                        {t("contact.send")}
                       </>
                     )}
                   </Button>
@@ -278,7 +279,7 @@ const ContactSection = () => {
 
             {/* Social links — 44px hit area, focus ring, 12px label floor */}
             <div className="card-swiss p-5">
-              <h3 className="text-sm font-display font-semibold mb-3">Réseaux & Liens</h3>
+              <h3 className="text-sm font-display font-semibold mb-3">{t("contact.linksTitle")}</h3>
               <div className="flex gap-2">
                 {socialLinks.map(({ icon: Icon, href, label }) => (
                   <a
@@ -302,10 +303,10 @@ const ContactSection = () => {
             <div className="card-swiss p-5 bg-primary/5 border-primary/30">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
-                <h3 className="text-sm font-display font-semibold">Disponible</h3>
+                <h3 className="text-sm font-display font-semibold">{t("contact.availableTitle")}</h3>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Ouvert aux missions freelance et projets de développement web full-stack.
+                {t("contact.availableDesc")}
               </p>
             </div>
           </motion.div>

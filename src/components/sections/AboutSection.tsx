@@ -1,40 +1,43 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Code, Palette, Rocket, Users } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
+import { useT, tx, type Bi } from "@/i18n";
+
+const values: { icon: typeof Code; title: Bi; description: Bi }[] = [
+  {
+    icon: Code,
+    title: "Clean Code",
+    description: { fr: "Du code maintenable, lisible et documenté, pensé pour durer.", en: "Maintainable, readable, documented code built to last." },
+  },
+  {
+    icon: Palette,
+    title: { fr: "Produit", en: "Product" },
+    description: { fr: "Des interfaces claires et utiles, au service de l'usage réel.", en: "Clear, useful interfaces serving real-world use." },
+  },
+  {
+    icon: Rocket,
+    title: "Performance",
+    description: { fr: "J'optimise chaque couche pour une expérience fluide.", en: "I optimise every layer for a smooth experience." },
+  },
+  {
+    icon: Users,
+    title: "Collaboration",
+    description: { fr: "Communication directe et travail efficace en équipe.", en: "Direct communication and effective teamwork." },
+  },
+];
 
 const AboutSection = () => {
   const reduce = useReducedMotion();
-  const values = [
-    {
-      icon: Code,
-      title: "Clean Code",
-      description: "Du code maintenable, lisible et documenté, pensé pour durer.",
-    },
-    {
-      icon: Palette,
-      title: "Produit",
-      description: "Des interfaces claires et utiles, au service de l'usage réel.",
-    },
-    {
-      icon: Rocket,
-      title: "Performance",
-      description: "J'optimise chaque couche pour une expérience fluide.",
-    },
-    {
-      icon: Users,
-      title: "Collaboration",
-      description: "Communication directe et travail efficace en équipe.",
-    },
-  ];
+  const { t, lang } = useT();
 
   return (
     <section className="section-container">
       <div className="section-content">
         <SectionHeading
           index="01"
-          label="À propos"
-          title="Qui suis-je ?"
-          description="Développeur full-stack, je conçois des applications web et mobile de bout en bout — du modèle de données jusqu'à l'interface finale."
+          label={t("about.label")}
+          title={t("about.title")}
+          description={t("about.desc")}
           className="mb-8 md:mb-12 lg:mb-16"
         />
 
@@ -46,20 +49,12 @@ const AboutSection = () => {
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
             className="card-swiss p-5 sm:p-6 lg:p-8"
           >
-            <span className="kicker">Mon parcours</span>
+            <span className="kicker">{t("about.journeyKicker")}</span>
             <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mt-1.5 mb-3 sm:mb-4">
-              De la formation au terrain
+              {t("about.journeyTitle")}
             </h3>
-            <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Diplômé d'une Licence en Informatique (IT-University, 2022–2025), je me suis
-              spécialisé en développement full-stack : Java, Python, PHP, C/C#, et les frameworks
-              React, React Native, Spring Boot, Laravel et Symfony.
-            </p>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              Depuis, j'enchaîne les missions concrètes : digitalisation du transport du personnel
-              chez Konecta, plateforme SaaS scolaire chez Levitation, et aujourd'hui développement
-              web &amp; mobile en freelance pour une marque de cosmétiques.
-            </p>
+            <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">{t("about.journeyP1")}</p>
+            <p className="text-base text-muted-foreground leading-relaxed">{t("about.journeyP2")}</p>
           </motion.div>
 
           <motion.div
@@ -69,25 +64,19 @@ const AboutSection = () => {
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
             className="card-swiss p-5 sm:p-6 lg:p-8"
           >
-            <span className="kicker">Ma philosophie</span>
+            <span className="kicker">{t("about.philoKicker")}</span>
             <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mt-1.5 mb-3 sm:mb-4">
-              Simple, solide, livré
+              {t("about.philoTitle")}
             </h3>
-            <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Je crois aux solutions simples et bien architecturées, qui répondent précisément au
-              besoin métier plutôt qu'à la tendance du moment — et qui restent maintenables dans le temps.
-            </p>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              Curieux des nouvelles technologies, notamment l'IA générative (certifié Google Cloud),
-              je cherche à affiner ma pratique et à livrer des produits fiables, du premier commit à la production.
-            </p>
+            <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">{t("about.philoP1")}</p>
+            <p className="text-base text-muted-foreground leading-relaxed">{t("about.philoP2")}</p>
           </motion.div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {values.map(({ icon: Icon, title, description }, index) => (
             <motion.div
-              key={title}
+              key={tx(title, lang)}
               initial={reduce ? false : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -100,8 +89,8 @@ const AboutSection = () => {
                 </div>
                 <span className="font-mono text-[11px] text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
               </div>
-              <h4 className="text-sm sm:text-base lg:text-lg font-display font-semibold mb-1 sm:mb-2">{title}</h4>
-              <p className="text-sm text-muted-foreground line-clamp-3">{description}</p>
+              <h4 className="text-sm sm:text-base lg:text-lg font-display font-semibold mb-1 sm:mb-2">{tx(title, lang)}</h4>
+              <p className="text-sm text-muted-foreground line-clamp-3">{tx(description, lang)}</p>
             </motion.div>
           ))}
         </div>

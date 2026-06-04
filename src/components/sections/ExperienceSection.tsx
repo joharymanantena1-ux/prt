@@ -2,99 +2,117 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Briefcase, GraduationCap, ExternalLink, Award, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SectionHeading from "@/components/SectionHeading";
+import { useT, tx, type Bi, type Lang } from "@/i18n";
 
-const experiences = [
+interface ExpItem {
+  title: Bi;
+  company?: string;
+  school?: string;
+  companyUrl?: string;
+  period: Bi;
+  current?: boolean;
+  description: Bi;
+  technologies?: string[];
+  result?: Bi;
+  highlight?: Bi;
+}
+
+const experiences: ExpItem[] = [
   {
-    title: "Développeur – Freelance On-site",
+    title: { fr: "Développeur – Freelance On-site", en: "Developer – On-site Freelance" },
     company: "Regard Beauty",
-    period: "Avr 2026 – Présent",
+    period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
     current: true,
-    description:
-      "Mission freelance à temps plein en présentiel : développement et maintenance d'applications internes, collaboration directe avec les équipes métier.",
+    description: {
+      fr: "Mission freelance à temps plein en présentiel : développement et maintenance d'applications internes, collaboration directe avec les équipes métier.",
+      en: "Full-time on-site freelance mission: building and maintaining internal applications, working directly with the business teams.",
+    },
   },
   {
-    title: "Projet SaaS – Gestion des Écoles",
+    title: { fr: "Projet SaaS – Gestion des Écoles", en: "SaaS Project – School Management" },
     company: "Levitation",
     companyUrl: "https://levitation.mg",
-    period: "Jan 2026 – Mai 2026",
+    period: { fr: "Jan 2026 – Mai 2026", en: "Jan 2026 – May 2026" },
     current: false,
-    description:
-      "Conception et développement d'une plateforme SaaS scolaire complète : gestion des notes et bulletins, facturation, automatisation des workflows (emails/SMS via n8n), gestion multi-établissements.",
+    description: {
+      fr: "Conception et développement d'une plateforme SaaS scolaire complète : gestion des notes et bulletins, facturation, automatisation des workflows (emails/SMS via n8n), gestion multi-établissements.",
+      en: "Design and development of a complete school SaaS platform: grades and report cards, billing, workflow automation (emails/SMS via n8n), multi-school management.",
+    },
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
-    result: "Plateforme livrée en production – edu.levitation.mg",
+    result: { fr: "Plateforme livrée en production – edu.levitation.mg", en: "Platform shipped to production – edu.levitation.mg" },
   },
   {
-    title: "Développeur Web Freelance",
+    title: { fr: "Développeur Web Freelance", en: "Freelance Web Developer" },
     company: "Loca & Deco",
-    period: "Nov 2025 – Fév 2026",
+    period: { fr: "Nov 2025 – Fév 2026", en: "Nov 2025 – Feb 2026" },
     current: false,
-    description:
-      "Développement d'un site de location événementielle avec back-office de gestion des stocks, catalogue produits et optimisation de l'expérience utilisateur.",
+    description: {
+      fr: "Développement d'un site de location événementielle avec back-office de gestion des stocks, catalogue produits et optimisation de l'expérience utilisateur.",
+      en: "Development of an event-rental website with a stock-management back office, product catalogue and UX optimisation.",
+    },
     technologies: ["Spring Boot", "ReactJS", "MySQL"],
-    result: "Livré avec réduction du temps de gestion stock de 60%",
+    result: { fr: "Livré avec réduction du temps de gestion stock de 60%", en: "Delivered with a 60% cut in stock-management time" },
   },
   {
-    title: "Application Logistique & Transport",
+    title: { fr: "Application Logistique & Transport", en: "Logistics & Transport App" },
     company: "Konecta Madagascar",
-    period: "Sep – Déc 2025",
+    period: { fr: "Sep – Déc 2025", en: "Sep – Dec 2025" },
     current: false,
-    description:
-      "Digitalisation du transport du personnel : suivi des livraisons en temps réel, optimisation des trajets (OSRM), tableaux de bord multi-profils (admin, chauffeur, RH).",
+    description: {
+      fr: "Digitalisation du transport du personnel : suivi des livraisons en temps réel, optimisation des trajets (OSRM), tableaux de bord multi-profils (admin, chauffeur, RH).",
+      en: "Digitalising staff transport: real-time delivery tracking, route optimisation (OSRM), multi-role dashboards (admin, driver, HR).",
+    },
     technologies: ["React Native", "ReactJS", "Node.js", "Firebase", "MySQL"],
-    result: "Réduction de 30% des temps d'attente",
+    result: { fr: "Réduction de 30% des temps d'attente", en: "30% reduction in waiting times" },
   },
 ];
 
-const education = [
+const education: ExpItem[] = [
   {
-    title: "Licence en Informatique",
+    title: { fr: "Licence en Informatique", en: "Bachelor's in Computer Science" },
     school: "IT-University",
     period: "2022 – 2025",
-    description:
-      "Formation complète en algorithmique, bases de données, programmation orientée objet, développement web et mobile. Projets académiques variés sur toute la durée du cursus.",
-    highlight: "Diplômé",
+    description: {
+      fr: "Formation complète en algorithmique, bases de données, programmation orientée objet, développement web et mobile. Projets académiques variés sur toute la durée du cursus.",
+      en: "Comprehensive training in algorithms, databases, object-oriented programming, web and mobile development. Varied academic projects throughout the curriculum.",
+    },
+    highlight: { fr: "Diplômé", en: "Graduated" },
   },
   {
     title: "Gen AI Skills Certification",
     school: "Google Cloud Skill Boost",
-    period: "Fév 2025",
-    description:
-      "Certification en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d'IA dans des applications métier.",
-    highlight: "Certifié Google Cloud",
+    period: { fr: "Fév 2025", en: "Feb 2025" },
+    description: {
+      fr: "Certification en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d'IA dans des applications métier.",
+      en: "Generative AI certification — prompting, language models, integrating AI into business applications.",
+    },
+    highlight: { fr: "Certifié Google Cloud", en: "Google Cloud certified" },
   },
   {
-    title: "Baccalauréat Série D",
+    title: { fr: "Baccalauréat Série D", en: "High-School Diploma (Sciences)" },
     school: "Lycée Manjary Soa",
     period: "2022",
-    description:
-      "Baccalauréat scientifique option Sciences de la Vie et de la Terre (série D).",
-    highlight: "Mention obtenue",
+    description: {
+      fr: "Baccalauréat scientifique option Sciences de la Vie et de la Terre (série D).",
+      en: "Scientific high-school diploma, Life & Earth Sciences track (série D).",
+    },
+    highlight: { fr: "Mention obtenue", en: "With honours" },
   },
 ];
-
-interface ExpItem {
-  title: string;
-  company?: string;
-  school?: string;
-  companyUrl?: string;
-  period: string;
-  current?: boolean;
-  description: string;
-  technologies?: string[];
-  result?: string;
-  highlight?: string;
-}
 
 const TimelineEntry = ({
   item,
   type,
   index,
+  lang,
 }: {
   item: ExpItem;
   type: "exp" | "edu";
   index: number;
+  lang: Lang;
 }) => {
   const reduce = useReducedMotion();
+  const { t } = useT();
 
   return (
     <motion.div
@@ -104,10 +122,8 @@ const TimelineEntry = ({
       transition={reduce ? { duration: 0 } : { duration: 0.45, delay: index * 0.1 }}
       className="relative pl-12 pb-8 last:pb-0"
     >
-      {/* Vertical line (hidden on last item via last:pb-0) */}
       <div className="absolute left-[13px] top-9 bottom-0 w-px bg-gradient-to-b from-primary/40 via-border to-transparent" />
 
-      {/* Timeline dot */}
       <div className={`absolute left-0 top-4 w-7 h-7 rounded-md flex items-center justify-center border-2 z-10 ${
         item.current
           ? "bg-primary border-primary shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
@@ -120,34 +136,31 @@ const TimelineEntry = ({
         )}
       </div>
 
-      {/* Content card */}
       <div className={`rounded-md border p-4 sm:p-5 transition-colors duration-300 group ${
         item.current
           ? "border-primary/30 bg-primary/5 dark:bg-primary/8"
           : "border-border bg-card hover:border-primary/40"
       }`}>
-        {/* Header row */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-primary/10 text-primary">
-            {item.period}
+            {tx(item.period, lang)}
           </span>
           {item.current && (
             <span className="flex items-center gap-1 text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
-              En cours
+              {t("experience.current")}
             </span>
           )}
           {item.highlight && (
             <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <Award className="w-3 h-3" />
-              {item.highlight}
+              {tx(item.highlight, lang)}
             </span>
           )}
         </div>
 
-        {/* Title & company */}
         <h3 className="text-base sm:text-lg font-display font-semibold mb-1 leading-snug">
-          {item.title}
+          {tx(item.title, lang)}
         </h3>
         <div className="flex items-center gap-1.5 mb-3">
           <span className="text-sm text-muted-foreground font-medium">
@@ -159,34 +172,31 @@ const TimelineEntry = ({
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center p-2 -m-1 rounded-md text-primary hover:text-primary/70 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              aria-label={`Visiter le site de ${item.company} (nouvel onglet)`}
-              title={`Visiter ${item.company}`}
+              aria-label={`${item.company} (${lang === "fr" ? "nouvel onglet" : "new tab"})`}
+              title={item.company}
             >
               <ExternalLink className="w-3 h-3" aria-hidden="true" />
             </a>
           )}
         </div>
 
-        {/* Description */}
         <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-          {item.description}
+          {tx(item.description, lang)}
         </p>
 
-        {/* Result badge */}
         {item.result && (
           <p className="flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/8 border border-primary/15 rounded-lg px-3 py-1.5 mb-3 w-fit">
             <Check className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-            {item.result}
+            {tx(item.result, lang)}
           </p>
         )}
 
-        {/* Tech tags */}
         {item.technologies && (
           <div className="flex flex-wrap gap-1.5">
             {item.technologies.map((tech) => (
               <span
                 key={tech}
-                className="px-2 py-0.5 rounded-md bg-secondary text-xs font-medium border border-border/50"
+                className="font-mono text-[11px] px-2 py-0.5 rounded-md bg-secondary border border-border/50"
               >
                 {tech}
               </span>
@@ -199,14 +209,15 @@ const TimelineEntry = ({
 };
 
 const ExperienceSection = () => {
+  const { t, lang } = useT();
   return (
     <section className="section-container">
       <div className="section-content max-w-3xl">
         <SectionHeading
           index="02"
-          label="Parcours"
-          title="Expériences & Formation"
-          description="Des missions concrètes en entreprise et en freelance, étayées par une formation solide."
+          label={t("experience.label")}
+          title={t("experience.title")}
+          description={t("experience.desc")}
           className="mb-10 md:mb-14"
         />
 
@@ -214,23 +225,18 @@ const ExperienceSection = () => {
           <TabsList className="grid w-full max-w-xs grid-cols-2 mb-10 h-11 rounded-md">
             <TabsTrigger value="experience" className="flex items-center gap-2 text-sm rounded-sm">
               <Briefcase className="w-3.5 h-3.5" />
-              Expériences
+              {t("experience.tabExp")}
             </TabsTrigger>
             <TabsTrigger value="education" className="flex items-center gap-2 text-sm rounded-sm">
               <GraduationCap className="w-3.5 h-3.5" />
-              Formation
+              {t("experience.tabEdu")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="experience">
             <div className="relative">
               {experiences.map((exp, index) => (
-                <TimelineEntry
-                  key={exp.title}
-                  item={exp}
-                  index={index}
-                  type="exp"
-                />
+                <TimelineEntry key={tx(exp.title, lang)} item={exp} index={index} type="exp" lang={lang} />
               ))}
             </div>
           </TabsContent>
@@ -238,12 +244,7 @@ const ExperienceSection = () => {
           <TabsContent value="education">
             <div className="relative">
               {education.map((edu, index) => (
-                <TimelineEntry
-                  key={edu.title}
-                  item={edu}
-                  index={index}
-                  type="edu"
-                />
+                <TimelineEntry key={tx(edu.title, lang)} item={edu} index={index} type="edu" lang={lang} />
               ))}
             </div>
           </TabsContent>

@@ -4,43 +4,62 @@ import { Github, Globe, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucid
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import SectionHeading from "@/components/SectionHeading";
+import { useT, tx, type Bi, type Lang } from "@/i18n";
+
+interface Project {
+  title: string;
+  description: Bi;
+  technologies: string[];
+  category: string;
+  githubUrl?: string;
+  liveUrl?: string;
+}
 
 // ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
-// Descriptions volontairement factuelles et discrètes : on décrit la contribution
-// réelle (ex. « rectification frontend ») sans sur-promettre ni exposer le client.
-const professionalProjects = [
+// Descriptions volontairement factuelles et discrètes (contribution réelle).
+const professionalProjects: Project[] = [
   {
     title: "BeautyBay – Web & Mobile",
-    description:
-      "Applications web et mobile pour une marque de cosmétiques : interfaces clientes, API GraphQL et composants partagés entre React et React Native.",
+    description: {
+      fr: "Applications web et mobile pour une marque de cosmétiques : interfaces clientes, API GraphQL et composants partagés entre React et React Native.",
+      en: "Web and mobile apps for a cosmetics brand: customer-facing interfaces, a GraphQL API and components shared across React and React Native.",
+    },
     technologies: ["ReactJS", "React Native", "GraphQL", "TypeScript"],
     category: "Web & Mobile",
   },
   {
     title: "fingerinthenose.com",
-    description:
-      "Reprise et correction de l'intégration frontend d'une boutique Shopify : ajustements du thème (Liquid), responsive et fidélité au design existant.",
+    description: {
+      fr: "Reprise et correction de l'intégration frontend d'une boutique Shopify : ajustements du thème (Liquid), responsive et fidélité au design existant.",
+      en: "Took over and fixed the frontend integration of a Shopify store: theme tweaks (Liquid), responsive and fidelity to the existing design.",
+    },
     technologies: ["Shopify", "Liquid", "JavaScript", "CSS"],
     category: "E-commerce",
   },
   {
     title: "Musier Paris",
-    description:
-      "Intégration et finitions frontend d'une boutique e-commerce Shopify : composants de thème, responsive et ajustements visuels.",
+    description: {
+      fr: "Intégration et finitions frontend d'une boutique e-commerce Shopify : composants de thème, responsive et ajustements visuels.",
+      en: "Frontend integration and finishing of a Shopify e-commerce store: theme components, responsive and visual adjustments.",
+    },
     technologies: ["Shopify", "Liquid", "JavaScript"],
     category: "E-commerce",
   },
   {
     title: "bank-file-converter",
-    description:
-      "Outil de conversion de fichiers bancaires : transformation des fichiers XML Odoo en XLSX et conversion inverse (revert), pour l'intégration comptable d'une banque (BRED, FR).",
+    description: {
+      fr: "Outil de conversion de fichiers bancaires : transformation des fichiers XML Odoo en XLSX et conversion inverse (revert), pour l'intégration comptable d'une banque (BRED, FR).",
+      en: "Banking file-conversion tool: transforming Odoo XML files into XLSX and back (revert), for the accounting integration of a bank (BRED, FR).",
+    },
     technologies: ["Python", "Odoo", "XML", "XLSX"],
     category: "Script",
   },
   {
     title: "Edu Levitation SaaS",
-    description:
-      "Plateforme SaaS scolaire : gestion des notes, bulletins, facturation, workflows automatisés (email/SMS), multi-établissements.",
+    description: {
+      fr: "Plateforme SaaS scolaire : gestion des notes, bulletins, facturation, workflows automatisés (email/SMS), multi-établissements.",
+      en: "School SaaS platform: grades, report cards, billing, automated email/SMS workflows, multi-school management.",
+    },
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
     category: "SaaS",
     liveUrl: "https://edu.levitation.mg",
@@ -48,97 +67,107 @@ const professionalProjects = [
   },
   {
     title: "EduContent Mobile App",
-    description:
-      "Application mobile React Native/Expo pour la consultation et la gestion de contenu éducatif en ligne.",
+    description: {
+      fr: "Application mobile React Native/Expo pour la consultation et la gestion de contenu éducatif en ligne.",
+      en: "React Native/Expo mobile app for browsing and managing educational content online.",
+    },
     technologies: ["React Native", "Expo", "JavaScript"],
     category: "Mobile",
     githubUrl: "https://github.com/joharymanantena1-ux/educontent-app",
   },
   {
     title: "Transport Interne Konecta",
-    description:
-      "Digitalisation du transport du personnel : planification, optimisation OSRM, suivi temps réel, reporting multi-profils.",
+    description: {
+      fr: "Digitalisation du transport du personnel : planification, optimisation OSRM, suivi temps réel, reporting multi-profils.",
+      en: "Digitalising staff transport: planning, OSRM optimisation, real-time tracking, multi-role reporting.",
+    },
     technologies: ["TypeScript", "React", "MySQL", "OSRM"],
     category: "Entreprise",
     githubUrl: "https://github.com/joharymanantena1-ux/Projet-de-Stage",
   },
   {
     title: "Shopify Data Automation",
-    description:
-      "Script Python d'automatisation pour l'import/export de données designers vers Shopify, avec base de données et export CSV.",
+    description: {
+      fr: "Script Python d'automatisation pour l'import/export de données designers vers Shopify, avec base de données et export CSV.",
+      en: "Python automation script for importing/exporting designer data to Shopify, with a database and CSV export.",
+    },
     technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
     category: "Automation",
     githubUrl: "https://github.com/joharymanantena1-ux/script-bash-shopify",
   },
   {
     title: "ERPNext Migration",
-    description:
-      "Migration d'un ERP existant vers Spring Boot avec refonte de l'architecture API et modernisation de la stack.",
+    description: {
+      fr: "Migration d'un ERP existant vers Spring Boot avec refonte de l'architecture API et modernisation de la stack.",
+      en: "Migration of an existing ERP to Spring Boot with a redesigned API architecture and a modernised stack.",
+    },
     technologies: ["Python", "Frappe", "Vue.js", "Spring Boot", "MySQL"],
     category: "ERP",
   },
   {
     title: "DayByDay CRM",
-    description:
-      "Migration et amélioration d'un CRM vers Spring Boot avec Docker et nouvelle architecture REST.",
+    description: {
+      fr: "Migration et amélioration d'un CRM vers Spring Boot avec Docker et nouvelle architecture REST.",
+      en: "Migration and improvement of a CRM to Spring Boot with Docker and a new REST architecture.",
+    },
     technologies: ["Symfony", "Spring Boot", "MySQL", "Docker"],
     category: "CRM",
   },
   {
     title: "Cryptomoney Cloud",
-    description:
-      "Plateforme crypto cloud-native : gestion de portefeuille, suivi du marché, applications web et mobile.",
+    description: {
+      fr: "Plateforme crypto cloud-native : gestion de portefeuille, suivi du marché, applications web et mobile.",
+      en: "Cloud-native crypto platform: wallet management, market tracking, web and mobile apps.",
+    },
     technologies: ["Symfony", "Spring Boot", "React", "React Native", "Docker"],
     category: "Cloud",
   },
 ];
 
 // ─── PROJETS ACADÉMIQUES ──────────────────────────────────────────────────────
-const academicProjects = [
-  { title: "ProjetKidoro", description: "Application web full-stack Spring Boot avec base PostgreSQL : gestion métier complète avec API REST.", technologies: ["Spring Boot", "Java", "PostgreSQL"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Trandraka-Volamena", description: "Application Java de gestion avec interface Servlet, GUI Swing et base de données Oracle.", technologies: ["Java", "Servlet", "Swing", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux/Trandraka-Volamena" },
-  { title: "Valan-Omby", description: "Application JavaEE distribuée avec EJB pour la gestion métier et base de données Oracle.", technologies: ["Java", "JavaEE", "EJB", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux/Valan-Omby" },
-  { title: "eHanofaTrano", description: "Application JavaEE avec EJB pour la gestion de biens immobiliers, connectée à une base Oracle.", technologies: ["Java", "JavaEE", "EJB", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Scoot-Tiger-Oracle", description: "Application desktop Java Swing avec interface graphique complète et base Oracle.", technologies: ["Java", "Java Swing", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux/Scoot-Tiger-Oracle" },
-  { title: "Solonify-ve", description: "Application WinForms de gestion interne pour cabinet dentaire : patients, rendez-vous, facturation.", technologies: ["C#", "WinForms", "PostgreSQL"], category: "C#", githubUrl: "https://github.com/joharymanantena1-ux/Solonify-ve" },
-  { title: "eFootball – Détection Hors-Jeu", description: "Système de détection de hors-jeu en temps réel via analyse vidéo et traitement d'image.", technologies: ["C#", "ASP.NET", "Postgres"], category: "C#", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Tickety – App Flutter", description: "Application mobile Flutter pour la gestion et l'organisation d'événements et de tickets.", technologies: ["Flutter", "Dart"], category: "Flutter", githubUrl: "https://github.com/joharymanantena1-ux/tickety" },
-  { title: "GestionTaches", description: "Application Angular de gestion des tâches avec filtrage avancé, catégories et suivi de progression.", technologies: ["Angular", "TypeScript", "Karma"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux/task-manager" },
-  { title: "hero-webdifference", description: "Test technique – hero section moderne avec animations, Next.js et Tailwind CSS.", technologies: ["Next.js", "Tailwind CSS", "CSS"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux/hero-webdifference" },
-  { title: "NextTask – Gestionnaire React", description: "Application To-Do list React complète avec filtrage, tags colorés et persistance LocalStorage.", technologies: ["React", "TypeScript", "Tailwind CSS"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Portfolio Web", description: "Portfolio personnel développé avec React.js, TypeScript et Vite, déployé sur Netlify.", technologies: ["React.js", "TypeScript", "Vite"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux/portfolio" },
-  { title: "Site Vitrine – Cabinet Dentaire", description: "Site WordPress professionnel pour cabinet dentaire avec prise de RDV en ligne et blog santé.", technologies: ["WordPress", "Elementor", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Botry", description: "Application web CodeIgniter de gestion avec base MySQL : CRUD complet, authentification et tableau de bord.", technologies: ["CodeIgniter", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Gestion de Restauration", description: "Application web de gestion d'un restaurant : commandes, menus, tables et suivi des ventes.", technologies: ["CodeIgniter", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux/TP-Gestion-Restauration" },
-  { title: "Jeu de Poker – S1", description: "Application web PHP d'un jeu de poker : distribution des cartes, évaluation des mains, gestion des tours.", technologies: ["PHP"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux/Poket-S1" },
-  { title: "Gestion Garage Automobile", description: "Application web de gestion d'atelier mécanique : réception véhicules, suivi réparations, historique client.", technologies: ["CodeIgniter", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Projet SGBD – S3", description: "Projet algorithmique de gestion de base de données avec scripts Python et Bash.", technologies: ["Algorithmique", "Python", "Bash"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux/Projet-SGBD-S3" },
-  { title: "Codage Son WAV", description: "Traitement et analyse de fichiers audio WAV : lecture binaire, visualisation de forme d'onde.", technologies: ["Python", "WAV"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Codage Huffman", description: "Algorithme de compression Huffman avec visualisation de l'arbre binaire et calcul du taux de compression.", technologies: ["Python", "Numpy", "Matplotlib"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Clustering FTP", description: "Système de clustering avec serveur FTP distribué et load balancer HAProxy sous Linux.", technologies: ["Python", "FTP", "HAProxy", "Linux"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "SIG McArthur's Madagascar", description: "Système d'Information Géographique pour la gestion territoriale et la cartographie interactive.", technologies: ["JavaScript", "SIG", "PostGIS"], category: "Géomatique", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Police & Voleur", description: "Jeu interactif Police-Voleur développé avec Python (logique) et React (interface) : IA de poursuite sur grille.", technologies: ["Python", "React", "JavaScript"], category: "Jeu", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Helicoptera", description: "Jeu 2D de type hélicoptère développé en Perl avec interface graphique Tkinter et base PostgreSQL.", technologies: ["Perl", "Tkinter", "PostgreSQL"], category: "Jeu", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Civilisation", description: "Jeu de stratégie temps réel : gestion de ressources, construction, conquête de territoires.", technologies: ["Java", "Swing", "Postgres"], category: "Jeu", githubUrl: "https://github.com/joharymanantena1-ux/Civilisation" },
-  { title: "RallyChronoWeb", description: "Application web de chronométrage pour rallye automobile : classements temps réel, gestion des étapes.", technologies: ["C++", "JavaScript", "ASP", "HTML/CSS"], category: "C++", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Chiffres et Lettres", description: "Jeu en ligne inspiré de l'émission TV : résolution de mots et calcul avec des chiffres tirés.", technologies: ["C++", "JavaScript", "HTML/CSS"], category: "C++", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Clustering Réseaux", description: "Architecture réseau distribuée avec clustering, load balancing et haute disponibilité.", technologies: ["Réseaux", "Linux", "Clustering"], category: "Réseaux", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "eDrambola", description: "Application web Django de gestion avec API REST intégrée et base de données MySQL.", technologies: ["Django", "Python", "MySQL", "API REST"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "AsaSprint Framework", description: "Framework Java maison MVC pour le développement rapide d'applications web, avec routeur et templates.", technologies: ["Java"], category: "Framework", githubUrl: "https://github.com/joharymanantena1-ux" },
-  { title: "Atelier Réparation PC", description: "Application web de gestion d'atelier : suivi des interventions, devis et facturation clients.", technologies: ["Spring Boot", "Postgres", "Bootstrap"], category: "Framework", githubUrl: "https://github.com/joharymanantena1-ux" },
+const academicProjects: Project[] = [
+  { title: "ProjetKidoro", description: { fr: "Application web full-stack Spring Boot avec base PostgreSQL : gestion métier complète avec API REST.", en: "Full-stack Spring Boot web app with a PostgreSQL database: complete business management with a REST API." }, technologies: ["Spring Boot", "Java", "PostgreSQL"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Trandraka-Volamena", description: { fr: "Application Java de gestion avec interface Servlet, GUI Swing et base de données Oracle.", en: "Java management app with a Servlet interface, Swing GUI and an Oracle database." }, technologies: ["Java", "Servlet", "Swing", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux/Trandraka-Volamena" },
+  { title: "Valan-Omby", description: { fr: "Application JavaEE distribuée avec EJB pour la gestion métier et base de données Oracle.", en: "Distributed JavaEE application with EJB for business management and an Oracle database." }, technologies: ["Java", "JavaEE", "EJB", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux/Valan-Omby" },
+  { title: "eHanofaTrano", description: { fr: "Application JavaEE avec EJB pour la gestion de biens immobiliers, connectée à une base Oracle.", en: "JavaEE app with EJB for real-estate management, connected to an Oracle database." }, technologies: ["Java", "JavaEE", "EJB", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Scoot-Tiger-Oracle", description: { fr: "Application desktop Java Swing avec interface graphique complète et base Oracle.", en: "Java Swing desktop application with a full GUI and an Oracle database." }, technologies: ["Java", "Java Swing", "Oracle"], category: "Java", githubUrl: "https://github.com/joharymanantena1-ux/Scoot-Tiger-Oracle" },
+  { title: "Solonify-ve", description: { fr: "Application WinForms de gestion interne pour cabinet dentaire : patients, rendez-vous, facturation.", en: "WinForms internal-management app for a dental practice: patients, appointments, billing." }, technologies: ["C#", "WinForms", "PostgreSQL"], category: "C#", githubUrl: "https://github.com/joharymanantena1-ux/Solonify-ve" },
+  { title: "eFootball – Détection Hors-Jeu", description: { fr: "Système de détection de hors-jeu en temps réel via analyse vidéo et traitement d'image.", en: "Real-time offside-detection system through video analysis and image processing." }, technologies: ["C#", "ASP.NET", "Postgres"], category: "C#", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Tickety – App Flutter", description: { fr: "Application mobile Flutter pour la gestion et l'organisation d'événements et de tickets.", en: "Flutter mobile app for managing and organising events and tickets." }, technologies: ["Flutter", "Dart"], category: "Flutter", githubUrl: "https://github.com/joharymanantena1-ux/tickety" },
+  { title: "GestionTaches", description: { fr: "Application Angular de gestion des tâches avec filtrage avancé, catégories et suivi de progression.", en: "Angular task-management app with advanced filtering, categories and progress tracking." }, technologies: ["Angular", "TypeScript", "Karma"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux/task-manager" },
+  { title: "hero-webdifference", description: { fr: "Test technique – hero section moderne avec animations, Next.js et Tailwind CSS.", en: "Technical test – modern hero section with animations, Next.js and Tailwind CSS." }, technologies: ["Next.js", "Tailwind CSS", "CSS"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux/hero-webdifference" },
+  { title: "NextTask – Gestionnaire React", description: { fr: "Application To-Do list React complète avec filtrage, tags colorés et persistance LocalStorage.", en: "Complete React to-do app with filtering, colour tags and LocalStorage persistence." }, technologies: ["React", "TypeScript", "Tailwind CSS"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Portfolio Web", description: { fr: "Portfolio personnel développé avec React.js, TypeScript et Vite, déployé sur Netlify.", en: "Personal portfolio built with React.js, TypeScript and Vite, deployed on Netlify." }, technologies: ["React.js", "TypeScript", "Vite"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux/portfolio" },
+  { title: "Site Vitrine – Cabinet Dentaire", description: { fr: "Site WordPress professionnel pour cabinet dentaire avec prise de RDV en ligne et blog santé.", en: "Professional WordPress site for a dental practice with online booking and a health blog." }, technologies: ["WordPress", "Elementor", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Botry", description: { fr: "Application web CodeIgniter de gestion avec base MySQL : CRUD complet, authentification et tableau de bord.", en: "CodeIgniter management web app with MySQL: full CRUD, authentication and a dashboard." }, technologies: ["CodeIgniter", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Gestion de Restauration", description: { fr: "Application web de gestion d'un restaurant : commandes, menus, tables et suivi des ventes.", en: "Restaurant-management web app: orders, menus, tables and sales tracking." }, technologies: ["CodeIgniter", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux/TP-Gestion-Restauration" },
+  { title: "Jeu de Poker – S1", description: { fr: "Application web PHP d'un jeu de poker : distribution des cartes, évaluation des mains, gestion des tours.", en: "PHP web poker game: card dealing, hand evaluation, turn management." }, technologies: ["PHP"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux/Poket-S1" },
+  { title: "Gestion Garage Automobile", description: { fr: "Application web de gestion d'atelier mécanique : réception véhicules, suivi réparations, historique client.", en: "Garage-management web app: vehicle intake, repair tracking, client history." }, technologies: ["CodeIgniter", "PHP", "MySQL"], category: "PHP", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Projet SGBD – S3", description: { fr: "Projet algorithmique de gestion de base de données avec scripts Python et Bash.", en: "Algorithmic database-management project with Python and Bash scripts." }, technologies: ["Algorithmique", "Python", "Bash"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux/Projet-SGBD-S3" },
+  { title: "Codage Son WAV", description: { fr: "Traitement et analyse de fichiers audio WAV : lecture binaire, visualisation de forme d'onde.", en: "WAV audio processing and analysis: binary reading, waveform visualisation." }, technologies: ["Python", "WAV"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Codage Huffman", description: { fr: "Algorithme de compression Huffman avec visualisation de l'arbre binaire et calcul du taux de compression.", en: "Huffman compression algorithm with binary-tree visualisation and compression-ratio computation." }, technologies: ["Python", "Numpy", "Matplotlib"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Clustering FTP", description: { fr: "Système de clustering avec serveur FTP distribué et load balancer HAProxy sous Linux.", en: "Clustering system with a distributed FTP server and an HAProxy load balancer on Linux." }, technologies: ["Python", "FTP", "HAProxy", "Linux"], category: "Algo", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "SIG McArthur's Madagascar", description: { fr: "Système d'Information Géographique pour la gestion territoriale et la cartographie interactive.", en: "Geographic Information System for territorial management and interactive mapping." }, technologies: ["JavaScript", "SIG", "PostGIS"], category: "Géomatique", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Police & Voleur", description: { fr: "Jeu interactif Police-Voleur développé avec Python (logique) et React (interface) : IA de poursuite sur grille.", en: "Interactive Cops & Robbers game built with Python (logic) and React (UI): grid-based pursuit AI." }, technologies: ["Python", "React", "JavaScript"], category: "Jeu", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Helicoptera", description: { fr: "Jeu 2D de type hélicoptère développé en Perl avec interface graphique Tkinter et base PostgreSQL.", en: "2D helicopter-style game built in Perl with a Tkinter GUI and a PostgreSQL database." }, technologies: ["Perl", "Tkinter", "PostgreSQL"], category: "Jeu", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Civilisation", description: { fr: "Jeu de stratégie temps réel : gestion de ressources, construction, conquête de territoires.", en: "Real-time strategy game: resource management, building, territory conquest." }, technologies: ["Java", "Swing", "Postgres"], category: "Jeu", githubUrl: "https://github.com/joharymanantena1-ux/Civilisation" },
+  { title: "RallyChronoWeb", description: { fr: "Application web de chronométrage pour rallye automobile : classements temps réel, gestion des étapes.", en: "Web timing app for car rallies: real-time rankings, stage management." }, technologies: ["C++", "JavaScript", "ASP", "HTML/CSS"], category: "C++", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Chiffres et Lettres", description: { fr: "Jeu en ligne inspiré de l'émission TV : résolution de mots et calcul avec des chiffres tirés.", en: "Online game inspired by the TV show: word solving and arithmetic with drawn numbers." }, technologies: ["C++", "JavaScript", "HTML/CSS"], category: "C++", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Clustering Réseaux", description: { fr: "Architecture réseau distribuée avec clustering, load balancing et haute disponibilité.", en: "Distributed network architecture with clustering, load balancing and high availability." }, technologies: ["Réseaux", "Linux", "Clustering"], category: "Réseaux", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "eDrambola", description: { fr: "Application web Django de gestion avec API REST intégrée et base de données MySQL.", en: "Django management web app with an integrated REST API and a MySQL database." }, technologies: ["Django", "Python", "MySQL", "API REST"], category: "Web", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "AsaSprint Framework", description: { fr: "Framework Java maison MVC pour le développement rapide d'applications web, avec routeur et templates.", en: "In-house Java MVC framework for rapid web development, with a router and templates." }, technologies: ["Java"], category: "Framework", githubUrl: "https://github.com/joharymanantena1-ux" },
+  { title: "Atelier Réparation PC", description: { fr: "Application web de gestion d'atelier : suivi des interventions, devis et facturation clients.", en: "Workshop-management web app: job tracking, quotes and client billing." }, technologies: ["Spring Boot", "Postgres", "Bootstrap"], category: "Framework", githubUrl: "https://github.com/joharymanantena1-ux" },
 ];
 
-// ─── Types & helpers ──────────────────────────────────────────────────────────
-interface Project {
-  title: string;
-  description: string;
-  technologies: string[];
-  category: string;
-  githubUrl?: string;
-  liveUrl?: string;
-}
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const CATEGORY_EN: Record<string, string> = {
+  Entreprise: "Company",
+  Réseaux: "Networks",
+  Jeu: "Game",
+  Géomatique: "GIS",
+};
+const catLabel = (cat: string, lang: Lang) => (lang === "en" ? CATEGORY_EN[cat] ?? cat : cat);
 
-// 2-letter monogram derived from the title — replaces stock cover images.
 const getMonogram = (title: string) => {
   const words = title.replace(/[^a-zA-Z0-9\s-]/g, " ").split(/[\s-]+/).filter(Boolean);
   const letters = words.length > 1 ? words.map((w) => w[0]).join("") : words[0] ?? "";
@@ -147,7 +176,6 @@ const getMonogram = (title: string) => {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// Reusable 44px icon link with FR aria-label + focus-visible ring
 const IconLink = ({
   href,
   label,
@@ -175,12 +203,14 @@ const IconLink = ({
   </a>
 );
 
-// Mono category label (Swiss — single accent, no rainbow)
-const CategoryTag = ({ category, accent = false }: { category: string; accent?: boolean }) => (
-  <span className={`kicker !text-[11px] !tracking-wider ${accent ? "!text-primary" : ""}`}>
-    {category}
-  </span>
-);
+const CategoryTag = ({ category, accent = false }: { category: string; accent?: boolean }) => {
+  const { lang } = useT();
+  return (
+    <span className={`kicker !text-[11px] !tracking-wider ${accent ? "!text-primary" : ""}`}>
+      {catLabel(category, lang)}
+    </span>
+  );
+};
 
 const TechTags = ({ technologies, max = 4 }: { technologies: string[]; max?: number }) => (
   <div className="flex flex-wrap gap-1.5">
@@ -198,6 +228,7 @@ const TechTags = ({ technologies, max = 4 }: { technologies: string[]; max?: num
 // ─── PROFESSIONAL PROJECT CARD (image-free Swiss cover) ──────────────────────
 const ProfessionalCard = ({ project, index }: { project: Project; index: number }) => {
   const { reduce } = useMotionPreset();
+  const { t, lang } = useT();
   return (
     <motion.article
       initial={reduce ? false : { opacity: 0, y: 16 }}
@@ -205,7 +236,6 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
       className="flex-shrink-0 w-[280px] sm:w-[320px] card-swiss overflow-hidden group flex flex-col"
     >
-      {/* Cover — no image: index watermark + monogram + category */}
       <div className="relative h-28 border-b border-border bg-secondary/40 overflow-hidden px-4 py-3 flex flex-col justify-between">
         <div className="absolute inset-0 grid-bg opacity-40" aria-hidden="true" />
         <span
@@ -221,25 +251,24 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
         <span className="relative font-mono text-xs text-muted-foreground">~/work/{getMonogram(project.title).toLowerCase()}</span>
       </div>
 
-      {/* Body */}
       <div className="p-4 flex flex-col gap-3 flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-base font-display font-semibold leading-snug line-clamp-1">{project.title}</h3>
           <div className="flex gap-0.5 flex-shrink-0 -mr-2 -mt-1">
             {project.githubUrl && (
-              <IconLink href={project.githubUrl} label={`Code source de ${project.title}`}>
+              <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
                 <Github className="w-4 h-4" aria-hidden="true" />
               </IconLink>
             )}
             {project.liveUrl && (
-              <IconLink href={project.liveUrl} label={`Voir le site de ${project.title}`} variant="primary">
+              <IconLink href={project.liveUrl} label={`${t("projects.liveOf")} ${project.title}`} variant="primary">
                 <Globe className="w-4 h-4" aria-hidden="true" />
               </IconLink>
             )}
           </div>
         </div>
         <p className="text-sm text-muted-foreground dark:text-foreground/80 line-clamp-3 leading-relaxed flex-1">
-          {project.description}
+          {tx(project.description, lang)}
         </p>
         <TechTags technologies={project.technologies} />
       </div>
@@ -250,6 +279,7 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
 // ─── ACADEMIC PROJECT CARD (compact, image-free) ─────────────────────────────
 const AcademicCard = ({ project, index }: { project: Project; index: number }) => {
   const { reduce } = useMotionPreset();
+  const { t, lang } = useT();
   return (
     <motion.article
       initial={reduce ? false : { opacity: 0, y: 12 }}
@@ -260,14 +290,14 @@ const AcademicCard = ({ project, index }: { project: Project; index: number }) =
       <div className="flex items-center justify-between">
         <CategoryTag category={project.category} accent />
         {project.githubUrl && (
-          <IconLink href={project.githubUrl} label={`Code source de ${project.title}`}>
+          <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
             <Github className="w-4 h-4" aria-hidden="true" />
           </IconLink>
         )}
       </div>
       <h3 className="text-sm font-display font-semibold leading-snug line-clamp-1">{project.title}</h3>
       <p className="text-sm text-muted-foreground dark:text-foreground/80 line-clamp-2 leading-relaxed">
-        {project.description}
+        {tx(project.description, lang)}
       </p>
       <TechTags technologies={project.technologies} max={3} />
     </motion.article>
@@ -276,6 +306,7 @@ const AcademicCard = ({ project, index }: { project: Project; index: number }) =
 
 // ─── ACCESSIBLE CAROUSEL (professional only) ─────────────────────────────────
 const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
+  const { t } = useT();
   const scrollRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -327,7 +358,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
         ref={scrollRef}
         role="region"
         aria-roledescription="carrousel"
-        aria-label="Projets professionnels — faites défiler avec les flèches gauche et droite"
+        aria-label={t("projects.carousel")}
         tabIndex={0}
         onPointerDown={onPointerDown}
         onPointerUp={stop}
@@ -346,7 +377,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
         <button
           type="button"
           onClick={() => scrollByCards(-1)}
-          aria-label="Projet précédent"
+          aria-label={t("projects.prev")}
           className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ChevronLeft className="w-5 h-5" aria-hidden="true" />
@@ -354,7 +385,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
         <button
           type="button"
           onClick={() => scrollByCards(1)}
-          aria-label="Projet suivant"
+          aria-label={t("projects.next")}
           className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ChevronRight className="w-5 h-5" aria-hidden="true" />
@@ -364,12 +395,12 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
   );
 };
 
-// ─── FILTER CATEGORIES ────────────────────────────────────────────────────────
 const filterCategories = ["Tous", "Java", "C#", "C++", "Flutter", "Web", "PHP", "Algo", "Réseaux", "Jeu", "Géomatique", "Framework"];
 
 // ─── ACADEMIC DRAWER (hidden by default, full-screen, slides up) ─────────────
 const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => {
   const { reduce } = useMotionPreset();
+  const { t, lang } = useT();
   const [activeFilter, setActiveFilter] = useState("Tous");
 
   const filtered = activeFilter === "Tous"
@@ -380,19 +411,18 @@ const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[92vh] card-swiss !rounded-b-none focus-visible:outline-none">
         <div className="mx-auto w-full max-w-7xl flex flex-col h-full min-h-0 px-4 sm:px-6 pb-6">
-          {/* Header */}
           <div className="flex items-center justify-between gap-4 pt-2 pb-4 border-b border-border">
             <div>
-              <span className="kicker !text-primary">Archive</span>
+              <span className="kicker !text-primary">{t("projects.drawerKicker")}</span>
               <h2 className="text-xl sm:text-2xl font-display font-bold mt-1">
-                Projets académiques
+                {t("projects.drawerTitle")}
                 <span className="font-mono text-sm text-muted-foreground ml-2">{academicProjects.length}</span>
               </h2>
             </div>
             <DrawerClose asChild>
               <button
                 type="button"
-                aria-label="Fermer la liste des projets académiques"
+                aria-label={t("projects.close")}
                 className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-border hover:bg-secondary cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <X className="w-5 h-5" aria-hidden="true" />
@@ -400,11 +430,11 @@ const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
             </DrawerClose>
           </div>
 
-          {/* Filters */}
-          <div role="group" aria-label="Filtrer les projets par catégorie" className="flex gap-2 overflow-x-auto py-4 scrollbar-hide flex-shrink-0">
+          <div role="group" aria-label={t("projects.filterGroup")} className="flex gap-2 overflow-x-auto py-4 scrollbar-hide flex-shrink-0">
             {filterCategories.map((cat) => {
               const active = activeFilter === cat;
               const count = cat === "Tous" ? academicProjects.length : academicProjects.filter((p) => p.category === cat).length;
+              const label = cat === "Tous" ? t("projects.filterAll") : catLabel(cat, lang);
               return (
                 <button
                   key={cat}
@@ -417,14 +447,13 @@ const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                       : "border border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
                   }`}
                 >
-                  {cat}
+                  {label}
                   <span className="opacity-70">{count}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Scrollable grid */}
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mx-1 px-1 pb-4">
             <AnimatePresence mode="wait">
               <motion.div
@@ -450,20 +479,21 @@ const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
 // ─── SECTION ─────────────────────────────────────────────────────────────────
 const ProjectsSection = () => {
   const { reduce } = useMotionPreset();
+  const { t } = useT();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <section className="section-container">
       <div className="section-content">
-        {/* Header */}
         <SectionHeading
           index="04"
-          label="Portfolio"
-          title="Projets sélectionnés"
+          label={t("projects.label")}
+          title={t("projects.title")}
           description={
             <>
-              Travaux clients et missions professionnelles. L'archive académique
-              (<span className="font-mono text-sm">{academicProjects.length}</span> projets) est consultable à la demande.
+              {t("projects.descBefore")}
+              <span className="font-mono text-sm">{academicProjects.length}</span>
+              {t("projects.descAfter")}
             </>
           }
           className="mb-10 md:mb-12"
@@ -478,7 +508,7 @@ const ProjectsSection = () => {
           className="mb-12"
         >
           <div className="flex items-center gap-3 mb-5">
-            <span className="kicker">Professionnel</span>
+            <span className="kicker">{t("projects.professional")}</span>
             <span className="h-px flex-1 bg-border" aria-hidden="true" />
             <span className="font-mono text-xs text-muted-foreground">{pad(professionalProjects.length)}</span>
           </div>
@@ -495,14 +525,11 @@ const ProjectsSection = () => {
         >
           <div className="absolute inset-0 grid-bg opacity-30" aria-hidden="true" />
           <div className="relative">
-            <span className="kicker">Archive académique</span>
+            <span className="kicker">{t("projects.archiveKicker")}</span>
             <h3 className="text-lg sm:text-xl font-display font-semibold mt-1.5">
-              {academicProjects.length} projets de formation
+              {academicProjects.length} {t("projects.archiveTitleSuffix")}
             </h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-md">
-              Java, C#, C++, PHP, Python, jeux, réseaux, SIG… L'ensemble de mon parcours,
-              filtrable par technologie — affiché uniquement si vous le souhaitez.
-            </p>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md">{t("projects.archiveDesc")}</p>
           </div>
           <button
             type="button"
@@ -510,7 +537,7 @@ const ProjectsSection = () => {
             aria-haspopup="dialog"
             className="relative flex-shrink-0 inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-md bg-primary text-primary-foreground font-medium cursor-pointer transition-colors duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            Voir les {academicProjects.length} projets
+            {t("projects.archiveBtnBefore")}{academicProjects.length}{t("projects.archiveBtnAfter")}
             <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
           </button>
         </motion.div>

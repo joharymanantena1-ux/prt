@@ -1,16 +1,18 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Monitor, Server, Database, Terminal, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
+import { useT, tx, type Bi } from "@/i18n";
+import { techIcons } from "@/data/techIcons";
 
 interface Skill {
   name: string;
-  devicon: string | null;
+  /** Key into techIcons (simple-icons path), or null to use `fallback`. */
+  slug: string | null;
   fallback?: string;
 }
 
 interface Category {
-  title: string;
-  color: "primary" | "accent";
+  title: Bi;
   Icon: React.ComponentType<{ className?: string }>;
   skills: Skill[];
 }
@@ -18,78 +20,87 @@ interface Category {
 const categories: Category[] = [
   {
     title: "Frontend",
-    color: "primary",
     Icon: Monitor,
     skills: [
-      { name: "React / Next.js", devicon: "devicon-react-original" },
-      { name: "TypeScript",      devicon: "devicon-typescript-plain" },
-      { name: "JavaScript",      devicon: "devicon-javascript-plain" },
-      { name: "Angular",         devicon: "devicon-angularjs-plain" },
-      { name: "Vue.js",          devicon: "devicon-vuejs-plain" },
-      { name: "Tailwind CSS",    devicon: "devicon-tailwindcss-plain" },
-      { name: "Bootstrap",       devicon: "devicon-bootstrap-plain" },
-      { name: "React Native",    devicon: "devicon-react-original" },
-      { name: "Flutter",         devicon: "devicon-flutter-plain" },
+      { name: "React / Next.js", slug: "siReact" },
+      { name: "TypeScript",      slug: "siTypescript" },
+      { name: "JavaScript",      slug: "siJavascript" },
+      { name: "Angular",         slug: "siAngular" },
+      { name: "Vue.js",          slug: "siVuedotjs" },
+      { name: "Tailwind CSS",    slug: "siTailwindcss" },
+      { name: "Bootstrap",       slug: "siBootstrap" },
+      { name: "React Native",    slug: "siReact" },
+      { name: "Flutter",         slug: "siFlutter" },
     ],
   },
   {
     title: "Backend",
-    color: "accent",
     Icon: Server,
     skills: [
-      { name: "PHP / Laravel",   devicon: "devicon-laravel-plain" },
-      { name: "Symfony",         devicon: "devicon-symfony-original" },
-      { name: "CodeIgniter",     devicon: "devicon-codeigniter-plain" },
-      { name: "Django",          devicon: "devicon-django-plain" },
-      { name: "Java / Spring",   devicon: "devicon-spring-plain" },
-      { name: "Node.js",         devicon: "devicon-nodejs-plain" },
-      { name: "Python",          devicon: "devicon-python-plain" },
-      { name: "C",               devicon: "devicon-c-plain" },
-      { name: "C# / ASP.NET",    devicon: "devicon-csharp-plain" },
-      { name: "C++",             devicon: "devicon-cplusplus-plain" },
+      { name: "PHP / Laravel",   slug: "siLaravel" },
+      { name: "Symfony",         slug: "siSymfony" },
+      { name: "CodeIgniter",     slug: "siCodeigniter" },
+      { name: "Django",          slug: "siDjango" },
+      { name: "Java / Spring",   slug: "siSpring" },
+      { name: "Node.js",         slug: "siNodedotjs" },
+      { name: "Python",          slug: "siPython" },
+      { name: "C",               slug: "siC" },
+      { name: "C# / ASP.NET",    slug: null, fallback: "C#" },
+      { name: "C++",             slug: "siCplusplus" },
     ],
   },
   {
-    title: "Bases de données",
-    color: "primary",
+    title: { fr: "Bases de données", en: "Databases" },
     Icon: Database,
     skills: [
-      { name: "MySQL",           devicon: "devicon-mysql-plain" },
-      { name: "PostgreSQL",      devicon: "devicon-postgresql-plain" },
-      { name: "Oracle",          devicon: "devicon-oracle-original" },
-      { name: "Firebase",        devicon: "devicon-firebase-plain" },
-      { name: "PostGIS",         devicon: null, fallback: "GIS" },
+      { name: "MySQL",           slug: "siMysql" },
+      { name: "PostgreSQL",      slug: "siPostgresql" },
+      { name: "Oracle",          slug: null, fallback: "Ora" },
+      { name: "Firebase",        slug: "siFirebase" },
+      { name: "PostGIS",         slug: null, fallback: "GIS" },
     ],
   },
   {
-    title: "DevOps & Outils",
-    color: "accent",
+    title: { fr: "DevOps & Outils", en: "DevOps & Tools" },
     Icon: Terminal,
     skills: [
-      { name: "Git / GitHub",    devicon: "devicon-git-plain" },
-      { name: "Docker",          devicon: "devicon-docker-plain" },
-      { name: "Linux",           devicon: "devicon-linux-plain" },
-      { name: "API REST",        devicon: null, fallback: "REST" },
-      { name: "n8n",             devicon: null, fallback: "n8n" },
+      { name: "Git / GitHub",    slug: "siGit" },
+      { name: "Docker",          slug: "siDocker" },
+      { name: "Linux",           slug: "siLinux" },
+      { name: "API REST",        slug: null, fallback: "REST" },
+      { name: "n8n",             slug: "siN8n" },
     ],
   },
 ];
 
-const softSkills = [
-  { label: "Analyse des besoins", Icon: Target },
-  { label: "Architecture logicielle", Icon: Layers },
-  { label: "Travail en équipe", Icon: Users },
-  { label: "Résolution de problèmes", Icon: Zap },
-  { label: "Autonomie", Icon: Rocket },
-  { label: "Adaptabilité", Icon: RefreshCw },
+const softSkills: { label: Bi; Icon: typeof Target }[] = [
+  { label: { fr: "Analyse des besoins", en: "Requirements analysis" }, Icon: Target },
+  { label: { fr: "Architecture logicielle", en: "Software architecture" }, Icon: Layers },
+  { label: { fr: "Travail en équipe", en: "Teamwork" }, Icon: Users },
+  { label: { fr: "Résolution de problèmes", en: "Problem solving" }, Icon: Zap },
+  { label: { fr: "Autonomie", en: "Autonomy" }, Icon: Rocket },
+  { label: { fr: "Adaptabilité", en: "Adaptability" }, Icon: RefreshCw },
   { label: "Communication", Icon: MessageSquare },
-  { label: "Rigueur", Icon: CheckCircle2 },
+  { label: { fr: "Rigueur", en: "Rigour" }, Icon: CheckCircle2 },
 ];
+
+// Monochrome brand glyph (simple-icons path) — currentColor → AA in both themes.
+const TechIcon = ({ slug }: { slug: string }) => {
+  const icon = techIcons[slug];
+  if (!icon) return null;
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="currentColor" aria-hidden="true">
+      <path d={icon.path} />
+    </svg>
+  );
+};
 
 const TechChip = ({ skill }: { skill: Skill }) => (
   <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary/50 border border-border/40 hover:border-primary/40 hover:bg-secondary transition-colors duration-200 group cursor-default">
-    {skill.devicon ? (
-      <i className={`${skill.devicon} colored text-xl flex-shrink-0 w-5 text-center`} aria-hidden="true" />
+    {skill.slug && techIcons[skill.slug] ? (
+      <span className="text-foreground/70 group-hover:text-primary transition-colors">
+        <TechIcon slug={skill.slug} />
+      </span>
     ) : (
       <span
         aria-hidden="true"
@@ -104,6 +115,7 @@ const TechChip = ({ skill }: { skill: Skill }) => (
 
 const CategoryCard = ({ category, index }: { category: Category; index: number }) => {
   const reduce = useReducedMotion();
+  const { lang } = useT();
   const { Icon } = category;
 
   return (
@@ -114,19 +126,17 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
       transition={reduce ? { duration: 0 } : { duration: 0.5, delay: index * 0.08 }}
       className="card-swiss p-5 lg:p-6 flex flex-col gap-4"
     >
-      {/* Card header */}
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-md bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
           <Icon className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-sm font-display font-bold leading-none mb-1">{category.title}</h3>
+          <h3 className="text-sm font-display font-bold leading-none mb-1">{tx(category.title, lang)}</h3>
           <div className="h-0.5 w-6 rounded-full bg-primary" />
         </div>
         <span className="ml-auto font-mono text-xs text-muted-foreground">{String(category.skills.length).padStart(2, "0")}</span>
       </div>
 
-      {/* Skills chips grid */}
       <div className="flex flex-wrap gap-2">
         {category.skills.map((skill) => (
           <TechChip key={skill.name} skill={skill} />
@@ -138,25 +148,24 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
 
 const SkillsSection = () => {
   const reduce = useReducedMotion();
+  const { t, lang } = useT();
   return (
     <section className="section-container">
       <div className="section-content">
         <SectionHeading
           index="03"
-          label="Compétences"
-          title="Stack & expertise"
-          description="Un stack full-stack moderne et polyvalent, enrichi en continu au fil des projets."
+          label={t("skills.label")}
+          title={t("skills.title")}
+          description={t("skills.desc")}
           className="mb-10 md:mb-14"
         />
 
-        {/* Tech categories grid */}
         <div className="grid sm:grid-cols-2 gap-4 lg:gap-5 mb-10 md:mb-12">
           {categories.map((category, index) => (
-            <CategoryCard key={category.title} category={category} index={index} />
+            <CategoryCard key={tx(category.title, lang)} category={category} index={index} />
           ))}
         </div>
 
-        {/* Soft skills */}
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -164,12 +173,12 @@ const SkillsSection = () => {
           transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.25 }}
         >
           <div className="text-center mb-5">
-            <h3 className="text-lg font-display font-semibold">Soft Skills</h3>
+            <h3 className="text-lg font-display font-semibold">{t("skills.soft")}</h3>
           </div>
           <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5">
             {softSkills.map(({ label, Icon }, index) => (
               <motion.div
-                key={label}
+                key={tx(label, lang)}
                 initial={reduce ? false : { opacity: 0, scale: 0.88 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -177,7 +186,7 @@ const SkillsSection = () => {
                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-primary/40 transition-colors duration-200"
               >
                 <Icon className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-                {label}
+                {tx(label, lang)}
               </motion.div>
             ))}
           </div>

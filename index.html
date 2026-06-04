@@ -4,10 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Perf: preconnect to font + asset origins before they are requested -->
+    <!-- Perf: preconnect to font origins before they are requested -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Fonts loaded non-render-blocking (print→all swap), with display=swap fallback -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      />
+    </noscript>
 
     <title>Johary Manantena | Développeur Full-Stack</title>
     <meta
@@ -32,8 +45,6 @@
          <link rel="canonical" href="https://votre-domaine.com" /> -->
 
     <meta name="twitter:card" content="summary_large_image" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/devicon@2.16.0/devicon.min.css" />
 
     <!-- RGPD / CNIL — Google Consent Mode v2: analytics DENIED by default.
          The in-app cookie banner calls gtag('consent','update', …) on user opt-in. -->
