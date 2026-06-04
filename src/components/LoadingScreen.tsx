@@ -20,7 +20,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   // ── Eased progress 0→100, then fade out and hand off ─────────────────────────
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const duration = reduce ? 600 : 10000;
+    const duration = reduce ? 600 : 6000;
     let startTs = 0;
 
     const tick = (ts: number) => {

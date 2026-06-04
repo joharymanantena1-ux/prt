@@ -84,12 +84,18 @@ const softSkills: { label: Bi; Icon: typeof Target }[] = [
   { label: { fr: "Rigueur", en: "Rigour" }, Icon: CheckCircle2 },
 ];
 
-// Monochrome brand glyph (simple-icons path) — currentColor → AA in both themes.
+// Brand glyph (simple-icons path) — keeps the official brand colour. Near-black
+// marks (Angular, Symfony…) fall back to currentColor so they stay visible in dark mode.
 const TechIcon = ({ slug }: { slug: string }) => {
   const icon = techIcons[slug];
   if (!icon) return null;
   return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="currentColor" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      className="w-5 h-5 flex-shrink-0"
+      fill={icon.adaptive ? "currentColor" : `#${icon.hex}`}
+      aria-hidden="true"
+    >
       <path d={icon.path} />
     </svg>
   );
