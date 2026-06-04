@@ -52,6 +52,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   return <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useT = () => {
   const ctx = useContext(LanguageContext);
   if (!ctx) throw new Error("useT must be used within a LanguageProvider");
@@ -60,4 +61,5 @@ export const useT = () => {
 
 /* Inline bilingual data fields: `tx({fr,en}, lang)`, or pass-through a plain string. */
 export type Bi = string | { fr: string; en: string };
+// eslint-disable-next-line react-refresh/only-export-components
 export const tx = (v: Bi, lang: Lang): string => (typeof v === "string" ? v : v[lang]);
