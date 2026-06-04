@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Briefcase, GraduationCap, ExternalLink, Award, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SectionHeading from "@/components/SectionHeading";
 
 const experiences = [
   {
@@ -94,7 +95,6 @@ const TimelineEntry = ({
   index: number;
 }) => {
   const reduce = useReducedMotion();
-  const isPrimary = type === "exp";
 
   return (
     <motion.div
@@ -105,38 +105,30 @@ const TimelineEntry = ({
       className="relative pl-12 pb-8 last:pb-0"
     >
       {/* Vertical line (hidden on last item via last:pb-0) */}
-      <div className={`absolute left-[13px] top-9 bottom-0 w-px ${
-        isPrimary
-          ? "bg-gradient-to-b from-primary/40 via-border to-transparent"
-          : "bg-gradient-to-b from-accent/40 via-border to-transparent"
-      }`} />
+      <div className="absolute left-[13px] top-9 bottom-0 w-px bg-gradient-to-b from-primary/40 via-border to-transparent" />
 
       {/* Timeline dot */}
-      <div className={`absolute left-0 top-4 w-7 h-7 rounded-full flex items-center justify-center border-2 z-10 ${
+      <div className={`absolute left-0 top-4 w-7 h-7 rounded-md flex items-center justify-center border-2 z-10 ${
         item.current
           ? "bg-primary border-primary shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
-          : isPrimary
-          ? "bg-background border-primary/60"
-          : "bg-background border-accent/60"
+          : "bg-background border-primary/60"
       }`}>
         {type === "exp" ? (
           <Briefcase className={`w-3 h-3 ${item.current ? "text-primary-foreground" : "text-primary"}`} />
         ) : (
-          <GraduationCap className={`w-3 h-3 ${isPrimary ? "text-primary" : "text-accent"}`} />
+          <GraduationCap className="w-3 h-3 text-primary" />
         )}
       </div>
 
       {/* Content card */}
-      <div className={`rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:shadow-elevated group ${
+      <div className={`rounded-md border p-4 sm:p-5 transition-colors duration-300 group ${
         item.current
-          ? "border-primary/25 bg-primary/5 dark:bg-primary/8"
-          : "border-border/60 bg-card/60 hover:border-border"
+          ? "border-primary/30 bg-primary/5 dark:bg-primary/8"
+          : "border-border bg-card hover:border-primary/40"
       }`}>
         {/* Header row */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className={`font-mono text-xs font-medium px-2.5 py-1 rounded-md ${
-            isPrimary ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent"
-          }`}>
+          <span className="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-primary/10 text-primary">
             {item.period}
           </span>
           {item.current && (
@@ -207,32 +199,24 @@ const TimelineEntry = ({
 };
 
 const ExperienceSection = () => {
-  const reduce = useReducedMotion();
   return (
     <section className="section-container">
       <div className="section-content max-w-3xl">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.55 }}
-          className="text-center mb-10 md:mb-14"
-        >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            Parcours
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold">
-            Expériences & Formation
-          </h2>
-        </motion.div>
+        <SectionHeading
+          index="02"
+          label="Parcours"
+          title="Expériences & Formation"
+          description="Des missions concrètes en entreprise et en freelance, étayées par une formation solide."
+          className="mb-10 md:mb-14"
+        />
 
         <Tabs defaultValue="experience" className="w-full">
-          <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2 mb-10 h-11 rounded-xl">
-            <TabsTrigger value="experience" className="flex items-center gap-2 text-sm rounded-lg">
+          <TabsList className="grid w-full max-w-xs grid-cols-2 mb-10 h-11 rounded-md">
+            <TabsTrigger value="experience" className="flex items-center gap-2 text-sm rounded-sm">
               <Briefcase className="w-3.5 h-3.5" />
               Expériences
             </TabsTrigger>
-            <TabsTrigger value="education" className="flex items-center gap-2 text-sm rounded-lg">
+            <TabsTrigger value="education" className="flex items-center gap-2 text-sm rounded-sm">
               <GraduationCap className="w-3.5 h-3.5" />
               Formation
             </TabsTrigger>

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Monitor, Server, Database, Terminal, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
+import SectionHeading from "@/components/SectionHeading";
 
 interface Skill {
   name: string;
@@ -86,13 +87,13 @@ const softSkills = [
 ];
 
 const TechChip = ({ skill }: { skill: Skill }) => (
-  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary/50 border border-border/40 hover:border-border hover:bg-secondary transition-colors duration-200 group cursor-default">
+  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary/50 border border-border/40 hover:border-primary/40 hover:bg-secondary transition-colors duration-200 group cursor-default">
     {skill.devicon ? (
       <i className={`${skill.devicon} colored text-xl flex-shrink-0 w-5 text-center`} aria-hidden="true" />
     ) : (
       <span
         aria-hidden="true"
-        className="w-6 h-5 flex items-center justify-center text-[10px] font-bold text-muted-foreground bg-muted rounded flex-shrink-0"
+        className="w-6 h-5 flex items-center justify-center font-mono text-[10px] font-bold text-muted-foreground bg-muted rounded flex-shrink-0"
       >
         {skill.fallback?.slice(0, 4)}
       </span>
@@ -103,7 +104,6 @@ const TechChip = ({ skill }: { skill: Skill }) => (
 
 const CategoryCard = ({ category, index }: { category: Category; index: number }) => {
   const reduce = useReducedMotion();
-  const isPrimary = category.color === "primary";
   const { Icon } = category;
 
   return (
@@ -112,22 +112,18 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
       transition={reduce ? { duration: 0 } : { duration: 0.5, delay: index * 0.08 }}
-      className="card-floating p-5 lg:p-6 flex flex-col gap-4"
+      className="card-swiss p-5 lg:p-6 flex flex-col gap-4"
     >
       {/* Card header */}
       <div className="flex items-center gap-3">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-          isPrimary ? "bg-primary/15 text-primary" : "bg-accent/15 text-accent"
-        }`}>
+        <div className="w-9 h-9 rounded-md bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
           <Icon className="w-4 h-4" />
         </div>
         <div>
           <h3 className="text-sm font-display font-bold leading-none mb-1">{category.title}</h3>
-          <div className={`h-0.5 w-6 rounded-full ${isPrimary ? "bg-primary" : "bg-accent"}`} />
+          <div className="h-0.5 w-6 rounded-full bg-primary" />
         </div>
-        <span className="ml-auto text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-          {category.skills.length}
-        </span>
+        <span className="ml-auto font-mono text-xs text-muted-foreground">{String(category.skills.length).padStart(2, "0")}</span>
       </div>
 
       {/* Skills chips grid */}
@@ -145,23 +141,13 @@ const SkillsSection = () => {
   return (
     <section className="section-container">
       <div className="section-content">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.55 }}
-          className="text-center mb-10 md:mb-14"
-        >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-            Expertise
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold mb-3">
-            Compétences
-          </h2>
-          <p className="text-base text-muted-foreground max-w-xl mx-auto">
-            Un stack moderne et polyvalent, enrichi continuellement.
-          </p>
-        </motion.div>
+        <SectionHeading
+          index="03"
+          label="Compétences"
+          title="Stack & expertise"
+          description="Un stack full-stack moderne et polyvalent, enrichi en continu au fil des projets."
+          className="mb-10 md:mb-14"
+        />
 
         {/* Tech categories grid */}
         <div className="grid sm:grid-cols-2 gap-4 lg:gap-5 mb-10 md:mb-12">

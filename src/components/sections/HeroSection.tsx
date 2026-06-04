@@ -1,6 +1,8 @@
 import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowDown, Download, Github, Linkedin, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CountUp from "@/components/motion/CountUp";
+import MagneticButton from "@/components/motion/MagneticButton";
 import developerPortrait from "@/assets/developer-portrait.png";
 
 interface HeroSectionProps {
@@ -8,10 +10,10 @@ interface HeroSectionProps {
   onNavigate: (id: string) => void;
 }
 
-const stats = [
-  { k: "Expérience", v: "3+ ans" },
-  { k: "Projets", v: "30+" },
-  { k: "Statut", v: "Freelance" },
+const stats: { k: string; to?: number; suffix?: string; text?: string }[] = [
+  { k: "Expérience", to: 3, suffix: "+ ans" },
+  { k: "Projets", to: 30, suffix: "+" },
+  { k: "Statut", text: "Freelance" },
 ];
 
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
@@ -104,36 +106,42 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             transition={{ delay: 0.45, duration: 0.5 }}
             className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start"
           >
-            <Button
-              size="lg"
-              className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 shadow-sm cursor-pointer"
-              onClick={() => onNavigate("projets")}
-            >
-              Voir mes projets
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 cursor-pointer"
-              onClick={() => onNavigate("contact")}
-            >
-              Me contacter
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 gap-2 cursor-pointer"
-              asChild
-            >
-              <a
-                href="https://drive.google.com/file/d/1qRizpZePkW1lJWCC8AgexFfZxVR_LjRY/view?usp=drive_link"
-                target="_blank"
-                rel="noopener noreferrer"
+            <MagneticButton>
+              <Button
+                size="lg"
+                className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 shadow-sm cursor-pointer"
+                onClick={() => onNavigate("projets")}
               >
-                <Download className="w-4 h-4" />
-                Mon CV
-              </a>
-            </Button>
+                Voir mes projets
+              </Button>
+            </MagneticButton>
+            <MagneticButton>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 cursor-pointer"
+                onClick={() => onNavigate("contact")}
+              >
+                Me contacter
+              </Button>
+            </MagneticButton>
+            <MagneticButton>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 gap-2 cursor-pointer"
+                asChild
+              >
+                <a
+                  href="https://drive.google.com/file/d/1qRizpZePkW1lJWCC8AgexFfZxVR_LjRY/view?usp=drive_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Download className="w-4 h-4" />
+                  Mon CV
+                </a>
+              </Button>
+            </MagneticButton>
           </motion.div>
 
           {/* Socials */}
@@ -225,12 +233,14 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
         transition={{ delay: 0.9, duration: 0.5 }}
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden sm:flex items-center gap-6 px-5 py-2.5 rounded-md bg-card/80 backdrop-blur-sm border border-border/60"
       >
-        {stats.map(({ k, v }, i) => (
+        {stats.map(({ k, to, suffix, text }, i) => (
           <div key={k} className="flex items-center gap-6">
             {i > 0 && <span className="h-6 w-px bg-border" aria-hidden="true" />}
             <div className="flex flex-col">
               <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground leading-none mb-1">{k}</span>
-              <span className="font-display text-sm font-bold leading-none">{v}</span>
+              <span className="font-display text-sm font-bold leading-none">
+                {typeof to === "number" ? <CountUp to={to} suffix={suffix} /> : text}
+              </span>
             </div>
           </div>
         ))}

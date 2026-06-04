@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { useState } from "react";
+import SectionHeading from "@/components/SectionHeading";
 
 // ── Config (env-sourced — keeps PII/endpoint out of the committed source) ──────
 // Set in `.env.local` (see .env.example):
@@ -73,23 +74,13 @@ const ContactSection = () => {
   return (
     <section className="section-container">
       <div className="section-content max-w-5xl">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.6 }}
-          className="text-center mb-10 md:mb-14"
-        >
-          <span className="inline-block px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-            Contact
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold mb-4">
-            Travaillons ensemble
-          </h2>
-          <p className="text-base text-foreground/80 max-w-xl mx-auto">
-            Un projet en tête ? Contactez-moi pour toute collaboration ou mission freelance.
-          </p>
-        </motion.div>
+        <SectionHeading
+          index="05"
+          label="Contact"
+          title="Travaillons ensemble"
+          description="Un projet en tête ? Contactez-moi pour toute collaboration ou mission freelance."
+          className="mb-10 md:mb-14"
+        />
 
         <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10">
           {/* Form — wider col */}
@@ -98,7 +89,7 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3 card-floating p-6 lg:p-8"
+            className="lg:col-span-3 card-swiss p-6 lg:p-8"
           >
             <AnimatePresence mode="wait">
               {formState === "success" ? (
@@ -230,7 +221,7 @@ const ContactSection = () => {
                     type="submit"
                     size="lg"
                     disabled={isDisabled || !consent}
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-secondary/60 disabled:text-muted-foreground glow-primary text-sm font-semibold h-12 gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-secondary/60 disabled:text-muted-foreground text-sm font-semibold h-12 gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     {formState === "loading" ? (
                       <>
@@ -262,14 +253,14 @@ const ContactSection = () => {
             className="lg:col-span-2 space-y-4"
           >
             {/* Contact items — full value stays readable on 375px */}
-            <div className="card-floating p-5 space-y-3">
+            <div className="card-swiss p-5 space-y-3">
               {contactItems.map(({ icon: Icon, label, value, href, breakClass }) => (
                 <div key={label} className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Icon className="w-4 h-4 text-primary" aria-hidden="true" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="kicker !text-[11px]">{label}</p>
                     {href ? (
                       <a
                         href={href}
@@ -286,7 +277,7 @@ const ContactSection = () => {
             </div>
 
             {/* Social links — 44px hit area, focus ring, 12px label floor */}
-            <div className="card-floating p-5">
+            <div className="card-swiss p-5">
               <h3 className="text-sm font-display font-semibold mb-3">Réseaux & Liens</h3>
               <div className="flex gap-2">
                 {socialLinks.map(({ icon: Icon, href, label }) => (
@@ -296,7 +287,7 @@ const ContactSection = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Ouvrir ${label} dans un nouvel onglet`}
-                    className="flex-1 min-h-11 flex flex-col items-center justify-center gap-1 p-3 rounded-xl bg-secondary/50 hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border border-border/50 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex-1 min-h-11 flex flex-col items-center justify-center gap-1 p-3 rounded-md bg-secondary/50 hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border border-border/50 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <Icon className="w-4 h-4" aria-hidden="true" />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-primary-foreground transition-colors truncate w-full text-center">
@@ -308,7 +299,7 @@ const ContactSection = () => {
             </div>
 
             {/* Availability — success token; dot pulse handled by the global reduced-motion guard */}
-            <div className="card-floating p-5 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+            <div className="card-swiss p-5 bg-primary/5 border-primary/30">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
                 <h3 className="text-sm font-display font-semibold">Disponible</h3>

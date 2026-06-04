@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Code, Palette, Rocket, Users } from "lucide-react";
+import SectionHeading from "@/components/SectionHeading";
 
 const AboutSection = () => {
   const reduce = useReducedMotion();
@@ -7,47 +8,35 @@ const AboutSection = () => {
     {
       icon: Code,
       title: "Clean Code",
-      description: "J'écris du code maintenable, testé et documenté.",
+      description: "Du code maintenable, lisible et documenté, pensé pour durer.",
     },
     {
       icon: Palette,
-      title: "Design",
-      description: "Je crée des interfaces élégantes et intuitives.",
+      title: "Produit",
+      description: "Des interfaces claires et utiles, au service de l'usage réel.",
     },
     {
       icon: Rocket,
       title: "Performance",
-      description: "J'optimise chaque aspect pour une expérience fluide.",
+      description: "J'optimise chaque couche pour une expérience fluide.",
     },
     {
       icon: Users,
       title: "Collaboration",
-      description: "Je travaille efficacement en équipe agile.",
+      description: "Communication directe et travail efficace en équipe.",
     },
   ];
 
   return (
     <section className="section-container">
       <div className="section-content">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.6 }}
-          className="text-center mb-8 md:mb-12 lg:mb-16"
-        >
-          <span className="inline-block px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-accent/10 text-accent text-xs sm:text-sm font-medium mb-3 sm:mb-4">
-            À propos
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4 sm:mb-6">
-            Qui suis-je ?
-          </h2>
-          <p className="text-base lg:text-lg text-foreground/80 max-w-2xl mx-auto px-2 leading-relaxed">
-            Développeur fullstack passionné par la création de solutions numériques
-            modernes et performantes. Actuellement en Licence Informatique à IT-University,
-            avec une expérience concrète en développement web et mobile.
-          </p>
-        </motion.div>
+        <SectionHeading
+          index="01"
+          label="À propos"
+          title="Qui suis-je ?"
+          description="Développeur full-stack, je conçois des applications web et mobile de bout en bout — du modèle de données jusqu'à l'interface finale."
+          className="mb-8 md:mb-12 lg:mb-16"
+        />
 
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 md:mb-12 lg:mb-16">
           <motion.div
@@ -55,21 +44,21 @@ const AboutSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="card-floating p-4 sm:p-6 lg:p-8"
+            className="card-swiss p-5 sm:p-6 lg:p-8"
           >
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mb-3 sm:mb-4">
-              Mon parcours
+            <span className="kicker">Mon parcours</span>
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mt-1.5 mb-3 sm:mb-4">
+              De la formation au terrain
             </h3>
             <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Étudiant en Licence Informatique à IT-University (2022-2025),
-              je me spécialise dans le développement fullstack. Je maîtrise
-              les langages Java, Python, PHP, C/C# ainsi que les frameworks
-              React, Spring Boot et Symfony.
+              Diplômé d'une Licence en Informatique (IT-University, 2022–2025), je me suis
+              spécialisé en développement full-stack : Java, Python, PHP, C/C#, et les frameworks
+              React, React Native, Spring Boot, Laravel et Symfony.
             </p>
             <p className="text-base text-muted-foreground leading-relaxed">
-              Mon expérience chez Konecta Madagascar m'a permis de travailler
-              sur des projets concrets de digitalisation, avec des technologies
-              comme React, PHP et MySQL.
+              Depuis, j'enchaîne les missions concrètes : digitalisation du transport du personnel
+              chez Konecta, plateforme SaaS scolaire chez Levitation, et aujourd'hui développement
+              web &amp; mobile en freelance pour une marque de cosmétiques.
             </p>
           </motion.div>
 
@@ -78,20 +67,19 @@ const AboutSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
-            className="card-floating p-4 sm:p-6 lg:p-8"
+            className="card-swiss p-5 sm:p-6 lg:p-8"
           >
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mb-3 sm:mb-4">
-              Ma philosophie
+            <span className="kicker">Ma philosophie</span>
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mt-1.5 mb-3 sm:mb-4">
+              Simple, solide, livré
             </h3>
             <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">
-              Je crois en des solutions simples, efficaces et bien architecturées.
-              Mon objectif est de concevoir des applications robustes qui répondent
-              précisément aux besoins métier tout en restant maintenables.
+              Je crois aux solutions simples et bien architecturées, qui répondent précisément au
+              besoin métier plutôt qu'à la tendance du moment — et qui restent maintenables dans le temps.
             </p>
             <p className="text-base text-muted-foreground leading-relaxed">
-              Je suis également passionné par les nouvelles technologies, notamment
-              l'IA générative (certification Google Cloud en cours), et je cherche
-              constamment à améliorer mes compétences.
+              Curieux des nouvelles technologies, notamment l'IA générative (certifié Google Cloud),
+              je cherche à affiner ma pratique et à livrer des produits fiables, du premier commit à la production.
             </p>
           </motion.div>
         </div>
@@ -104,10 +92,13 @@ const AboutSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.1 * index }}
-              className="group p-3 sm:p-4 lg:p-6 rounded-xl lg:rounded-2xl bg-secondary/50 hover:bg-secondary border border-border/50 transition-colors duration-300"
+              className="group card-swiss p-3 sm:p-4 lg:p-6"
             >
-              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl bg-primary/10 flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 group-hover:bg-primary transition-colors duration-300">
-                <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-primary group-hover:text-primary-foreground transition-colors" aria-hidden="true" />
+              <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors duration-300">
+                  <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-primary group-hover:text-primary-foreground transition-colors" aria-hidden="true" />
+                </div>
+                <span className="font-mono text-[11px] text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
               </div>
               <h4 className="text-sm sm:text-base lg:text-lg font-display font-semibold mb-1 sm:mb-2">{title}</h4>
               <p className="text-sm text-muted-foreground line-clamp-3">{description}</p>

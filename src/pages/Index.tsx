@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import LoadingScreen from "@/components/LoadingScreen";
+import ScrollProgress from "@/components/motion/ScrollProgress";
 
 const HeroSection = lazy(() => import("@/components/sections/HeroSection"));
 const AboutSection = lazy(() => import("@/components/sections/AboutSection"));
@@ -73,6 +74,7 @@ const Index = () => {
 
   return (
     <div className="bg-background">
+      <ScrollProgress />
       <Navigation
         currentSection={currentSection}
         totalSections={sections.length}

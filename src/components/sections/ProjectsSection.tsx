@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Github, Globe, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucide-react";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
+import SectionHeading from "@/components/SectionHeading";
 
 // ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
 // Descriptions volontairement factuelles et discrètes : on décrit la contribution
@@ -455,20 +456,18 @@ const ProjectsSection = () => {
     <section className="section-container">
       <div className="section-content">
         {/* Header */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.55 }}
+        <SectionHeading
+          index="04"
+          label="Portfolio"
+          title="Projets sélectionnés"
+          description={
+            <>
+              Travaux clients et missions professionnelles. L'archive académique
+              (<span className="font-mono text-sm">{academicProjects.length}</span> projets) est consultable à la demande.
+            </>
+          }
           className="mb-10 md:mb-12"
-        >
-          <span className="kicker !text-primary">04 — Portfolio</span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold mt-2 mb-3">Projets sélectionnés</h2>
-          <p className="text-base text-muted-foreground max-w-xl">
-            Travaux clients et missions professionnelles. L'archive académique
-            (<span className="font-mono text-sm">{academicProjects.length}</span> projets) est consultable à la demande.
-          </p>
-        </motion.div>
+        />
 
         {/* ── Projets professionnels — carousel horizontal ── */}
         <motion.div
