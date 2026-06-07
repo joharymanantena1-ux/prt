@@ -35,19 +35,17 @@ const ContactSection = () => {
     try {
       if (!GOOGLE_SCRIPT_URL) throw new Error("Endpoint de contact non configuré.");
 
-      // Real round-trip (NO no-cors): we validate the actual response instead of
-      // assuming success. `text/plain` is a "simple request" → no CORS preflight,
-      // so the response stays readable for Apps Script-style endpoints.
-      const res = await fetch(GOOGLE_SCRIPT_URL, {
+      // Apps Script ne renvoie pas d'en-tête Access-Control-Allow-Origin, donc une
+      // requête CORS "lisible" est bloquée par le navigateur. `no-cors` laisse le
+      // POST aboutir (le mail part bien) au prix d'une réponse opaque, illisible.
+      // On ne peut donc pas valider le corps : l'absence d'erreur réseau = succès.
+      // `text/plain` reste une "simple request" → aucun preflight OPTIONS.
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(formData),
       });
-      if (!res.ok) throw new Error(`Statut ${res.status}`);
-      // Require a positively-parsed success — a 200 with a non-JSON / empty /
-      // result-less body must NOT be treated as a confirmed send.
-      const data = await res.json().catch(() => null);
-      if (!data || data.result !== "success") throw new Error("Réponse inattendue du serveur.");
 
       setFormState("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
