@@ -35,16 +35,16 @@ const ContactSection = () => {
     try {
       if (!GOOGLE_SCRIPT_URL) throw new Error("Endpoint de contact non configuré.");
 
-      // Apps Script ne renvoie pas d'en-tête Access-Control-Allow-Origin, donc une
-      // requête CORS "lisible" est bloquée par le navigateur. `no-cors` laisse le
-      // POST aboutir (le mail part bien) au prix d'une réponse opaque, illisible.
-      // On ne peut donc pas valider le corps : l'absence d'erreur réseau = succès.
-      // `text/plain` reste une "simple request" → aucun preflight OPTIONS.
+      // Apps Script ne renvoie pas d'en-tête Access-Control-Allow-Origin → on poste
+      // en `no-cors` (réponse opaque, le mail part quand même). On envoie en
+      // form-urlencoded (URLSearchParams) plutôt qu'en JSON : c'est une "simple
+      // request" qui suit correctement la redirection 302 de Google en no-cors,
+      // là où un body JSON/text-plain pouvait être perdu. Le script Apps Script
+      // lit alors `e.parameter`. Sans réponse lisible, succès = pas d'erreur réseau.
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(formData),
+        body: new URLSearchParams(formData),
       });
 
       setFormState("success");
