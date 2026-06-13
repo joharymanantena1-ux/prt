@@ -42,18 +42,6 @@ const experiences: ExpItem[] = [
     result: { fr: "Plateforme livrée en production – edu.levitation.mg", en: "Platform shipped to production – edu.levitation.mg" },
   },
   {
-    title: { fr: "Développeur Web Freelance", en: "Freelance Web Developer" },
-    company: "Loca & Deco",
-    period: { fr: "Nov 2025 – Fév 2026", en: "Nov 2025 – Feb 2026" },
-    current: false,
-    description: {
-      fr: "Développement d'un site de location événementielle avec back-office de gestion des stocks, catalogue produits et optimisation de l'expérience utilisateur.",
-      en: "Development of an event-rental website with a stock-management back office, product catalogue and UX optimisation.",
-    },
-    technologies: ["Spring Boot", "ReactJS", "MySQL"],
-    result: { fr: "Livré avec réduction du temps de gestion stock de 60%", en: "Delivered with a 60% cut in stock-management time" },
-  },
-  {
     title: { fr: "Application Logistique & Transport", en: "Logistics & Transport App" },
     company: "Konecta Madagascar",
     period: { fr: "Sep – Déc 2025", en: "Sep – Dec 2025" },
@@ -79,14 +67,15 @@ const education: ExpItem[] = [
     highlight: { fr: "Diplômé", en: "Graduated" },
   },
   {
-    title: "Gen AI Skills Certification",
+    title: { fr: "Parcours IA Générative", en: "Generative AI Track" },
     school: "Google Cloud Skill Boost",
-    period: { fr: "Fév 2025", en: "Feb 2025" },
+    period: { fr: "En cours", en: "Ongoing" },
+    current: true,
     description: {
-      fr: "Certification en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d'IA dans des applications métier.",
-      en: "Generative AI certification — prompting, language models, integrating AI into business applications.",
+      fr: "Formation en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d'IA dans des applications métier.",
+      en: "Generative AI training — prompting, language models, integrating AI into business applications.",
     },
-    highlight: { fr: "Certifié Google Cloud", en: "Google Cloud certified" },
+    highlight: { fr: "Google Cloud", en: "Google Cloud" },
   },
   {
     title: { fr: "Baccalauréat Série D", en: "High-School Diploma (Sciences)" },
