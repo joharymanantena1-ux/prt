@@ -5,6 +5,7 @@ import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import SectionHeading from "@/components/SectionHeading";
 import { useT, tx, type Bi, type Lang } from "@/i18n";
+import { PROJECT_LOGOS, PROJECT_COLORS, hueFromString } from "@/data/projectLogos";
 
 interface Project {
   title: string;
@@ -37,6 +38,15 @@ const professionalProjects: Project[] = [
     category: "E-commerce",
   },
   {
+    title: "The Cool Republic",
+    description: {
+      fr: "Automatisation Python de l'import des données produits designers vers la boutique Shopify (mobilier & décoration) : mapping des catalogues, base de données et export CSV.",
+      en: "Python automation for importing designer product data into the Shopify store (furniture & decor): catalogue mapping, database and CSV export.",
+    },
+    technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
+    category: "Automation",
+  },
+  {
     title: "Musier Paris",
     description: {
       fr: "Intégration et finitions frontend d'une boutique e-commerce Shopify : composants de thème, responsive et ajustements visuels.",
@@ -44,6 +54,26 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Shopify", "Liquid", "JavaScript"],
     category: "E-commerce",
+  },
+  {
+    title: "OTA Server",
+    description: {
+      fr: "Serveur de mises à jour OTA (Over-The-Air) : distribution de firmwares/builds, API Node.js TypeScript et infrastructure cloud sur AWS.",
+      en: "Over-The-Air (OTA) update server: firmware/build distribution, a Node.js TypeScript API and cloud infrastructure on AWS.",
+    },
+    technologies: ["TypeScript", "Node.js", "AWS", "Cloud"],
+    category: "Cloud",
+    githubUrl: "https://github.com/johary1-ux/OTA-Server",
+  },
+  {
+    title: "Test Technique Biloki",
+    description: {
+      fr: "Test technique — application de gestion de stock : suivi des produits, mouvements d'entrée/sortie et tableau de bord.",
+      en: "Technical test — stock-management app: product tracking, in/out movements and a dashboard.",
+    },
+    technologies: ["TypeScript", "React", "Node.js"],
+    category: "Gestion",
+    githubUrl: "https://github.com/johary1-ux/ges-test",
   },
   {
     title: "bank-file-converter",
@@ -84,16 +114,6 @@ const professionalProjects: Project[] = [
     technologies: ["TypeScript", "React", "MySQL", "OSRM"],
     category: "Entreprise",
     githubUrl: "https://github.com/joharymanantena1-ux/Projet-de-Stage",
-  },
-  {
-    title: "Shopify Data Automation",
-    description: {
-      fr: "Script Python d'automatisation pour l'import/export de données designers vers Shopify, avec base de données et export CSV.",
-      en: "Python automation script for importing/exporting designer data to Shopify, with a database and CSV export.",
-    },
-    technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
-    category: "Automation",
-    githubUrl: "https://github.com/joharymanantena1-ux/script-bash-shopify",
   },
   {
     title: "ERPNext Migration",
@@ -176,6 +196,59 @@ const getMonogram = (title: string) => {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+// Resolve a project's brand accent: explicit colour, else a stable hue from title.
+const projectAccent = (title: string): string =>
+  PROJECT_COLORS[title] ?? `hsl(${hueFromString(title)} 70% 55%)`;
+
+// Full-bleed logo header. The logo sits on its own native brand background
+// (white / black / brand colour), so dark logos never get a jarring white box.
+// `object-contain` keeps every logo's aspect ratio. Projects without a mapped
+// logo fall back to a big monogram on a brand-tinted backdrop. The category +
+// index overlay the artwork with a top scrim so they stay readable on any bg.
+const ProjectLogoHeader = ({ project, index }: { project: Project; index: number }) => {
+  const { lang } = useT();
+  const logo = PROJECT_LOGOS[project.title];
+  const accent = projectAccent(project.title);
+  const lightBg = logo ? ["#ffffff", "#fff"].includes(logo.bg.toLowerCase()) : false;
+  // Meta text colour adapts to the backdrop for contrast.
+  const metaClass = lightBg ? "text-foreground/55" : "text-white/75";
+
+  return (
+    <div
+      className="relative h-32 w-full overflow-hidden flex items-center justify-center"
+      style={logo ? { backgroundColor: logo.bg } : { background: `linear-gradient(135deg, ${accent}, ${accent}bb)` }}
+    >
+      {/* Top scrim so the meta row reads on busy/dark/light artwork alike */}
+      <div
+        aria-hidden="true"
+        className={`absolute inset-x-0 top-0 h-12 ${lightBg ? "bg-gradient-to-b from-black/[0.04] to-transparent" : "bg-gradient-to-b from-black/25 to-transparent"}`}
+      />
+      <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 py-2.5">
+        <span className={`font-mono text-[11px] uppercase tracking-wider ${metaClass}`}>
+          {catLabel(project.category, lang)}
+        </span>
+        <span className={`font-mono text-[11px] ${metaClass}`}>№{pad(index + 1)}</span>
+      </div>
+
+      {logo ? (
+        <img
+          src={logo.src}
+          alt={`Logo ${project.title}`}
+          // Padded logos (baked-in transparent margin) display larger to compensate.
+          className={`object-contain ${logo.padded ? "max-h-[80%] max-w-[88%]" : "max-h-[52%] max-w-[70%]"}`}
+          loading="lazy"
+          draggable={false}
+        />
+      ) : (
+        // No logo → just the big ghost monogram on the brand-tinted backdrop.
+        <span aria-hidden="true" className="absolute -bottom-6 -right-2 font-display font-black text-[8rem] leading-none text-white/15 select-none">
+          {getMonogram(project.title)}
+        </span>
+      )}
+    </div>
+  );
+};
+
 const IconLink = ({
   href,
   label,
@@ -234,26 +307,16 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       initial={reduce ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
-      className="flex-shrink-0 w-[280px] sm:w-[320px] card-swiss overflow-hidden group flex flex-col"
+      className="flex-shrink-0 w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col"
     >
-      <div className="relative h-28 border-b border-border bg-secondary/40 overflow-hidden px-4 py-3 flex flex-col justify-between">
-        <div className="absolute inset-0 grid-bg opacity-40" aria-hidden="true" />
-        <span
-          aria-hidden="true"
-          className="absolute -right-1 -bottom-5 font-display font-bold text-[5.5rem] leading-none text-foreground/[0.06] select-none"
-        >
-          {getMonogram(project.title)}
-        </span>
-        <div className="relative flex items-center justify-between">
-          <CategoryTag category={project.category} accent />
-          <span className="font-mono text-[11px] text-muted-foreground">№{pad(index + 1)}</span>
-        </div>
-        <span className="relative font-mono text-xs text-muted-foreground">~/work/{getMonogram(project.title).toLowerCase()}</span>
+      {/* Full-bleed logo header — logo sits on its own brand background */}
+      <div className="relative border-b border-border">
+        <ProjectLogoHeader project={project} index={index} />
       </div>
 
-      <div className="p-4 flex flex-col gap-3 flex-1">
+      <div className="p-5 flex flex-col gap-3.5 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-base font-display font-semibold leading-snug line-clamp-1">{project.title}</h3>
+          <h3 className="text-lg font-display font-semibold leading-snug line-clamp-2">{project.title}</h3>
           <div className="flex gap-0.5 flex-shrink-0 -mr-2 -mt-1">
             {project.githubUrl && (
               <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
@@ -267,10 +330,10 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
             )}
           </div>
         </div>
-        <p className="text-sm text-muted-foreground dark:text-foreground/80 line-clamp-3 leading-relaxed flex-1">
+        <p className="text-sm sm:text-[0.95rem] text-muted-foreground dark:text-foreground/80 line-clamp-4 leading-relaxed flex-1">
           {tx(project.description, lang)}
         </p>
-        <TechTags technologies={project.technologies} />
+        <TechTags technologies={project.technologies} max={5} />
       </div>
     </motion.article>
   );
@@ -338,7 +401,9 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
   }, []);
 
   const scrollByCards = useCallback((dir: 1 | -1) => {
-    scrollRef.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
+    // One card width + gap (cards are ~380–400px on ≥sm, narrower on mobile).
+    const step = scrollRef.current?.querySelector("article")?.clientWidth ?? 380;
+    scrollRef.current?.scrollBy({ left: dir * (step + 16), behavior: "smooth" });
   }, []);
 
   const onKeyDown = useCallback(
