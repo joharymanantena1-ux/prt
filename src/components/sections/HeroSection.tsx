@@ -135,7 +135,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 asChild
               >
                 <a
-                  href="https://drive.google.com/file/d/1qRizpZePkW1lJWCC8AgexFfZxVR_LjRY/view?usp=drive_link"
+                  href="https://drive.google.com/file/d/1TW1OODP6uhMU2yf7uOci1v-cVwj3qxhh/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
