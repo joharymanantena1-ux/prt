@@ -1,3 +1,23 @@
+# ── Security headers (applied to every route) ───────────────────────────────
+/*
+  # Block clickjacking — the site must never be framed by another origin.
+  X-Frame-Options: DENY
+  # Stop browsers from MIME-sniffing a response away from its declared type.
+  X-Content-Type-Options: nosniff
+  # Don't leak full URLs to third parties; send only the origin cross-site.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Drop access to powerful APIs the site never uses.
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  # Force HTTPS for 2 years (incl. subdomains). Safe once the prod domain is HTTPS-only.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  # Content-Security-Policy — whitelists exactly the origins the app talks to:
+  #   - Google Fonts (CSS + font files)
+  #   - Google Analytics / Tag Manager (gtag)
+  #   - Google Apps Script (contact form POST → script.google.com + googleusercontent.com redirect)
+  # 'unsafe-inline' on script/style is required by Vite's injected styles and the
+  # inline gtag bootstrap in index.html; tighten to nonces/hashes if those are removed.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+
 # Hashed build assets are immutable — cache hard for 1 year.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

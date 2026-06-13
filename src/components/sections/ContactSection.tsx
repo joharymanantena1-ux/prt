@@ -26,10 +26,17 @@ const ContactSection = () => {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [consent, setConsent] = useState(false);
   const [formState, setFormState] = useState<FormState>("idle");
+  // Honeypot — invisible to humans; if a bot fills it, we silently drop the submit.
+  const [honeypot, setHoneypot] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!consent) return;
+    // Bot caught by the honeypot → fake a success, send nothing.
+    if (honeypot) {
+      setFormState("success");
+      return;
+    }
     setFormState("loading");
 
     try {
@@ -115,6 +122,17 @@ const ContactSection = () => {
                   onSubmit={handleSubmit}
                   className="space-y-5"
                 >
+                  {/* Honeypot — off-screen & hidden from AT; only bots fill it. */}
+                  <input
+                    type="text"
+                    name="company"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                  />
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
@@ -128,6 +146,7 @@ const ContactSection = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
+                        maxLength={100}
                         disabled={isDisabled}
                         className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
                       />
@@ -145,6 +164,7 @@ const ContactSection = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         required
+                        maxLength={150}
                         disabled={isDisabled}
                         className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
                       />
@@ -162,6 +182,7 @@ const ContactSection = () => {
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                       required
+                      maxLength={150}
                       disabled={isDisabled}
                       className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
                     />
@@ -179,6 +200,7 @@ const ContactSection = () => {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       required
+                      maxLength={3000}
                       disabled={isDisabled}
                       className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring resize-none text-sm"
                     />
