@@ -14,9 +14,10 @@
   #   - Google Fonts (CSS + font files)
   #   - Google Analytics / Tag Manager (gtag)
   #   - Google Apps Script (contact form POST → script.google.com + googleusercontent.com redirect)
+  #   - Netlify RUM (*.nsvcs.net) — Real User Metrics beacon from Netlify Analytics
   # 'unsafe-inline' on script/style is required by Vite's injected styles and the
   # inline gtag bootstrap in index.html; tighten to nonces/hashes if those are removed.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://www.google-analytics.com https://www.googletagmanager.com https://*.nsvcs.net; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 # Hashed build assets are immutable — cache hard for 1 year.
 /assets/*
