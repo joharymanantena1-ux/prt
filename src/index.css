@@ -247,6 +247,25 @@
   50%      { transform: scale(1.018); }
 }
 
+@keyframes loader-letter {
+  /* each name letter rises into place */
+  from { opacity: 0; transform: translateY(0.5em); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  /* row is duplicated; shifting by -50% loops seamlessly */
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Custom cursor active (fine-pointer desktop only) — hide the native cursor
+   everywhere so the bespoke dot+ring replaces it. */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none !important;
+}
+
 /* prefers-reduced-motion — global catch-all (covers CSS + Framer's CSS-driven animations) */
 @media (prefers-reduced-motion: reduce) {
   html {

@@ -20,7 +20,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   // ── Eased progress 0→100, then fade out and hand off ─────────────────────────
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const duration = reduce ? 600 : 6000;
+    const duration = reduce ? 500 : 2500;
     let startTs = 0;
 
     const tick = (ts: number) => {
@@ -215,12 +215,26 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         </div>
       </div>
 
-      {/* L3 — minimal text + percentage readout */}
-      <div className="relative z-10 flex flex-col items-center gap-2 animate-[loader-in_.7s_cubic-bezier(.22,.61,.36,1)_both]">
-        <p className="text-sm md:text-base text-muted-foreground font-medium uppercase tracking-[0.3em]">
-          Développeur Full-Stack
+      {/* L3 — name composing letter-by-letter + percentage readout */}
+      <div className="relative z-10 flex flex-col items-center gap-2.5 animate-[loader-in_.7s_cubic-bezier(.22,.61,.36,1)_both]">
+        <p
+          className="text-base md:text-lg font-display font-semibold tracking-[0.18em] uppercase"
+          aria-label="Johary Manantena"
+        >
+          {"Johary Manantena".split("").map((ch, i) => (
+            <span
+              key={i}
+              aria-hidden="true"
+              className="inline-block animate-[loader-letter_.5s_cubic-bezier(.22,.61,.36,1)_both]"
+              style={{ animationDelay: `${0.3 + i * 0.05}s`, whiteSpace: "pre" }}
+            >
+              {ch}
+            </span>
+          ))}
         </p>
-        <p className="text-sm text-foreground/80 font-semibold tabular-nums tracking-[0.25em]">{progress}%</p>
+        <p className="text-xs text-muted-foreground font-medium tabular-nums tracking-[0.3em]">
+          {progress}% · DÉVELOPPEUR FULL-STACK
+        </p>
       </div>
     </div>
   );
