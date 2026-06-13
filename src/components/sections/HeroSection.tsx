@@ -3,6 +3,9 @@ import { ArrowDown, Download, Github, Linkedin, Mail, Globe } from "lucide-react
 import { Button } from "@/components/ui/button";
 import CountUp from "@/components/motion/CountUp";
 import MagneticButton from "@/components/motion/MagneticButton";
+import RevealText from "@/components/motion/RevealText";
+import Parallax from "@/components/motion/Parallax";
+import MorphingRoles from "@/components/motion/MorphingRoles";
 import { useT } from "@/i18n";
 import developerPortraitAvif from "@/assets/developer-portrait.avif";
 import developerPortraitWebp from "@/assets/developer-portrait.webp";
@@ -69,7 +72,9 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             transition={{ delay: 0.15, duration: 0.5 }}
             className="flex items-center gap-3 justify-center lg:justify-start"
           >
-            <span className="kicker !text-primary">{t("hero.role")}</span>
+            <span className="kicker !text-primary inline-flex items-center gap-1.5">
+              <MorphingRoles items={["Full-Stack", "React", "Node.js", "TypeScript", "Mobile"]} />
+            </span>
             <span className="h-px w-8 bg-border hidden sm:block" aria-hidden="true" />
             <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
@@ -92,14 +97,14 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             </h1>
           </motion.div>
 
-          <motion.p
-            initial={reduce ? false : { opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.5 }}
+          <RevealText
+            text={t("hero.lead")}
+            as="p"
+            trigger="mount"
+            delay={0.4}
+            stagger={0.025}
             className="text-base text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed"
-          >
-            {t("hero.lead")}
-          </motion.p>
+          />
 
           {/* CTAs */}
           <motion.div
@@ -178,13 +183,15 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           onMouseLeave={handleMouseLeave}
         >
           <div className="relative w-72 sm:w-80 md:w-[340px] lg:w-[380px]">
-            {/* offset registration frame behind */}
-            <div className="absolute -left-3 -top-3 -right-3 -bottom-3 border border-border rounded-md pointer-events-none" aria-hidden="true" />
-            {/* corner ticks (primary) */}
-            <span className="absolute -left-3 -top-3 w-4 h-4 border-l-2 border-t-2 border-primary" aria-hidden="true" />
-            <span className="absolute -right-3 -top-3 w-4 h-4 border-r-2 border-t-2 border-primary" aria-hidden="true" />
-            <span className="absolute -left-3 -bottom-3 w-4 h-4 border-l-2 border-b-2 border-primary" aria-hidden="true" />
-            <span className="absolute -right-3 -bottom-3 w-4 h-4 border-r-2 border-b-2 border-primary" aria-hidden="true" />
+            {/* Decorative frame + corner ticks — drift on scroll for depth (parallax).
+                Kept separate from the portrait so it never conflicts with the 3D tilt. */}
+            <Parallax speed={22} className="absolute -left-3 -top-3 -right-3 -bottom-3 pointer-events-none">
+              <div className="absolute inset-0 border border-border rounded-md" aria-hidden="true" />
+              <span className="absolute left-0 top-0 w-4 h-4 border-l-2 border-t-2 border-primary" aria-hidden="true" />
+              <span className="absolute right-0 top-0 w-4 h-4 border-r-2 border-t-2 border-primary" aria-hidden="true" />
+              <span className="absolute left-0 bottom-0 w-4 h-4 border-l-2 border-b-2 border-primary" aria-hidden="true" />
+              <span className="absolute right-0 bottom-0 w-4 h-4 border-r-2 border-b-2 border-primary" aria-hidden="true" />
+            </Parallax>
 
             {/* tilt + float container */}
             <motion.div

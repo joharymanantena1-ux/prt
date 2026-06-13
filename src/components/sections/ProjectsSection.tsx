@@ -235,7 +235,8 @@ const ProjectLogoHeader = ({ project, index }: { project: Project; index: number
           src={logo.src}
           alt={`Logo ${project.title}`}
           // Padded logos (baked-in transparent margin) display larger to compensate.
-          className={`object-contain ${logo.padded ? "max-h-[80%] max-w-[88%]" : "max-h-[52%] max-w-[70%]"}`}
+          // Subtle zoom on card hover (transform-only); skipped under reduced-motion.
+          className={`object-contain transition-transform duration-500 ease-out group-hover:scale-[1.07] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${logo.padded ? "max-h-[80%] max-w-[88%]" : "max-h-[52%] max-w-[70%]"}`}
           loading="lazy"
           draggable={false}
         />
@@ -307,7 +308,9 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       initial={reduce ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
-      className="flex-shrink-0 w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col"
+      // Halo glow + subtle lift on hover — transform/shadow only (GPU-cheap),
+      // motion-reduce drops the lift. The shadow uses the teal primary token.
+      className="flex-shrink-0 w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.35)] hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
     >
       {/* Full-bleed logo header — logo sits on its own brand background */}
       <div className="relative border-b border-border">
@@ -345,10 +348,13 @@ const AcademicCard = ({ project, index }: { project: Project; index: number }) =
   const { t, lang } = useT();
   return (
     <motion.article
-      initial={reduce ? false : { opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={reduce ? { duration: 0 } : { duration: 0.3, delay: (index % 12) * 0.03 }}
-      className="card-swiss p-3.5 flex flex-col gap-2 group"
+      layout={!reduce}
+      initial={reduce ? false : { opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+      transition={reduce ? { duration: 0 } : { duration: 0.3, delay: (index % 12) * 0.02, layout: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
+      style={{ transition: "box-shadow .3s, border-color .3s" }}
+      className="card-swiss p-3.5 flex flex-col gap-2 group hover:border-primary/40 hover:shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.3)]"
     >
       <div className="flex items-center justify-between">
         <CategoryTag category={project.category} accent />
@@ -520,20 +526,15 @@ const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mx-1 px-1 pb-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeFilter}
-                initial={reduce ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={reduce ? { opacity: 1 } : { opacity: 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.18 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"
-              >
+            {/* Fluid layout: cards keep stable keys and animate their position when the
+                filter changes (magic-move) instead of a wholesale fade. */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+              <AnimatePresence mode="popLayout">
                 {filtered.map((project, index) => (
                   <AcademicCard key={project.title} project={project} index={index} />
                 ))}
-              </motion.div>
-            </AnimatePresence>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </DrawerContent>

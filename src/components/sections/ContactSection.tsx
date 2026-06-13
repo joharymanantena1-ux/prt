@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
+import MagneticButton from "@/components/motion/MagneticButton";
 import { useT } from "@/i18n";
 
 // ── Config (env-sourced — keeps PII/endpoint out of the committed source) ──────
@@ -238,6 +239,7 @@ const ContactSection = () => {
                     )}
                   </div>
 
+                  <MagneticButton strength={0.2} className="!block w-full">
                   <Button
                     type="submit"
                     size="lg"
@@ -260,6 +262,7 @@ const ContactSection = () => {
                       </>
                     )}
                   </Button>
+                  </MagneticButton>
                 </motion.form>
               )}
             </AnimatePresence>

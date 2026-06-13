@@ -1,8 +1,16 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Monitor, Server, Database, Terminal, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
+import Marquee from "@/components/motion/Marquee";
 import { useT, tx, type Bi } from "@/i18n";
 import { techIcons } from "@/data/techIcons";
+
+// Flat tech list for the scrolling ticker at the bottom of the section.
+const MARQUEE_TECH = [
+  "React", "TypeScript", "Node.js", "React Native", "Laravel", "Spring Boot",
+  "Python", "Vue.js", "Angular", "Symfony", "Django", "Flutter",
+  "MySQL", "PostgreSQL", "Docker", "GraphQL", "Tailwind CSS", "AWS",
+];
 
 interface Skill {
   name: string;
@@ -197,6 +205,9 @@ const SkillsSection = () => {
             ))}
           </div>
         </motion.div>
+
+        {/* Tech ticker — seamless scrolling strip */}
+        <Marquee items={MARQUEE_TECH} speed={34} className="mt-10 md:mt-12 py-4 border-y border-border/50" />
       </div>
     </section>
   );

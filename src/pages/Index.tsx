@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import LoadingScreen from "@/components/LoadingScreen";
 import ScrollProgress from "@/components/motion/ScrollProgress";
@@ -28,6 +29,7 @@ const sections = [
 
 const Index = () => {
   const { t } = useT();
+  const reduce = useReducedMotion();
   const [isLoading, setIsLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
   const sectionNames = sections.map((s) => t(s.navKey));
@@ -86,11 +88,22 @@ const Index = () => {
       />
 
       {sections.map(({ id, component: Component }) => (
-        <div id={id} key={id} className="scroll-section">
+        <motion.div
+          id={id}
+          key={id}
+          className="scroll-section"
+          // Soft cross-section transition: a light fade/rise as each section
+          // enters. once:true so it never re-fades on scroll-back, and the range
+          // stays subtle to avoid clashing with each section's own entrance anims.
+          initial={reduce ? false : { opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
           <Suspense fallback={<SectionLoader />}>
             <Component onNavigate={goToId} />
           </Suspense>
-        </div>
+        </motion.div>
       ))}
 
       {/* Mobile dots — navigate on click only, never auto-trigger. 44px hit area, FR labels. */}

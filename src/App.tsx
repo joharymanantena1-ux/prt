@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CookieConsent from "@/components/CookieConsent";
+import CustomCursor from "@/components/motion/CustomCursor";
 import { LanguageProvider } from "@/i18n";
 
 const App = () => (
@@ -16,6 +17,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
       <CookieConsent />
+      <CustomCursor />
     </TooltipProvider>
   </LanguageProvider>
 );
