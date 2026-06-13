@@ -204,7 +204,9 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                     width={380}
                     height={580}
                     decoding="async"
-                    fetchPriority="high"
+                    // React 18 doesn't map camelCase `fetchPriority`; pass the lowercase
+                    // DOM attribute directly to keep the priority hint without the warning.
+                    {...{ fetchpriority: "high" }}
                     className="w-full h-full object-cover object-center"
                   />
                 </picture>
