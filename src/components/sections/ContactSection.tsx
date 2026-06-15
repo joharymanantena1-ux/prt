@@ -9,15 +9,14 @@ import SectionHeading from "@/components/SectionHeading";
 import MagneticButton from "@/components/motion/MagneticButton";
 import { useT } from "@/i18n";
 
-// ── Config (env-sourced — keeps PII/endpoint out of the committed source) ──────
-// Set in `.env.local` (see .env.example):
-//   VITE_CONTACT_EMAIL, VITE_CONTACT_PHONE, VITE_GOOGLE_SCRIPT_URL
-// The endpoint must accept a POST and return JSON ({ result: "success" }).
+// ── Config ─────────────────────────────────────────────────────────────────
+// Display values come from env (see .env.example). The form submits to a
+// same-origin Netlify function (netlify/functions/contact) which relays to
+// Apps Script server-side — the actual endpoint URL lives in the Netlify env
+// var GOOGLE_SCRIPT_URL, never in the client bundle.
 const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL ?? "andrianmanantena@gmail.com";
 const CONTACT_PHONE = import.meta.env.VITE_CONTACT_PHONE ?? "+261 38 46 090 25";
-const GOOGLE_SCRIPT_URL =
-  import.meta.env.VITE_GOOGLE_SCRIPT_URL ??
-  "https://script.google.com/macros/s/AKfycbzkNL3UIxlgjYhXk2RcLfHBcTjRNlYxJPUwA2EjKHuNTL4d2H3yzQc8EgQ5HyLG1hHJ/exec";
+const CONTACT_ENDPOINT = "/.netlify/functions/contact";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
@@ -33,27 +32,22 @@ const ContactSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!consent) return;
-    // Bot caught by the honeypot → fake a success, send nothing.
-    if (honeypot) {
-      setFormState("success");
-      return;
-    }
     setFormState("loading");
 
     try {
-      if (!GOOGLE_SCRIPT_URL) throw new Error("Endpoint de contact non configuré.");
-
-      // Apps Script n'expose pas d'en-tête CORS → on poste en `no-cors` (réponse
-      // opaque, le mail part quand même). On envoie le corps en JSON avec un
-      // Content-Type `text/plain` : c'est une "simple request" (pas de préflight
-      // CORS) dont le body survit à la redirection 302 de Google, là où un
-      // form-urlencoded pouvait être perdu. Le script lit `e.postData.contents`.
-      await fetch(GOOGLE_SCRIPT_URL, {
+      // Same-origin POST to our Netlify function proxy → no CORS, no `no-cors`.
+      // The function relays to Apps Script server-side and returns the REAL
+      // result, so a success here means the e-mail actually went out.
+      const res = await fetch(CONTACT_ENDPOINT, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, company: honeypot }),
       });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || data.result !== "success") {
+        throw new Error(data?.reason || `HTTP ${res.status}`);
+      }
 
       setFormState("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
