@@ -26,7 +26,7 @@ export const en: typeof import("./fr").fr = {
     lead: "I design and build modern web & mobile applications — from backend architecture to the final interface.",
     ctaProjects: "View my work",
     ctaContact: "Get in touch",
-    ctaCV: "My résumé",
+    ctaCV: "My resume",
     statExp: "Experience",
     statExpSuffix: "+ yrs",
     statProjects: "Projects",
