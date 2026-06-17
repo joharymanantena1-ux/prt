@@ -29,6 +29,15 @@ const professionalProjects: Project[] = [
     category: "Web & Mobile",
   },
   {
+    title: "Paul Beuscher",
+    description: {
+      fr: "Boutique Shopify : refonte des emails transactionnels (Liquid) aux couleurs de la marque, et script Python de détection/nettoyage des produits en doublon via l'API Admin Shopify.",
+      en: "Shopify store: redesign of transactional emails (Liquid) in the brand's colours, and a Python script to detect and clean up duplicate products via the Admin API.",
+    },
+    technologies: ["Shopify", "Liquid", "Python", "Shopify API"],
+    category: "E-commerce",
+  },
+  {
     title: "fingerinthenose.com",
     description: {
       fr: "Reprise et correction de l'intégration frontend d'une boutique Shopify : ajustements du thème (Liquid), responsive et fidélité au design existant.",

@@ -19,6 +19,7 @@ import erpnext from "@/assets/erpnext_official_logo.jpeg";
 import odoo from "@/assets/odoo.svg";
 import fingerinthenose from "@/assets/fingerinthenose.png";
 import musierparis from "@/assets/musierparis.webp";
+import paulbeuscher from "@/assets/paulbeaucher.png";
 
 export interface LogoConfig {
   src: string;
@@ -29,6 +30,7 @@ export interface LogoConfig {
 // Map: exact project title → logo config. Titles must match ProjectsSection data.
 export const PROJECT_LOGOS: Record<string, LogoConfig> = {
   "BeautyBay – Web & Mobile": { src: beautybay, bg: "#ffffff" },
+  "Paul Beuscher": { src: paulbeuscher, bg: "#e8341c" },
   "fingerinthenose.com": { src: fingerinthenose, bg: "#0a0a0a" },
   "The Cool Republic": { src: tcr, bg: "#ffffff", padded: true },
   "Musier Paris": { src: musierparis, bg: "#0a0a0a" },
@@ -46,6 +48,7 @@ export const PROJECT_COLORS: Record<string, string> = {
   "OTA Server": "#f59e0b", // AWS amber
   "Test Technique Biloki": "#00a3ff", // biloki blue
   "BeautyBay – Web & Mobile": "#ec4899", // pink (beauty)
+  "Paul Beuscher": "#e8341c", // brand red wordmark
   "fingerinthenose.com": "#16a34a", // green
   "Musier Paris": "#111111", // mono black
   "Transport Interne Konecta": "#4f1fff", // konecta violet
