@@ -44,7 +44,9 @@ export const CustomCursor = () => {
       window.removeEventListener("pointermove", move);
       document.documentElement.classList.remove("custom-cursor-active");
     };
-  }, [reduce, x, y]);
+    // x and y are stable MotionValues — only `reduce` should re-run this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduce]);
 
   if (!enabled) return null;
 

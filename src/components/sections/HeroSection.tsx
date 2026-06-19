@@ -1,4 +1,5 @@
-import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useMotionValue, useTransform, useSpring, useInView, useReducedMotion } from "framer-motion";
 import { ArrowDown, Download, Github, Linkedin, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CountUp from "@/components/motion/CountUp";
@@ -19,6 +20,12 @@ interface HeroSectionProps {
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const reduce = useReducedMotion();
   const { t } = useT();
+  // Looping ambient animations (float, scanline, scroll cue) only run while the
+  // Hero is on screen — they stop once the user scrolls to a later section, so
+  // nothing burns the GPU/battery in the background.
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef);
+  const loop = !reduce && inView;
   const stats: { label: string; to?: number; suffix?: string; text?: string }[] = [
     { label: t("hero.statExp"), to: 3, suffix: t("hero.statExpSuffix") },
     { label: t("hero.statProjects"), to: 30, suffix: "+" },
@@ -51,7 +58,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   ];
 
   return (
-    <section className="section-container relative overflow-hidden min-h-screen flex items-center">
+    <section ref={sectionRef} className="section-container relative overflow-hidden min-h-screen flex items-center">
       {/* Swiss engineering grid backdrop (decorative) */}
       <div className="absolute inset-0 grid-bg opacity-[0.35] pointer-events-none" aria-hidden="true" />
       <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background pointer-events-none" aria-hidden="true" />
@@ -196,8 +203,8 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             {/* tilt + float container */}
             <motion.div
               style={{ rotateX: springRotateX, rotateY: springRotateY, perspective: 1000 }}
-              animate={reduce ? undefined : { y: [0, -8, 0] }}
-              transition={reduce ? undefined : { duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              animate={loop ? { y: [0, -8, 0] } : { y: 0 }}
+              transition={loop ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : undefined}
               className="relative z-10"
             >
               <div className="relative h-[440px] sm:h-[500px] md:h-[540px] lg:h-[580px] rounded-md overflow-hidden border border-border bg-card shadow-elevated">
@@ -218,8 +225,9 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                   />
                 </picture>
 
-                {/* animated scan line — pure transform, GPU-cheap, off when reduced */}
-                {!reduce && (
+                {/* animated scan line — pure transform, GPU-cheap; unmounts when
+                    reduced-motion is set or the Hero scrolls off screen */}
+                {loop && (
                   <motion.div
                     aria-hidden="true"
                     initial={{ y: "-10%", opacity: 0 }}
@@ -272,8 +280,8 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
         <motion.button
           type="button"
           onClick={() => onNavigate("apropos")}
-          animate={reduce ? undefined : { y: [0, 6, 0] }}
-          transition={reduce ? undefined : { duration: 2, repeat: Infinity }}
+          animate={loop ? { y: [0, 6, 0] } : { y: 0 }}
+          transition={loop ? { duration: 2, repeat: Infinity } : undefined}
           aria-label={t("hero.scrollAria")}
           className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors group cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 px-2 py-1"
         >

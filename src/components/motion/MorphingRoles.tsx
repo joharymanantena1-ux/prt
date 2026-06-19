@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -24,13 +24,17 @@ export const MorphingRoles = ({
   className?: string;
 }) => {
   const reduce = useReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  // Pause the cycle when the component scrolls out of view → no background
+  // setState/timer churn (and no wasted battery) on a section the user left.
+  const inView = useInView(ref);
   const [i, setI] = useState(0);
 
   useEffect(() => {
-    if (reduce || items.length <= 1) return;
+    if (reduce || !inView || items.length <= 1) return;
     const id = window.setInterval(() => setI((p) => (p + 1) % items.length), interval);
     return () => window.clearInterval(id);
-  }, [reduce, items.length, interval]);
+  }, [reduce, inView, items.length, interval]);
 
   if (reduce) {
     return <span className={className}>{items[0]}</span>;
@@ -38,7 +42,7 @@ export const MorphingRoles = ({
 
   return (
     // inline-grid so successive words stack in the same cell (no layout jump)
-    <span className={`relative inline-grid overflow-hidden align-bottom ${className}`}>
+    <span ref={ref} className={`relative inline-grid overflow-hidden align-bottom ${className}`}>
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={items[i]}
