@@ -72,7 +72,6 @@ const professionalProjects: Project[] = [
     },
     technologies: ["TypeScript", "Node.js", "AWS", "Cloud"],
     category: "Cloud",
-    githubUrl: "https://github.com/johary1-ux/OTA-Server",
   },
   {
     title: "Test Technique Biloki",
@@ -82,7 +81,6 @@ const professionalProjects: Project[] = [
     },
     technologies: ["TypeScript", "React", "Node.js"],
     category: "Gestion",
-    githubUrl: "https://github.com/johary1-ux/ges-test",
   },
   {
     title: "bank-file-converter",
@@ -101,8 +99,6 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
     category: "SaaS",
-    liveUrl: "https://edu.levitation.mg",
-    githubUrl: "https://github.com/joharymanantena1-ux/educontent-app",
   },
   {
     title: "EduContent Mobile App",
@@ -112,7 +108,6 @@ const professionalProjects: Project[] = [
     },
     technologies: ["React Native", "Expo", "JavaScript"],
     category: "Mobile",
-    githubUrl: "https://github.com/joharymanantena1-ux/educontent-app",
   },
   {
     title: "Transport Interne Konecta",
@@ -122,7 +117,6 @@ const professionalProjects: Project[] = [
     },
     technologies: ["TypeScript", "React", "MySQL", "OSRM"],
     category: "Entreprise",
-    githubUrl: "https://github.com/joharymanantena1-ux/Projet-de-Stage",
   },
   {
     title: "ERPNext Migration",

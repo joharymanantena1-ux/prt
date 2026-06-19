@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, MapPin, Phone, Send, Github, Linkedin, Globe, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mail, MapPin, Phone, Send, Github, Linkedin, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -68,7 +68,6 @@ const ContactSection = () => {
   const socialLinks = [
     { icon: Github, href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
-    { icon: Globe, href: "https://levitation.mg", label: "Levitation.mg" },
   ];
 
   const isDisabled = formState === "loading" || formState === "success";

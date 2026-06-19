@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, useMotionValue, useTransform, useSpring, useInView, useReducedMotion } from "framer-motion";
-import { ArrowDown, Download, Github, Linkedin, Mail, Globe } from "lucide-react";
+import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CountUp from "@/components/motion/CountUp";
 import MagneticButton from "@/components/motion/MagneticButton";
@@ -54,7 +54,6 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
     { icon: Github, href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
     { icon: Mail, href: "mailto:andrianmanantena@gmail.com", label: "Email" },
-    { icon: Globe, href: "https://levitation.mg", label: "Levitation" },
   ];
 
   return (

@@ -32,11 +32,20 @@ export const CustomCursor = () => {
     // Hide the native cursor site-wide while the custom one is active.
     document.documentElement.classList.add("custom-cursor-active");
 
+    // `pointermove` fires dozens of times per second. Moving the dot is free
+    // (MotionValue → GPU, no React render), but calling setHovering on every
+    // event would re-render the component each frame — even when the value is
+    // unchanged. Track the last value and only setState when it actually flips.
+    let lastHover = false;
     const move = (e: PointerEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);
       const t = e.target as Element | null;
-      setHovering(!!t?.closest(INTERACTIVE));
+      const next = !!t?.closest(INTERACTIVE);
+      if (next !== lastHover) {
+        lastHover = next;
+        setHovering(next);
+      }
     };
 
     window.addEventListener("pointermove", move, { passive: true });

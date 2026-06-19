@@ -31,7 +31,6 @@ const experiences: ExpItem[] = [
   {
     title: { fr: "Projet SaaS – Gestion des Écoles", en: "SaaS Project – School Management" },
     company: "Levitation",
-    companyUrl: "https://levitation.mg",
     period: { fr: "Jan 2026 – Mai 2026", en: "Jan 2026 – May 2026" },
     current: false,
     description: {
