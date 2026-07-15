@@ -11,8 +11,9 @@ const ScrollProgress = () => {
   return (
     <motion.div
       aria-hidden="true"
-      style={{ scaleX }}
-      className="fixed top-0 left-0 right-0 h-0.5 origin-left bg-gradient-to-r from-primary to-accent z-[60]"
+      // Single-accent ramp (teal → cyan) via the shared token — no purple.
+      style={{ scaleX, background: "var(--gradient-primary)" }}
+      className="fixed top-0 left-0 right-0 h-0.5 origin-left z-loader"
     />
   );
 };

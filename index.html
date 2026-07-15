@@ -8,6 +8,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- Perf: the portrait is the LCP element — start fetching it with the HTML,
+         long before the lazy Hero chunk mounts. Browsers without AVIF skip it. -->
+    <link
+      rel="preload"
+      as="image"
+      href="/portrait/developer-portrait.avif"
+      type="image/avif"
+      fetchpriority="high"
+    />
+
     <!-- Fonts loaded non-render-blocking (print→all swap), with display=swap fallback -->
     <link
       rel="stylesheet"
@@ -21,6 +31,13 @@
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       />
     </noscript>
+
+    <!-- Icons — SVG first (crisp + theme-aware), .ico fallback, iOS touch icon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f8fa" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1016" />
 
     <title>Johary Manantena | Développeur Full-Stack</title>
     <meta
@@ -39,12 +56,39 @@
       content="Applications web modernes et performantes — front, back et mobile."
     />
     <meta property="og:type" content="website" />
-    <!-- TODO: set your production domain, then add:
-         <meta property="og:url" content="https://votre-domaine.com" />
-         <meta property="og:image" content="https://votre-domaine.com/og-image.png" />  (1200×630, in /public)
-         <link rel="canonical" href="https://votre-domaine.com" /> -->
+    <meta property="og:site_name" content="Johary Manantena" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <!-- canonical + og:url + og:image (URLs absolues) sont injectés au build par
+         le plugin inject-site-meta (vite.config.ts) à partir de VITE_SITE_URL,
+         ou automatiquement de la variable URL fournie par Netlify. -->
 
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Johary Manantena | Développeur Full-Stack" />
+    <meta
+      name="twitter:description"
+      content="Applications web modernes et performantes — front, back et mobile."
+    />
+
+    <!-- Structured data — Person (référencement enrichi) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Johary Manantena",
+        "jobTitle": "Développeur Full-Stack",
+        "description": "Développeur web full-stack freelance — React, Node.js, TypeScript, Laravel, Spring Boot.",
+        "address": { "@type": "PostalAddress", "addressLocality": "Antananarivo", "addressCountry": "MG" },
+        "sameAs": [
+          "https://github.com/joharymanantena1-ux",
+          "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3"
+        ],
+        "knowsAbout": [
+          "React", "React Native", "Node.js", "TypeScript",
+          "Laravel", "Spring Boot", "GraphQL", "Shopify"
+        ]
+      }
+    </script>
 
     <!-- RGPD / CNIL — Google Consent Mode v2: analytics DENIED by default.
          The in-app cookie banner calls gtag('consent','update', …) on user opt-in. -->

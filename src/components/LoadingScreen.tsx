@@ -20,7 +20,17 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   // ── Eased progress 0→100, then fade out and hand off ─────────────────────────
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const duration = reduce ? 500 : 2500;
+    // The full intro plays once per session — returning to the tab mid-session
+    // fast-tracks the loader so navigation never feels gated (perf > effet).
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("portfolio-loader-seen") === "1";
+      sessionStorage.setItem("portfolio-loader-seen", "1");
+    } catch {
+      /* storage unavailable (private mode) → always play the full intro */
+    }
+    const duration = reduce ? 400 : seen ? 700 : 2500;
+    const exitDelay = reduce ? 200 : seen ? 300 : 600;
     let startTs = 0;
 
     const tick = (ts: number) => {
@@ -31,7 +41,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         progressRaf.current = requestAnimationFrame(tick);
       } else {
         setExiting(true);
-        window.setTimeout(onComplete, reduce ? 200 : 600);
+        window.setTimeout(onComplete, exitDelay);
       }
     };
 
@@ -135,7 +145,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             transition: `transform .4s ${ease}`,
           }}
         >
-          <div className="w-[360px] h-[360px] max-w-[68vw] rounded-full bg-accent/12 blur-3xl" />
+          <div className="w-[360px] h-[360px] max-w-[68vw] rounded-full bg-primary/8 blur-3xl" />
         </div>
       </div>
 
@@ -164,11 +174,11 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
                 cy="100"
                 r="94"
                 fill="none"
-                stroke="hsl(var(--accent))"
+                stroke="hsl(var(--primary))"
                 strokeWidth="1.5"
                 strokeDasharray="1.5 10"
                 strokeLinecap="round"
-                opacity="0.4"
+                opacity="0.35"
               />
             </svg>
 
@@ -176,8 +186,9 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             <svg viewBox="0 0 160 160" className="w-48 h-48 md:w-56 md:h-56" role="presentation">
               <defs>
                 <linearGradient id="loaderRing" x1="0" y1="0" x2="1" y2="1">
+                  {/* teal → cyan, mirrors --gradient-primary (no purple) */}
                   <stop offset="0%" stopColor="hsl(var(--primary))" />
-                  <stop offset="100%" stopColor="hsl(var(--accent))" />
+                  <stop offset="100%" stopColor="hsl(196 80% 48%)" />
                 </linearGradient>
               </defs>
               {/* track */}

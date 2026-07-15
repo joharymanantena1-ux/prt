@@ -58,6 +58,13 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      // Map the shadow design tokens (index.css) to utilities — without this,
+      // `shadow-soft` / `shadow-elevated` / `shadow-glow` silently emit nothing.
+      boxShadow: {
+        soft: "var(--shadow-soft)",
+        elevated: "var(--shadow-elevated)",
+        glow: "var(--shadow-glow)",
+      },
       // Documented z-index scale (replaces ad-hoc z-[9999])
       zIndex: {
         dropdown: "20",
