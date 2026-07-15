@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Globe, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucide-react";
+import { Check, Github, Globe, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucide-react";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import SectionHeading from "@/components/SectionHeading";
@@ -16,6 +16,8 @@ interface Project {
   liveUrl?: string;
   /** Marks the flagship work — renders a small "Sélection" tag on the card. */
   featured?: boolean;
+  /** Short functional highlights — rendered as a compact mono checklist. */
+  keyPoints?: Bi[];
 }
 
 // ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
@@ -57,6 +59,23 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
     category: "Automation",
+  },
+  {
+    title: "SIRH Regard Beauty",
+    description: {
+      fr: "Plateforme SIRH permettant de digitaliser et centraliser les processus RH : gestion des employés, présences, absences, congés, fiches de paie et administration du personnel.",
+      en: "HRIS platform digitalising and centralising HR processes: employee management, attendance, leave, payslips and staff administration.",
+    },
+    keyPoints: [
+      { fr: "Gestion des collaborateurs", en: "Employee management" },
+      { fr: "Suivi des présences avec intégration Hikvision", en: "Attendance tracking with Hikvision integration" },
+      { fr: "Workflow de validation des congés", en: "Leave-approval workflow" },
+      { fr: "Gestion documentaire RH", en: "HR document management" },
+      { fr: "Gestion des rôles et permissions", en: "Roles & permissions management" },
+    ],
+    technologies: ["Laravel", "PHP", "REST API", "Hikvision API"],
+    category: "SIRH",
+    featured: true,
   },
   {
     title: "Musier Paris",
@@ -301,6 +320,22 @@ const CategoryTag = ({ category, accent = false }: { category: string; accent?: 
   );
 };
 
+// Compact mono checklist for a project's functional highlights. Capped at 4 so
+// it never pushes card heights out of alignment with the rest of the carousel.
+const KeyPoints = ({ points, max = 4 }: { points: Bi[]; max?: number }) => {
+  const { lang } = useT();
+  return (
+    <ul className="flex flex-col gap-1">
+      {points.slice(0, max).map((point) => (
+        <li key={tx(point, lang)} className="flex items-start gap-1.5 font-mono text-[11px] leading-snug text-muted-foreground">
+          <Check className="w-3 h-3 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <span>{tx(point, lang)}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const TechTags = ({ technologies, max = 4 }: { technologies: string[]; max?: number }) => (
   <div className="flex flex-wrap gap-1.5">
     {technologies.slice(0, max).map((tech) => (
@@ -356,6 +391,7 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
         <p className="text-sm sm:text-[0.95rem] text-muted-foreground dark:text-foreground/80 line-clamp-4 leading-relaxed flex-1">
           {tx(project.description, lang)}
         </p>
+        {project.keyPoints && <KeyPoints points={project.keyPoints} />}
         <TechTags technologies={project.technologies} max={5} />
       </div>
     </motion.article>
