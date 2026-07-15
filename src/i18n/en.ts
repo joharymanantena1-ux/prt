@@ -68,6 +68,7 @@ export const en: typeof import("./fr").fr = {
     descBefore: "Client work and professional missions. The academic archive (",
     descAfter: " projects) is available on demand.",
     professional: "Professional",
+    featured: "Featured",
     archiveKicker: "Academic archive",
     archiveTitleSuffix: "coursework projects",
     archiveDesc: "Java, C#, C++, PHP, Python, games, networks, GIS… My full academic path, filterable by technology — shown only if you want to.",

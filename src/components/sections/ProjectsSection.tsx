@@ -14,6 +14,8 @@ interface Project {
   category: string;
   githubUrl?: string;
   liveUrl?: string;
+  /** Marks the flagship work — renders a small "Sélection" tag on the card. */
+  featured?: boolean;
 }
 
 // ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
@@ -27,6 +29,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["ReactJS", "React Native", "GraphQL", "TypeScript"],
     category: "Web & Mobile",
+    featured: true,
   },
   {
     title: "Paul Beuscher",
@@ -99,6 +102,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
     category: "SaaS",
+    featured: true,
   },
   {
     title: "EduContent Mobile App",
@@ -117,6 +121,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["TypeScript", "React", "MySQL", "OSRM"],
     category: "Entreprise",
+    featured: true,
   },
   {
     title: "ERPNext Migration",
@@ -209,7 +214,7 @@ const projectAccent = (title: string): string =>
 // logo fall back to a big monogram on a brand-tinted backdrop. The category +
 // index overlay the artwork with a top scrim so they stay readable on any bg.
 const ProjectLogoHeader = ({ project, index }: { project: Project; index: number }) => {
-  const { lang } = useT();
+  const { t, lang } = useT();
   const logo = PROJECT_LOGOS[project.title];
   const accent = projectAccent(project.title);
   const lightBg = logo ? ["#ffffff", "#fff"].includes(logo.bg.toLowerCase()) : false;
@@ -232,6 +237,13 @@ const ProjectLogoHeader = ({ project, index }: { project: Project; index: number
         </span>
         <span className={`font-mono text-[11px] ${metaClass}`}>№{pad(index + 1)}</span>
       </div>
+
+      {/* Flagship tag — solid teal chip, readable on any artwork */}
+      {project.featured && (
+        <span className="absolute bottom-2 left-3 z-10 font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-primary text-primary-foreground">
+          {t("projects.featured")}
+        </span>
+      )}
 
       {logo ? (
         <img
@@ -313,8 +325,13 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
       // Halo glow + subtle lift on hover — transform/shadow only (GPU-cheap),
       // motion-reduce drops the lift. The shadow uses the teal primary token.
-      className="flex-shrink-0 w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.35)] hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      className="relative flex-shrink-0 snap-start w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.35)] hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
     >
+      {/* Accent sweep — teal hairline drawn from the left on hover */}
+      <span
+        aria-hidden="true"
+        className="absolute top-0 left-0 z-20 h-0.5 w-full bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out motion-reduce:transition-none"
+      />
       {/* Full-bleed logo header — logo sits on its own brand background */}
       <div className="relative border-b border-border">
         <ProjectLogoHeader project={project} index={index} />
@@ -384,6 +401,26 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
   const startX = useRef(0);
   const startScroll = useRef(0);
   const rafId = useRef<number | null>(null);
+  const scrollRafId = useRef<number | null>(null);
+  // Reading position: drives the left edge fade, the mono counter and the
+  // hairline progress bar under the track.
+  const [pos, setPos] = useState({ atStart: true, index: 0, progress: 0 });
+
+  const onScroll = useCallback(() => {
+    if (scrollRafId.current != null) return;
+    scrollRafId.current = requestAnimationFrame(() => {
+      scrollRafId.current = null;
+      const el = scrollRef.current;
+      if (!el) return;
+      const step = (el.querySelector("article")?.clientWidth ?? 380) + 16;
+      const max = el.scrollWidth - el.clientWidth;
+      setPos({
+        atStart: el.scrollLeft < 24,
+        index: Math.min(Math.round(el.scrollLeft / step), projects.length - 1),
+        progress: max > 0 ? Math.min(el.scrollLeft / max, 1) : 0,
+      });
+    });
+  }, [projects.length]);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (!scrollRef.current) return;
@@ -439,15 +476,32 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
         onPointerLeave={stop}
         onPointerMove={onPointerMove}
         onKeyDown={onKeyDown}
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide select-none cursor-grab active:cursor-grabbing rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        onScroll={onScroll}
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide select-none cursor-grab active:cursor-grabbing snap-x snap-proximity rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         {projects.map((p, i) => <ProfessionalCard key={p.title} project={p} index={i} />)}
         <div className="flex-shrink-0 w-4" aria-hidden="true" />
       </div>
 
+      {/* Edge fades — the left one only appears once the track has scrolled */}
+      <div
+        className={`pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-background to-transparent transition-opacity duration-300 ${pos.atStart ? "opacity-0" : "opacity-100"}`}
+        aria-hidden="true"
+      />
       <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background to-transparent" aria-hidden="true" />
 
-      <div className="mt-3 flex justify-end gap-2">
+      {/* Reading position: hairline progress + mono counter + arrows */}
+      <div className="mt-3 flex items-center gap-4">
+        <div className="flex-1 h-px bg-border relative overflow-hidden" aria-hidden="true">
+          <div
+            className="absolute inset-0 bg-primary origin-left transition-transform duration-200 ease-out"
+            style={{ transform: `scaleX(${pos.progress})` }}
+          />
+        </div>
+        <span className="font-mono text-xs text-muted-foreground tabular-nums" aria-hidden="true">
+          {pad(pos.index + 1)} / {pad(projects.length)}
+        </span>
+        <div className="flex gap-2">
         <button
           type="button"
           onClick={() => scrollByCards(-1)}
@@ -464,6 +518,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
         >
           <ChevronRight className="w-5 h-5" aria-hidden="true" />
         </button>
+        </div>
       </div>
     </div>
   );

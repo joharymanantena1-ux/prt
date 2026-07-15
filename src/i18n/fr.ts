@@ -68,6 +68,7 @@ export const fr = {
     descBefore: "Travaux clients et missions professionnelles. L'archive académique (",
     descAfter: " projets) est consultable à la demande.",
     professional: "Professionnel",
+    featured: "Sélection",
     archiveKicker: "Archive académique",
     archiveTitleSuffix: "projets de formation",
     archiveDesc: "Java, C#, C++, PHP, Python, jeux, réseaux, SIG… L'ensemble de mon parcours, filtrable par technologie — affiché uniquement si vous le souhaitez.",
