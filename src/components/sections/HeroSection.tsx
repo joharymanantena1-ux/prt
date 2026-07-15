@@ -8,9 +8,12 @@ import RevealText from "@/components/motion/RevealText";
 import Parallax from "@/components/motion/Parallax";
 import MorphingRoles from "@/components/motion/MorphingRoles";
 import { useT } from "@/i18n";
-import developerPortraitAvif from "@/assets/developer-portrait.avif";
-import developerPortraitWebp from "@/assets/developer-portrait.webp";
-import developerPortrait from "@/assets/developer-portrait.png";
+
+// The portrait lives in /public (stable URLs) so index.html can <link rel="preload">
+// it before this lazy chunk even loads — it's the LCP element on mobile.
+const developerPortraitAvif = "/portrait/developer-portrait.avif";
+const developerPortraitWebp = "/portrait/developer-portrait.webp";
+const developerPortrait = "/portrait/developer-portrait.png";
 
 interface HeroSectionProps {
   /** Navigate to a section by its id (e.g. "projets", "contact"). */
