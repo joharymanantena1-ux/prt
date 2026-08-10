@@ -61,7 +61,9 @@ const Navigation = ({
       {/* Barre supérieure sobre : pleine largeur, fond opaque + filet de séparation
           (pas de panneau translucide à reflouter à chaque frame de scroll). */}
       <header className="rise fixed top-0 left-0 right-0 z-header bg-background/95 border-b border-border/60">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2.5 md:py-3 flex items-center justify-between">
+        {/* Mêmes retraits que .section-container : les bords du header et du
+            contenu restent alignés à toutes les largeurs. */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2.5 md:py-3 flex items-center justify-between">
           <a
             href="#accueil"
             className="text-xl md:text-2xl font-display font-bold tracking-tight rounded-md cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"

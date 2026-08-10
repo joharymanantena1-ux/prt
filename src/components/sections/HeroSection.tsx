@@ -1,10 +1,13 @@
 import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import MorphingRoles from "@/components/motion/MorphingRoles";
 import { useT } from "@/i18n";
 
 // Portrait détouré, servi depuis /public (URL stable) pour que index.html puisse
-// le précharger avant même que ce chunk lazy soit évalué : c'est l'élément LCP.
+// le précharger avant même que ce chunk soit évalué : c'est l'élément LCP.
 // 440px couvre le mobile, 880px le desktop en 2x — AVIF ~18/48 Ko, WebP en repli.
+// `SIZES` est dupliqué dans le <link rel="preload"> d'index.html — garder en phase.
+const SIZES = "(min-width: 1280px) 460px, (min-width: 1024px) 42vw, (min-width: 640px) 400px, 78vw";
 const PORTRAIT = {
   avif: "/portrait/johary-440.avif 440w, /portrait/johary-880.avif 880w",
   webp: "/portrait/johary-440.webp 440w, /portrait/johary-880.webp 880w",
@@ -26,13 +29,102 @@ const SOCIALS = [
   { icon: Mail, href: "mailto:andrianmanantena@gmail.com", label: "Email" },
 ];
 
+/* ── Zone portrait — composition éditoriale ─────────────────────────────────
+   Le portrait détouré s'appuie sur un panneau discret (la tête déborde du
+   panneau pour la profondeur), ponctué d'une trame de points et d'une équerre
+   cyan. Le cartouche d'identité (border-left cyan, fond translucide) chevauche
+   le bas du panneau. Aucune animation : c'est l'élément LCP, il peint direct. */
+const HeroPortrait = () => {
+  const { t } = useT();
+  return (
+    <div className="relative order-2 lg:order-none lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:self-center flex justify-center lg:justify-start">
+      <div className="relative w-[min(78vw,340px)] sm:w-[400px] lg:w-full lg:max-w-[420px] xl:max-w-[460px]">
+
+        {/* Panneau d'appui — commence sous la tête, file jusqu'au sol */}
+        <div
+          className="absolute inset-x-0 top-[14%] bottom-0 rounded-md border border-border/70 bg-gradient-to-b from-secondary/60 to-secondary/20 dark:from-secondary/40 dark:to-secondary/10"
+          aria-hidden="true"
+        />
+
+        {/* Trame de points — coin haut-gauche, à cheval sur le bord du panneau */}
+        <div
+          className="pointer-events-none absolute top-[8%] -left-5 sm:-left-7 w-24 h-28 opacity-80"
+          style={{
+            backgroundImage: "radial-gradient(hsl(var(--primary) / 0.5) 1.5px, transparent 2px)",
+            backgroundSize: "13px 13px",
+            WebkitMaskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
+            maskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Équerre cyan — coin haut-droit du panneau */}
+        <span
+          className="pointer-events-none absolute top-[14%] right-0 w-10 h-10 -translate-y-px translate-x-px border-t-2 border-r-2 border-primary rounded-tr-md"
+          aria-hidden="true"
+        />
+
+        {/* Rail éditorial vertical — coordonnées d'Antananarivo (décoratif) */}
+        <div
+          className="pointer-events-none absolute -left-9 xl:-left-11 bottom-10 hidden xl:flex flex-col items-center gap-3"
+          aria-hidden="true"
+        >
+          <span className="h-16 w-px bg-border" />
+          <span
+            className="font-mono text-[10px] tracking-[0.22em] text-muted-foreground/70 uppercase whitespace-nowrap"
+            style={{ writingMode: "vertical-rl" }}
+          >
+            18.8792° S · 47.5079° E — TNR
+          </span>
+        </div>
+
+        <picture>
+          <source type="image/avif" srcSet={PORTRAIT.avif} sizes={SIZES} />
+          <source type="image/webp" srcSet={PORTRAIT.webp} sizes={SIZES} />
+          <img
+            src={PORTRAIT.png}
+            alt="Johary Manantena, développeur full-stack"
+            width={PORTRAIT.width}
+            height={PORTRAIT.height}
+            decoding="async"
+            draggable={false}
+            // React 18 ne mappe pas `fetchPriority` : attribut DOM en minuscules
+            // pour conserver l'indice de priorité sans warning console.
+            {...{ fetchpriority: "high" }}
+            className="relative z-10 w-full h-auto select-none"
+          />
+        </picture>
+
+        {/* Ligne de sol — ancre la silhouette, un seul filet */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 z-10 h-px bg-gradient-to-r from-transparent via-border to-transparent"
+        />
+
+        {/* Cartouche d'identité — sobre : filet cyan, fond translucide.
+            Le nom n'apparaît ici qu'en ≥lg (en dessous, il est déjà affiché
+            juste au-dessus du portrait dans le flux). */}
+        <div className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-primary rounded-r-md bg-background/75 backdrop-blur-[3px] px-4 py-2.5">
+          <p className="hidden lg:block font-display text-base xl:text-lg font-semibold leading-tight">
+            Johary Manantena
+          </p>
+          <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground lg:mt-1">
+            {t("hero.location")}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /**
- * Hero — composition sobre en deux colonnes : texte à gauche, portrait détouré
- * à droite, surmonté d'une plaque nominative inclinée (skewX(-12°)).
+ * Hero — composition éditoriale en deux zones : portrait-panneau à gauche
+ * (~44 %), présentation à droite (~56 %). En mobile, l'ordre est spécifique :
+ * eyebrow → identité → description → portrait → actions → stats (via `order-*`,
+ * la grille ne s'activant qu'à partir de lg).
  *
- * Perf : aucune dépendance d'animation ici (pas de tilt 3D, de halo, de
- * parallaxe ni de boucle infinie). Les entrées se font en CSS pur (`.rise`,
- * transform/opacity uniquement), donc le LCP ne dépend d'aucun JS d'animation.
+ * Perf : entrées en CSS pur (`.rise`, transform/opacity), aucune dépendance
+ * d'animation JS ; le portrait (LCP) n'est pas animé et peint immédiatement.
  */
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const { t } = useT();
@@ -45,23 +137,26 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
 
   return (
     <section className="section-container items-center relative overflow-hidden">
-      {/* Trame technique, statique et discrète (décorative) — dissoute vers les bords. */}
+      {/* Trame technique, statique et discrète (décorative) — dissoute vers les bords */}
       <div
         className="absolute inset-0 grid-bg opacity-[0.28] pointer-events-none"
         style={{
-          WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 55% 40%, black 20%, transparent 100%)",
-          maskImage: "radial-gradient(ellipse 80% 70% at 55% 40%, black 20%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 45% 42%, black 20%, transparent 100%)",
+          maskImage: "radial-gradient(ellipse 80% 70% at 45% 42%, black 20%, transparent 100%)",
         }}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col gap-y-10 lg:grid lg:grid-cols-[0.88fr_1.12fr] lg:grid-rows-[auto_auto] lg:gap-y-9 lg:gap-x-14 xl:gap-x-20">
 
-        {/* ── Colonne texte ────────────────────────────────────────────── */}
-        <div className="text-center lg:text-left order-2 lg:order-1">
-          {/* Étiquette mono + disponibilité */}
+        {/* ── Identité : eyebrow → nom → métier → description ───────────── */}
+        <div className="order-1 lg:order-none lg:col-start-2 lg:row-start-1 lg:self-end text-center lg:text-left">
           <div className="rise flex flex-wrap items-center gap-x-3 gap-y-1.5 justify-center lg:justify-start">
-            <span className="kicker !text-primary">React · Node.js · TypeScript</span>
+            {/* Technologies en défilement automatique — un mot à la fois,
+                en pause hors écran et sous prefers-reduced-motion. */}
+            <span className="kicker !text-primary inline-flex items-center gap-1.5">
+              <MorphingRoles items={["React", "Node.js", "TypeScript", "React Native", "Laravel", "Spring Boot"]} />
+            </span>
             <span className="h-px w-8 bg-border hidden sm:block" aria-hidden="true" />
             <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
               <span className="w-1.5 h-1.5 rounded-full bg-success" aria-hidden="true" />
@@ -69,27 +164,37 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             </span>
           </div>
 
-          {/* Le nom vit sur la plaque du portrait — ici, le métier fait le titre
-              (pas de doublon de nom à l'écran). */}
-          <h1 className="rise mt-5 font-display font-bold leading-[0.95] tracking-tight" style={{ animationDelay: "60ms" }}>
-            <span className="block text-xl sm:text-2xl text-muted-foreground font-medium mb-1.5">
-              {t("hero.greeting")}
+          <p className="rise mt-6 text-base sm:text-lg text-muted-foreground font-medium" style={{ animationDelay: "60ms" }}>
+            {t("hero.greeting")}
+          </p>
+
+          {/* Un seul h1 : nom + métier (SEO), le métier reste l'élément dominant */}
+          <h1 className="rise mt-1.5 font-display font-bold" style={{ animationDelay: "90ms" }}>
+            <span className="block text-[clamp(1.35rem,2.3vw,1.9rem)] uppercase tracking-[0.04em] leading-tight">
+              Johary Manantena
             </span>
-            <span className="block text-4xl sm:text-5xl lg:text-[4.25rem]">{t("hero.roleL1")}</span>
-            <span className="block text-4xl sm:text-5xl lg:text-[4.25rem] text-primary">{t("hero.roleL2")}</span>
+            <span className="mt-3 block tracking-tight leading-[0.98] text-[clamp(2.6rem,4.8vw,4.6rem)]">
+              <span className="block">{t("hero.roleL1")}</span>
+              <span className="block text-primary">{t("hero.roleL2")}</span>
+            </span>
           </h1>
 
           <p
-            className="rise mt-5 text-base text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed"
-            style={{ animationDelay: "120ms" }}
+            className="rise mt-6 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed"
+            style={{ animationDelay: "150ms" }}
           >
             {t("hero.lead")}
           </p>
+        </div>
 
-          {/* Actions */}
+        {/* ── Portrait (mobile : entre description et actions) ──────────── */}
+        <HeroPortrait />
+
+        {/* ── Actions : CTA → réseaux → stats ───────────────────────────── */}
+        <div className="order-3 lg:order-none lg:col-start-2 lg:row-start-2 lg:self-start text-center lg:text-left">
           <div
-            className="rise mt-7 flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start"
-            style={{ animationDelay: "180ms" }}
+            className="rise flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start"
+            style={{ animationDelay: "210ms" }}
           >
             <Button
               size="lg"
@@ -123,10 +228,9 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             </Button>
           </div>
 
-          {/* Réseaux */}
           <div
             className="rise mt-6 flex gap-2 justify-center lg:justify-start"
-            style={{ animationDelay: "240ms" }}
+            style={{ animationDelay: "270ms" }}
           >
             {SOCIALS.map(({ icon: Icon, href, label }) => (
               <a
@@ -142,61 +246,20 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             ))}
           </div>
 
-          {/* Chiffres clés — en flux, sur une ligne mono séparée par des filets */}
+          {/* Chiffres clés — trois colonnes alignées sur la grille du contenu */}
           <dl
-            className="rise mt-8 pt-6 border-t border-border/60 flex items-center justify-center lg:justify-start gap-6 sm:gap-8"
-            style={{ animationDelay: "300ms" }}
+            className="rise mt-8 pt-6 border-t border-border/60 grid grid-cols-3 gap-4 sm:gap-6 max-w-xl mx-auto lg:mx-0"
+            style={{ animationDelay: "330ms" }}
           >
             {stats.map(({ label, value }) => (
-              <div key={label} className="flex flex-col gap-1">
-                <dt className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground leading-none">
+              <div key={label} className="flex flex-col gap-1.5">
+                <dt className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-muted-foreground leading-none">
                   {label}
                 </dt>
-                <dd className="font-display text-base sm:text-lg font-bold leading-none">{value}</dd>
+                <dd className="font-display text-xl sm:text-2xl font-bold leading-none">{value}</dd>
               </div>
             ))}
           </dl>
-        </div>
-
-        {/* ── Portrait détouré + plaque nominative inclinée ─────────────── */}
-        {/* Pas d'animation d'entrée sur cette colonne : le portrait est l'élément
-            LCP, on le laisse peindre immédiatement. */}
-        <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
-          <div className="relative w-[min(74vw,300px)] sm:w-[340px] lg:w-[400px]">
-            <picture>
-              <source type="image/avif" srcSet={PORTRAIT.avif} sizes="(min-width: 1024px) 400px, (min-width: 640px) 340px, 74vw" />
-              <source type="image/webp" srcSet={PORTRAIT.webp} sizes="(min-width: 1024px) 400px, (min-width: 640px) 340px, 74vw" />
-              <img
-                src={PORTRAIT.png}
-                alt="Johary Manantena, développeur full-stack"
-                width={PORTRAIT.width}
-                height={PORTRAIT.height}
-                decoding="async"
-                draggable={false}
-                // React 18 ne mappe pas `fetchPriority` : on passe l'attribut DOM
-                // en minuscules pour conserver l'indice de priorité sans warning.
-                {...{ fetchpriority: "high" }}
-                className="w-full h-auto select-none"
-              />
-            </picture>
-
-            {/* Ligne de sol — ancre la silhouette détourée, un seul filet. */}
-            <span
-              aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
-            />
-
-            {/* Plaque nominative : un seul bandeau incliné (skewX(-12°)) posé sur
-                le bas du portrait — le nom uniquement, sans libellé de poste.
-                Le texte est contre-incliné pour rester droit. */}
-            <div className="absolute inset-x-0 bottom-8 sm:bottom-10 z-10 flex justify-center pointer-events-none">
-              <span className="-skew-x-12 border-l-4 border-primary bg-foreground px-5 sm:px-6 py-2 sm:py-2.5 shadow-elevated">
-                <span className="block skew-x-12 font-display text-lg sm:text-2xl font-bold tracking-tight text-background whitespace-nowrap">
-                  Johary Manantena
-                </span>
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -205,8 +268,8 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
         type="button"
         onClick={() => onNavigate("apropos")}
         aria-label={t("hero.scrollAria")}
-        className="rise group absolute bottom-6 right-6 hidden lg:flex flex-col items-center gap-1.5 px-2 py-1 rounded-md text-muted-foreground hover:text-primary transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        style={{ animationDelay: "360ms" }}
+        className="rise group absolute bottom-6 right-8 lg:right-12 hidden xl:flex flex-col items-center gap-1.5 px-2 py-1 rounded-md text-muted-foreground hover:text-primary transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        style={{ animationDelay: "400ms" }}
       >
         <span className="font-mono text-[10px] tracking-widest uppercase">{t("hero.scroll")}</span>
         <ArrowDown
