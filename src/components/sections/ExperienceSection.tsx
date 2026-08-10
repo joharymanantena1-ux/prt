@@ -104,8 +104,8 @@ const TimelineEntry = ({
 
   return (
     <motion.div
-      initial={reduce ? false : { opacity: 0, x: -16 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={reduce ? false : { opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={reduce ? { duration: 0 } : { duration: 0.45, delay: index * 0.1 }}
       className="relative pl-12 pb-8 last:pb-0"
@@ -114,7 +114,7 @@ const TimelineEntry = ({
 
       <div className={`absolute left-0 top-4 w-7 h-7 rounded-md flex items-center justify-center border-2 z-10 ${
         item.current
-          ? "bg-primary border-primary shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
+          ? "bg-primary border-primary"
           : "bg-background border-primary/60"
       }`}>
         {type === "exp" ? (

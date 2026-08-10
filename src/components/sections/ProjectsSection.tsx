@@ -61,23 +61,6 @@ const professionalProjects: Project[] = [
     category: "Automation",
   },
   {
-    title: "SIRH Regard Beauty",
-    description: {
-      fr: "Plateforme SIRH permettant de digitaliser et centraliser les processus RH : gestion des employés, présences, absences, congés, fiches de paie et administration du personnel.",
-      en: "HRIS platform digitalising and centralising HR processes: employee management, attendance, leave, payslips and staff administration.",
-    },
-    keyPoints: [
-      { fr: "Gestion des collaborateurs", en: "Employee management" },
-      { fr: "Suivi des présences avec intégration Hikvision", en: "Attendance tracking with Hikvision integration" },
-      { fr: "Workflow de validation des congés", en: "Leave-approval workflow" },
-      { fr: "Gestion documentaire RH", en: "HR document management" },
-      { fr: "Gestion des rôles et permissions", en: "Roles & permissions management" },
-    ],
-    technologies: ["Laravel", "PHP", "REST API", "Hikvision API"],
-    category: "SIRH",
-    featured: true,
-  },
-  {
     title: "Musier Paris",
     description: {
       fr: "Intégration et finitions frontend d'une boutique e-commerce Shopify : composants de thème, responsive et ajustements visuels.",

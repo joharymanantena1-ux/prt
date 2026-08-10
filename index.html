@@ -9,12 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <!-- Perf: the portrait is the LCP element — start fetching it with the HTML,
-         long before the lazy Hero chunk mounts. Browsers without AVIF skip it. -->
+         long before the lazy Hero chunk mounts. `imagesrcset` mirrors the <picture>
+         in HeroSection so mobile preloads the 440px file, desktop the 880px one.
+         Browsers without AVIF skip this hint entirely. -->
     <link
       rel="preload"
       as="image"
-      href="/portrait/developer-portrait.avif"
       type="image/avif"
+      href="/portrait/johary-880.avif"
+      imagesrcset="/portrait/johary-440.avif 440w, /portrait/johary-880.avif 880w"
+      imagesizes="(min-width: 1024px) 400px, (min-width: 640px) 340px, 74vw"
       fetchpriority="high"
     />
 

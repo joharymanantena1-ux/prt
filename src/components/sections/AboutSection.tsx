@@ -43,10 +43,10 @@ const AboutSection = () => {
 
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 md:mb-12 lg:mb-16">
           <motion.div
-            initial={reduce ? false : { opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.45 }}
             className="card-swiss p-5 sm:p-6 lg:p-8"
           >
             <span className="kicker">{t("about.journeyKicker")}</span>
@@ -58,10 +58,10 @@ const AboutSection = () => {
           </motion.div>
 
           <motion.div
-            initial={reduce ? false : { opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.45, delay: 0.08 }}
             className="card-swiss p-5 sm:p-6 lg:p-8"
           >
             <span className="kicker">{t("about.philoKicker")}</span>
@@ -77,10 +77,10 @@ const AboutSection = () => {
           {values.map(({ icon: Icon, title, description }, index) => (
             <motion.div
               key={tx(title, lang)}
-              initial={reduce ? false : { opacity: 0, y: 30 }}
+              initial={reduce ? false : { opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.1 * index }}
+              transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.06 * index }}
               className="group card-swiss p-3 sm:p-4 lg:p-6"
             >
               <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">

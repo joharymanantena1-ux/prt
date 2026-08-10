@@ -20,7 +20,10 @@ export const fr = {
     switchLang: "Switch to English",
   },
   hero: {
-    role: "Full-stack engineer",
+    role: "Développeur Full-Stack",
+    /* Titre du hero sur deux lignes — le nom, lui, vit sur la plaque du portrait. */
+    roleL1: "Développeur",
+    roleL2: "Full-Stack",
     available: "Disponible",
     greeting: "Bonjour, je suis",
     lead: "Je conçois et développe des applications web et mobile modernes — de l'architecture backend jusqu'à l'interface finale.",

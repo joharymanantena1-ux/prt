@@ -20,9 +20,12 @@ export const en: typeof import("./fr").fr = {
     switchLang: "Passer en français",
   },
   hero: {
-    role: "Full-stack engineer",
+    role: "Full-Stack Developer",
+    /* Hero title on two lines — the name lives on the portrait nameplate. */
+    roleL1: "Full-Stack",
+    roleL2: "Developer",
     available: "Available",
-    greeting: "Hi, I'm",
+    greeting: "Hi, I'm a",
     lead: "I design and build modern web & mobile applications — from backend architecture to the final interface.",
     ctaProjects: "View my work",
     ctaContact: "Get in touch",

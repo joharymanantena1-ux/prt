@@ -40,13 +40,10 @@
 
     /* Design tokens */
     --gradient-primary: linear-gradient(135deg, hsl(174 70% 29%) 0%, hsl(196 80% 40%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(262 64% 50%) 0%, hsl(300 64% 50%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(220 18% 97%) 0%, hsl(220 22% 93%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 18% 98%) 100%);
 
     --shadow-soft: 0 2px 16px -4px hsl(224 28% 12% / 0.07);
     --shadow-elevated: 0 12px 40px -8px hsl(224 28% 12% / 0.11);
-    --shadow-glow: 0 0 48px -8px hsl(174 70% 29% / 0.28);
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'DM Sans', sans-serif;
@@ -86,13 +83,10 @@
     --ring: 174 72% 48%;
 
     --gradient-primary: linear-gradient(135deg, hsl(174 72% 48%) 0%, hsl(196 80% 54%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(262 64% 66%) 0%, hsl(300 64% 64%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(224 24% 7%) 0%, hsl(224 28% 5%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(224 22% 13%) 0%, hsl(224 22% 9%) 100%);
 
     --shadow-soft: 0 2px 16px -4px hsl(0 0% 0% / 0.28);
     --shadow-elevated: 0 12px 40px -8px hsl(0 0% 0% / 0.44);
-    --shadow-glow: 0 0 64px -8px hsl(174 72% 48% / 0.22);
   }
 }
 
@@ -142,23 +136,16 @@
     background-image: var(--gradient-primary);
   }
 
-  /* Elevated card with glassmorphism */
+  /* Surface surélevée — fond opaque, sans filtre de flou (moins coûteux au
+     compositing qu'un panneau translucide qui doit reflouter à chaque scroll) */
   .card-floating {
-    background: var(--gradient-card);
+    @apply rounded-lg border border-border bg-card;
     box-shadow: var(--shadow-soft);
-    @apply rounded-2xl border border-border/60;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .card-floating:hover {
     box-shadow: var(--shadow-elevated);
-    @apply border-border/80;
-  }
-
-  .glow-primary {
-    box-shadow: var(--shadow-glow);
   }
 
   /* Full-height section layout — natural page scroll, no overflow trapping */
@@ -188,7 +175,6 @@
     width: 8px;
     height: 22px;
     border-radius: 4px;
-    box-shadow: 0 0 10px hsl(var(--primary) / 0.45);
   }
 
   /* ─── Swiss-tech system ─────────────────────────────────────────────── */
@@ -224,10 +210,20 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+}
 
-  .perspective {
-    perspective: 1000px;
-  }
+/* ─── Entrée par défaut — CSS pur, transform + opacity uniquement ───────────
+   Utilisée pour le contenu au-dessus de la ligne de flottaison (hero, loader) :
+   aucun JS d'animation n'est nécessaire pour le premier rendu. Décaler un
+   élément se fait avec `style={{ animationDelay: "120ms" }}`.
+   `prefers-reduced-motion` est déjà neutralisé par le bloc global plus bas. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.rise {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ─── Loading screen (3D scene) — transform/opacity only, GPU-friendly ─────── */
@@ -257,13 +253,6 @@
   /* row is duplicated; shifting by -50% loops seamlessly */
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
-}
-
-/* Custom cursor active (fine-pointer desktop only) — hide the native cursor
-   everywhere so the bespoke dot+ring replaces it. */
-.custom-cursor-active,
-.custom-cursor-active * {
-  cursor: none !important;
 }
 
 /* prefers-reduced-motion — global catch-all (covers CSS + Framer's CSS-driven animations) */

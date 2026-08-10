@@ -124,7 +124,7 @@ async function ogImage() {
   const mask = Buffer.from(
     `<svg width="${P.w}" height="${P.h}"><rect width="${P.w}" height="${P.h}" rx="10" fill="#fff"/></svg>`,
   );
-  const portrait = await sharp(path.join(PUBLIC, "portrait", "developer-portrait.webp"))
+  const portrait = await sharp(path.join(PUBLIC, "portrait", "johary-880.webp"))
     .resize(P.w, P.h, { fit: "cover", position: "top" })
     .composite([{ input: mask, blend: "dest-in" }])
     .png()

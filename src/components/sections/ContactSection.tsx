@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
-import MagneticButton from "@/components/motion/MagneticButton";
 import { useT } from "@/i18n";
 
 // ── Config ─────────────────────────────────────────────────────────────────
@@ -224,7 +223,7 @@ const ContactSection = () => {
                       <motion.div
                         {...(reduce ? {} : { initial: { opacity: 0, y: -8 }, animate: { opacity: 1, y: 0 } })}
                         role="alert"
-                        className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-xl px-4 py-3"
+                        className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md px-4 py-3"
                       >
                         <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                         {t("contact.errorMsg")}
@@ -232,7 +231,6 @@ const ContactSection = () => {
                     )}
                   </div>
 
-                  <MagneticButton strength={0.2} className="!block w-full">
                   <Button
                     type="submit"
                     size="lg"
@@ -255,7 +253,6 @@ const ContactSection = () => {
                       </>
                     )}
                   </Button>
-                  </MagneticButton>
                 </motion.form>
               )}
             </AnimatePresence>

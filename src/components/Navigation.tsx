@@ -58,94 +58,87 @@ const Navigation = ({
 
   return (
     <>
-      {/* Glassmorphism top nav */}
-      <motion.header
-        initial={reduce ? false : { y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
-        className="fixed top-0 left-0 right-0 z-header"
-      >
-        <div className="mx-4 md:mx-8 mt-3 md:mt-4 rounded-2xl bg-background/60 backdrop-blur-xl border border-border/40 shadow-soft">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
-            <a
-              href="#accueil"
-              className="text-xl md:text-2xl font-display font-bold rounded-md cursor-pointer transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              aria-label={t("nav.backHome")}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigate(0);
-              }}
+      {/* Barre supérieure sobre : pleine largeur, fond opaque + filet de séparation
+          (pas de panneau translucide à reflouter à chaque frame de scroll). */}
+      <header className="rise fixed top-0 left-0 right-0 z-header bg-background/95 border-b border-border/60">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2.5 md:py-3 flex items-center justify-between">
+          <a
+            href="#accueil"
+            className="text-xl md:text-2xl font-display font-bold tracking-tight rounded-md cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label={t("nav.backHome")}
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate(0);
+            }}
+          >
+            J<span className="text-muted-foreground/40">-</span>
+            <span className="text-primary">m</span>
+          </a>
+
+          {/* Desktop navigation */}
+          <nav className="hidden lg:flex items-center gap-1" aria-label={t("nav.mainNav")}>
+            {sectionNames.map((name, index) => {
+              const active = currentSection === index;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => onNavigate(index)}
+                  aria-current={active ? "page" : undefined}
+                  className={`relative inline-flex items-center min-h-11 px-3.5 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {name}
+                  {/* Le filet actif glisse d'un onglet à l'autre (layout partagé) */}
+                  {active && (
+                    <motion.span
+                      layoutId="activeNav"
+                      transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+                      className="absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-primary"
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setLang(lang === "fr" ? "en" : "fr")}
+              aria-label={t("nav.switchLang")}
+              className="inline-flex items-center justify-center min-h-11 min-w-11 px-2 rounded-md font-mono text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <span className="text-gradient">J</span>
-              <span className="text-foreground/70">-m</span>
-            </a>
+              <span className={lang === "fr" ? "text-primary" : ""}>FR</span>
+              <span className="mx-0.5 opacity-40" aria-hidden="true">/</span>
+              <span className={lang === "en" ? "text-primary" : ""}>EN</span>
+            </button>
 
-            {/* Desktop navigation */}
-            <nav className="hidden lg:flex items-center gap-1" aria-label={t("nav.mainNav")}>
-              {sectionNames.map((name, index) => {
-                const active = currentSection === index;
-                return (
-                  <button
-                    key={name}
-                    type="button"
-                    onClick={() => onNavigate(index)}
-                    aria-current={active ? "page" : undefined}
-                    className={`relative inline-flex items-center min-h-11 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                      active
-                        ? "text-primary bg-primary/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                    }`}
-                  >
-                    {name}
-                    {active && (
-                      <motion.div
-                        layoutId="activeNav"
-                        transition={reduce ? { duration: 0 } : undefined}
-                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label={isDark ? t("nav.lightMode") : t("nav.darkMode")}
+              className="rounded-md hover:bg-secondary w-11 h-11 cursor-pointer"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setLang(lang === "fr" ? "en" : "fr")}
-                aria-label={t("nav.switchLang")}
-                className="inline-flex items-center justify-center min-h-11 min-w-11 px-2 rounded-md font-mono text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary/60 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <span className={lang === "fr" ? "text-primary" : ""}>FR</span>
-                <span className="mx-0.5 opacity-40" aria-hidden="true">/</span>
-                <span className={lang === "en" ? "text-primary" : ""}>EN</span>
-              </button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                aria-label={isDark ? t("nav.lightMode") : t("nav.darkMode")}
-                className="rounded-xl hover:bg-secondary/60 w-11 h-11 cursor-pointer"
-              >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden rounded-xl hover:bg-secondary/60 w-11 h-11 cursor-pointer"
-                onClick={() => setIsMenuOpen(true)}
-                aria-label={t("nav.openMenu")}
-                aria-expanded={isMenuOpen}
-                aria-controls="mobile-menu"
-              >
-                <Menu className="w-4 h-4" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden rounded-md hover:bg-secondary w-11 h-11 cursor-pointer"
+              onClick={() => setIsMenuOpen(true)}
+              aria-label={t("nav.openMenu")}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              <Menu className="w-4 h-4" />
+            </Button>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile menu */}
       <AnimatePresence>
@@ -158,7 +151,7 @@ const Navigation = ({
             className="fixed inset-0 z-overlay lg:hidden"
           >
             <div
-              className="absolute inset-0 bg-background/80 backdrop-blur-md"
+              className="absolute inset-0 bg-foreground/25"
               onClick={() => setIsMenuOpen(false)}
             />
             <motion.nav
@@ -170,14 +163,14 @@ const Navigation = ({
               animate={{ x: 0 }}
               exit={reduce ? { opacity: 0 } : { x: "100%" }}
               transition={reduce ? { duration: 0 } : { type: "spring", damping: 28, stiffness: 300 }}
-              className="absolute right-0 top-0 bottom-0 w-72 bg-card/95 backdrop-blur-xl border-l border-border/50 p-6 flex flex-col"
+              className="absolute right-0 top-0 bottom-0 w-72 bg-card border-l border-border p-6 flex flex-col"
             >
               <div className="flex items-center justify-between mb-8">
-                <span className="font-display font-bold text-lg text-gradient">{t("nav.menu")}</span>
+                <span className="kicker !text-primary">{t("nav.menu")}</span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-xl w-11 h-11 cursor-pointer"
+                  className="rounded-md w-11 h-11 cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
                   aria-label={t("nav.closeMenu")}
                 >
@@ -197,10 +190,10 @@ const Navigation = ({
                         setIsMenuOpen(false);
                       }}
                       aria-current={active ? "page" : undefined}
-                      className={`min-h-11 text-base font-medium text-left px-4 py-3 rounded-xl cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                      className={`min-h-11 text-base font-medium text-left px-4 py-3 rounded-md border-l-2 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                         active
-                          ? "text-primary bg-primary/10"
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                          ? "border-primary text-foreground bg-secondary/60"
+                          : "border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                       }`}
                     >
                       {name}

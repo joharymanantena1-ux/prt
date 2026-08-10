@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import LoadingScreen from "@/components/LoadingScreen";
 import ScrollProgress from "@/components/motion/ScrollProgress";
+import HeroSection from "@/components/sections/HeroSection";
 import { useT } from "@/i18n";
 
-const HeroSection = lazy(() => import("@/components/sections/HeroSection"));
+// Le hero est importé statiquement : c'est le contenu au-dessus de la ligne de
+// flottaison, il ne doit pas attendre un chunk supplémentaire pour peindre.
+// Les sections suivantes restent chargées à la demande.
 const AboutSection = lazy(() => import("@/components/sections/AboutSection"));
 const ExperienceSection = lazy(() => import("@/components/sections/ExperienceSection"));
 const SkillsSection = lazy(() => import("@/components/sections/SkillsSection"));
@@ -29,7 +31,6 @@ const sections = [
 
 const Index = () => {
   const { t } = useT();
-  const reduce = useReducedMotion();
   const [isLoading, setIsLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
   const sectionNames = sections.map((s) => t(s.navKey));
@@ -87,23 +88,16 @@ const Index = () => {
         sectionNames={sectionNames}
       />
 
+      {/* Pas d'enveloppe animée par section : chaque section gère sa propre
+          entrée. Une couche `whileInView` supplémentaire ici rendait le contenu
+          invisible jusqu'à ce que l'IntersectionObserver se déclenche — coûteux
+          pour le hero, et six observateurs de plus à maintenir. */}
       {sections.map(({ id, component: Component }) => (
-        <motion.div
-          id={id}
-          key={id}
-          className="scroll-section"
-          // Soft cross-section transition: a light fade/rise as each section
-          // enters. once:true so it never re-fades on scroll-back, and the range
-          // stays subtle to avoid clashing with each section's own entrance anims.
-          initial={reduce ? false : { opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <div id={id} key={id} className="scroll-section">
           <Suspense fallback={<SectionLoader />}>
             <Component onNavigate={goToId} />
           </Suspense>
-        </motion.div>
+        </div>
       ))}
 
       {/* Mobile dots — navigate on click only, never auto-trigger. 44px hit area, FR labels. */}

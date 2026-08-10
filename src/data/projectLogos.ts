@@ -20,7 +20,6 @@ import odoo from "@/assets/odoo.svg";
 import fingerinthenose from "@/assets/fingerinthenose.png";
 import musierparis from "@/assets/musierparis.webp";
 import paulbeuscher from "@/assets/paulbeaucher.png";
-import regardbeauty from "@/assets/regardbeauty.jpg";
 
 export interface LogoConfig {
   src: string;
@@ -40,7 +39,6 @@ export const PROJECT_LOGOS: Record<string, LogoConfig> = {
   "Transport Interne Konecta": { src: konecta, bg: "#ffffff", padded: true },
   "DayByDay CRM": { src: daybyday, bg: "#ffffff" },
   "ERPNext Migration": { src: erpnext, bg: "#0089ff" },
-  "SIRH Regard Beauty": { src: regardbeauty, bg: "#0a0a0a" },
 };
 
 // Odoo is used by bank-file-converter (Odoo XML); kept here for reuse if needed.
@@ -56,7 +54,6 @@ export const PROJECT_COLORS: Record<string, string> = {
   "Transport Interne Konecta": "#4f1fff", // konecta violet
   "DayByDay CRM": "#4f5fe0", // daybyday indigo
   "ERPNext Migration": "#0089ff", // erpnext blue
-  "SIRH Regard Beauty": "#14b8a6", // teal (matches Regard Beauty's brand accent)
   // No-logo projects → explicit brand-ish accents for their monogram fallback.
   "bank-file-converter": "#0d9488", // teal (matches site accent)
   "Edu Levitation SaaS": "#7c3aed", // violet (education)
