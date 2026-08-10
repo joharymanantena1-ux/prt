@@ -86,60 +86,99 @@ const ticks = (x, y, w, h, len = 22, sw = 3, color = TEAL, off = 10) => `
     <path d="M${x - off + len} ${y + h + off}H${x - off}V${y + h + off - len}"/>
   </g>`;
 
-// ── OG image 1200×630 ─────────────────────────────────────────────────────────
+// ── OG image 1200×630 — miroir du Hero éditorial ─────────────────────────────
+// Composition alignée sur le site : portrait détouré debout sur un panneau
+// discret (tête débordante), trame de points + équerre teal, cartouche
+// d'identité à filet teal, et à gauche la hiérarchie du Hero (kicker technos,
+// « Bonjour, je suis », nom en capitales, « Développeur / Full-Stack »).
 async function ogImage() {
   const W = 1200, H = 630;
-  const P = { w: 396, h: 500 };
-  P.x = W - 76 - P.w;
-  P.y = (H - P.h) / 2;
+
+  // Portrait détouré : ratio du recadrage 1353×2134 (≈0.634), aligné au bas.
+  const PH = 560;
+  const PW = Math.round((PH * 1353) / 2134); // ≈ 355
+  const PX = 790;                            // bord gauche du portrait
+  const PY = H - PH;                         // pied au ras du cadre
+  // Panneau d'appui — mêmes proportions que le Hero (la tête déborde).
+  const PANEL = { x: PX - 55, y: PY + Math.round(PH * 0.14), w: PW + 110 };
+
+  // Trame de points (coin haut-gauche du panneau, à cheval sur le bord)
+  let dots = "";
+  for (let r = 0; r < 7; r++)
+    for (let c = 0; c < 6; c++)
+      dots += `<circle cx="${PANEL.x - 34 + c * 14}" cy="${PANEL.y - 26 + r * 14}" r="2"
+                 fill="${TEAL}" opacity="${(0.62 - r * 0.06 - c * 0.04).toFixed(2)}"/>`;
 
   const base = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
     <rect width="${W}" height="${H}" fill="${BG}"/>
     ${grid(W, H)}
-    <radialGradient id="halo" cx="0.78" cy="0.5" r="0.55">
-      <stop offset="0%" stop-color="${TEAL}" stop-opacity="0.16"/>
+    <radialGradient id="halo" cx="0.82" cy="0.55" r="0.55">
+      <stop offset="0%" stop-color="${TEAL}" stop-opacity="0.14"/>
       <stop offset="100%" stop-color="${TEAL}" stop-opacity="0"/>
     </radialGradient>
     <rect width="${W}" height="${H}" fill="url(#halo)"/>
-    ${ticks(36, 36, W - 72, H - 72, 30, 3, TEAL, 0)}
 
-    <text x="84" y="163" font-family="${esc(fonts.mono)}" font-size="23" font-weight="600"
-          letter-spacing="7" fill="${TEAL}">01 — PORTFOLIO</text>
+    <!-- Panneau d'appui du portrait -->
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a2130" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#1a2130" stop-opacity="0.3"/>
+    </linearGradient>
+    <rect x="${PANEL.x}" y="${PANEL.y}" width="${PANEL.w}" height="${H - PANEL.y}" rx="10" fill="url(#panel)"/>
+    <rect x="${PANEL.x + 0.5}" y="${PANEL.y + 0.5}" width="${PANEL.w - 1}" height="${H - PANEL.y + 20}" rx="10"
+          fill="none" stroke="${BORDER}" stroke-width="1.5"/>
+    ${dots}
+    <!-- Équerre teal, coin haut-droit du panneau -->
+    <path d="M${PANEL.x + PANEL.w - 46} ${PANEL.y - 1} H${PANEL.x + PANEL.w - 9}
+             q10 0 10 10 V${PANEL.y + 45}" fill="none" stroke="${TEAL}" stroke-width="3"/>
 
-    <text x="80" y="268" font-family="${esc(fonts.display)}" font-size="97" font-weight="700"
-          fill="${FG}" letter-spacing="-2">Johary</text>
-    <text x="80" y="368" font-family="${esc(fonts.display)}" font-size="97" font-weight="700"
-          fill="${TEAL}" letter-spacing="-2">Manantena</text>
+    <!-- Colonne texte : hiérarchie du Hero -->
+    <text x="82" y="120" font-family="${esc(fonts.mono)}" font-size="21" font-weight="600"
+          letter-spacing="5" fill="${TEAL}">REACT · NODE.JS · TYPESCRIPT</text>
+    <circle cx="88" cy="152" r="4.5" fill="#3fd68f"/>
+    <text x="103" y="159" font-family="${esc(fonts.mono)}" font-size="18" fill="${MUTED}"
+          letter-spacing="2">DISPONIBLE</text>
 
-    <text x="84" y="441" font-family="${esc(fonts.display)}" font-size="33" font-weight="500"
-          fill="${MUTED}">Développeur Full-Stack — Web &amp; Mobile</text>
+    <text x="80" y="230" font-family="${esc(fonts.display)}" font-size="30" font-weight="500"
+          fill="${MUTED}">Bonjour, je suis</text>
+    <text x="80" y="282" font-family="${esc(fonts.display)}" font-size="42" font-weight="700"
+          letter-spacing="2" fill="${FG}">JOHARY MANANTENA</text>
 
-    <text x="84" y="500" font-family="${esc(fonts.mono)}" font-size="21" fill="${FAINT}"
-          letter-spacing="1">React · Node.js · TypeScript · Laravel · Spring Boot</text>
+    <text x="80" y="390" font-family="${esc(fonts.display)}" font-size="88" font-weight="700"
+          fill="${FG}" letter-spacing="-2">Développeur</text>
+    <text x="80" y="478" font-family="${esc(fonts.display)}" font-size="88" font-weight="700"
+          fill="${TEAL}" letter-spacing="-2">Full-Stack</text>
 
-    <circle cx="92" cy="551" r="5" fill="${TEAL}"/>
-    <text x="108" y="559" font-family="${esc(fonts.mono)}" font-size="20" fill="${MUTED}">Disponible pour missions freelance</text>
+    <line x1="82" y1="524" x2="700" y2="524" stroke="${LINE}" stroke-width="1.5"/>
+    <text x="82" y="566" font-family="${esc(fonts.mono)}" font-size="15" fill="${FAINT}" letter-spacing="2">EXPÉRIENCE</text>
+    <text x="82" y="598" font-family="${esc(fonts.display)}" font-size="27" font-weight="700" fill="${FG}">3+ ans</text>
+    <text x="302" y="566" font-family="${esc(fonts.mono)}" font-size="15" fill="${FAINT}" letter-spacing="2">PROJETS</text>
+    <text x="302" y="598" font-family="${esc(fonts.display)}" font-size="27" font-weight="700" fill="${FG}">30+</text>
+    <text x="482" y="566" font-family="${esc(fonts.mono)}" font-size="15" fill="${FAINT}" letter-spacing="2">STATUT</text>
+    <text x="482" y="598" font-family="${esc(fonts.display)}" font-size="27" font-weight="700" fill="${FG}">Freelance</text>
   </svg>`;
 
-  const mask = Buffer.from(
-    `<svg width="${P.w}" height="${P.h}"><rect width="${P.w}" height="${P.h}" rx="10" fill="#fff"/></svg>`,
-  );
+  // Portrait détouré (alpha conservée) posé sur le panneau
   const portrait = await sharp(path.join(PUBLIC, "portrait", "johary-880.webp"))
-    .resize(P.w, P.h, { fit: "cover", position: "top" })
-    .composite([{ input: mask, blend: "dest-in" }])
+    .resize({ height: PH })
     .png()
     .toBuffer();
 
-  const frame = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect x="${P.x + 0.5}" y="${P.y + 0.5}" width="${P.w - 1}" height="${P.h - 1}" rx="10"
-          fill="none" stroke="${BORDER}" stroke-width="1.5"/>
-    ${ticks(P.x, P.y, P.w, P.h)}
+  // Cartouche d'identité — filet teal + fond translucide, comme sur le site
+  const cartouche = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+    <g>
+      <rect x="${PANEL.x + 22}" y="${H - 92}" width="238" height="66" rx="6" fill="${BG}" fill-opacity="0.82"/>
+      <rect x="${PANEL.x + 22}" y="${H - 92}" width="4" height="66" fill="${TEAL}"/>
+      <text x="${PANEL.x + 42}" y="${H - 64}" font-family="${esc(fonts.display)}" font-size="21"
+            font-weight="600" fill="${FG}">Johary Manantena</text>
+      <text x="${PANEL.x + 42}" y="${H - 39}" font-family="${esc(fonts.mono)}" font-size="13"
+            letter-spacing="2" fill="${MUTED}">MADAGASCAR · REMOTE</text>
+    </g>
   </svg>`;
 
   await sharp(Buffer.from(base))
     .composite([
-      { input: portrait, left: P.x, top: Math.round(P.y) },
-      { input: Buffer.from(frame), left: 0, top: 0 },
+      { input: portrait, left: PX, top: PY },
+      { input: Buffer.from(cartouche), left: 0, top: 0 },
     ])
     .flatten({ background: BG })
     .jpeg({ quality: 86, mozjpeg: true })

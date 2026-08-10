@@ -58,12 +58,10 @@ const Navigation = ({
 
   return (
     <>
-      {/* Barre supérieure sobre : pleine largeur, fond opaque + filet de séparation
-          (pas de panneau translucide à reflouter à chaque frame de scroll). */}
-      <header className="rise fixed top-0 left-0 right-0 z-header bg-background/95 border-b border-border/60">
-        {/* Mêmes retraits que .section-container : les bords du header et du
-            contenu restent alignés à toutes les largeurs. */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2.5 md:py-3 flex items-center justify-between">
+      {/* Header flottant — pilule détachée du bord, fond translucide + blur
+          (style historique du site, conservé à la demande). */}
+      <header className="rise fixed top-0 left-0 right-0 z-header">
+        <div className="mx-4 md:mx-8 mt-3 md:mt-4 rounded-2xl bg-background/60 backdrop-blur-xl border border-border/40 shadow-soft max-w-7xl xl:mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
           <a
             href="#accueil"
             className="text-xl md:text-2xl font-display font-bold tracking-tight rounded-md cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
