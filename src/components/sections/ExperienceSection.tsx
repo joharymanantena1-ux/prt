@@ -19,6 +19,17 @@ interface ExpItem {
 
 const experiences: ExpItem[] = [
   {
+    title: { fr: "Développeur Full-Stack", en: "Full-Stack Developer" },
+    company: "BeautyBay",
+    period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
+    current: true,
+    description: {
+      fr: "Développement full-stack de l'écosystème e-commerce BeautyBay, web et mobile : évolution des interfaces clientes et de l'API, intégration de données entre les systèmes métier (flux produits, stocks et commandes synchronisés), intégration mobile React Native et services cloud AWS (stockage S3, automatisations).",
+      en: "Full-stack development of the BeautyBay e-commerce ecosystem, web and mobile: customer-facing interfaces and API work, data integration across business systems (synchronised product, stock and order flows), React Native mobile integration and AWS cloud services (S3 storage, automations).",
+    },
+    technologies: ["ReactJS", "React Native", "Node.js", "GraphQL", "AWS"],
+  },
+  {
     title: { fr: "Développeur – Freelance On-site", en: "Developer – On-site Freelance" },
     company: "Regard Beauty",
     period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
@@ -110,17 +121,26 @@ const TimelineEntry = ({
       transition={reduce ? { duration: 0 } : { duration: 0.45, delay: index * 0.1 }}
       className="relative pl-12 pb-8 last:pb-0"
     >
-      <div className="absolute left-[13px] top-9 bottom-0 w-px bg-gradient-to-b from-primary/40 via-border to-transparent" />
+      {/* Rail vertical — se déploie en scaleY (transform-only) à l'entrée de l'item */}
+      <motion.div
+        aria-hidden="true"
+        initial={reduce ? false : { scaleY: 0 }}
+        whileInView={{ scaleY: 1 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={reduce ? { duration: 0 } : { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+        className="absolute left-[13px] top-9 bottom-0 w-px origin-top bg-gradient-to-b from-border via-border to-transparent"
+      />
 
+      {/* Point actif = seul marqueur vermillon ; les autres restent graphite */}
       <div className={`absolute left-0 top-4 w-7 h-7 rounded-md flex items-center justify-center border-2 z-10 ${
         item.current
-          ? "bg-primary border-primary"
-          : "bg-background border-primary/60"
+          ? "bg-brand border-brand"
+          : "bg-background border-border"
       }`}>
         {type === "exp" ? (
-          <Briefcase className={`w-3 h-3 ${item.current ? "text-primary-foreground" : "text-primary"}`} />
+          <Briefcase className={`w-3 h-3 ${item.current ? "text-brand-foreground" : "text-muted-foreground"}`} />
         ) : (
-          <GraduationCap className="w-3 h-3 text-primary" />
+          <GraduationCap className="w-3 h-3 text-muted-foreground" />
         )}
       </div>
 
@@ -130,7 +150,7 @@ const TimelineEntry = ({
           : "border-border bg-card hover:border-primary/40"
       }`}>
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-primary/10 text-primary">
+          <span className="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-secondary/70 text-muted-foreground">
             {tx(item.period, lang)}
           </span>
           {item.current && (
@@ -173,7 +193,7 @@ const TimelineEntry = ({
         </p>
 
         {item.result && (
-          <p className="flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/8 border border-primary/15 rounded-lg px-3 py-1.5 mb-3 w-fit">
+          <p className="flex items-center gap-1.5 text-xs font-medium text-success bg-success/10 border border-success/20 rounded-md px-3 py-1.5 mb-3 w-fit">
             <Check className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
             {tx(item.result, lang)}
           </p>

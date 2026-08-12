@@ -79,15 +79,6 @@ const professionalProjects: Project[] = [
     category: "Cloud",
   },
   {
-    title: "Test Technique Biloki",
-    description: {
-      fr: "Test technique — application de gestion de stock : suivi des produits, mouvements d'entrée/sortie et tableau de bord.",
-      en: "Technical test — stock-management app: product tracking, in/out movements and a dashboard.",
-    },
-    technologies: ["TypeScript", "React", "Node.js"],
-    category: "Gestion",
-  },
-  {
     title: "bank-file-converter",
     description: {
       fr: "Outil de conversion de fichiers bancaires : transformation des fichiers XML Odoo en XLSX et conversion inverse (revert), pour l'intégration comptable d'une banque (BRED, FR).",
@@ -240,9 +231,9 @@ const ProjectLogoHeader = ({ project, index }: { project: Project; index: number
         <span className={`font-mono text-[11px] ${metaClass}`}>№{pad(index + 1)}</span>
       </div>
 
-      {/* Flagship tag — solid teal chip, readable on any artwork */}
+      {/* Flagship tag — solid vermillon chip, readable on any artwork */}
       {project.featured && (
-        <span className="absolute bottom-2 left-3 z-10 font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-primary text-primary-foreground">
+        <span className="absolute bottom-2 left-3 z-10 font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-brand text-brand-foreground">
           {t("projects.featured")}
         </span>
       )}
@@ -253,7 +244,7 @@ const ProjectLogoHeader = ({ project, index }: { project: Project; index: number
           alt={`Logo ${project.title}`}
           // Padded logos (baked-in transparent margin) display larger to compensate.
           // Subtle zoom on card hover (transform-only); skipped under reduced-motion.
-          className={`object-contain transition-transform duration-500 ease-out group-hover:scale-[1.07] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${logo.padded ? "max-h-[80%] max-w-[88%]" : "max-h-[52%] max-w-[70%]"}`}
+          className={`object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${logo.padded ? "max-h-[80%] max-w-[88%]" : "max-h-[52%] max-w-[70%]"}`}
           loading="lazy"
           draggable={false}
         />
@@ -286,7 +277,7 @@ const IconLink = ({
     title={label}
     className={`inline-flex items-center justify-center min-h-11 min-w-11 rounded-md cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
       variant === "primary"
-        ? "text-primary hover:bg-primary hover:text-primary-foreground"
+        ? "text-primary hover:bg-brand hover:text-brand-foreground"
         : "text-muted-foreground hover:bg-foreground hover:text-background"
     }`}
   >
@@ -342,13 +333,13 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       animate={{ opacity: 1, y: 0 }}
       transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
       // Halo glow + subtle lift on hover — transform/shadow only (GPU-cheap),
-      // motion-reduce drops the lift. The shadow uses the teal primary token.
-      className="relative flex-shrink-0 snap-start w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.35)] hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      // motion-reduce drops the lift. Neutral elevated shadow — no coloured glow.
+      className="relative flex-shrink-0 snap-start w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-elevated hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
     >
-      {/* Accent sweep — teal hairline drawn from the left on hover */}
+      {/* Accent sweep — vermilion hairline drawn from the left on hover */}
       <span
         aria-hidden="true"
-        className="absolute top-0 left-0 z-20 h-0.5 w-full bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out motion-reduce:transition-none"
+        className="absolute top-0 left-0 z-20 h-0.5 w-full bg-brand origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out motion-reduce:transition-none"
       />
       {/* Full-bleed logo header — logo sits on its own brand background */}
       <div className="relative border-b border-border">
@@ -357,7 +348,7 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
 
       <div className="p-5 flex flex-col gap-3.5 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-display font-semibold leading-snug line-clamp-2">{project.title}</h3>
+          <h3 className="text-lg font-display font-semibold leading-snug line-clamp-2 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none">{project.title}</h3>
           <div className="flex gap-0.5 flex-shrink-0 -mr-2 -mt-1">
             {project.githubUrl && (
               <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
@@ -393,7 +384,7 @@ const AcademicCard = ({ project, index }: { project: Project; index: number }) =
       exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
       transition={reduce ? { duration: 0 } : { duration: 0.3, delay: (index % 12) * 0.02, layout: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
       style={{ transition: "box-shadow .3s, border-color .3s" }}
-      className="card-swiss p-3.5 flex flex-col gap-2 group hover:border-primary/40 hover:shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.3)]"
+      className="card-swiss p-3.5 flex flex-col gap-2 group hover:border-primary/40 hover:shadow-elevated"
     >
       <div className="flex items-center justify-between">
         <CategoryTag category={project.category} accent />
@@ -513,7 +504,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
       <div className="mt-3 flex items-center gap-4">
         <div className="flex-1 h-px bg-border relative overflow-hidden" aria-hidden="true">
           <div
-            className="absolute inset-0 bg-primary origin-left transition-transform duration-200 ease-out"
+            className="absolute inset-0 bg-brand origin-left transition-transform duration-200 ease-out"
             style={{ transform: `scaleX(${pos.progress})` }}
           />
         </div>
@@ -525,7 +516,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
           type="button"
           onClick={() => scrollByCards(-1)}
           aria-label={t("projects.prev")}
-          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-brand/50 text-primary hover:bg-brand hover:text-brand-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ChevronLeft className="w-5 h-5" aria-hidden="true" />
         </button>
@@ -533,7 +524,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
           type="button"
           onClick={() => scrollByCards(1)}
           aria-label={t("projects.next")}
-          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-brand/50 text-primary hover:bg-brand hover:text-brand-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ChevronRight className="w-5 h-5" aria-hidden="true" />
         </button>
@@ -591,7 +582,7 @@ const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (
                   onClick={() => setActiveFilter(cat)}
                   className={`flex-shrink-0 inline-flex items-center gap-1.5 min-h-11 px-4 rounded-md font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                     active
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-brand text-brand-foreground"
                       : "border border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
                   }`}
                 >
@@ -678,10 +669,13 @@ const ProjectsSection = () => {
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-haspopup="dialog"
-            className="relative flex-shrink-0 inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-md bg-primary text-primary-foreground font-medium cursor-pointer transition-colors duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group relative flex-shrink-0 inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-md bg-brand text-brand-foreground font-medium cursor-pointer transition-colors duration-200 hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {t("projects.archiveBtnBefore")}{academicProjects.length}{t("projects.archiveBtnAfter")}
-            <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+            <ArrowUpRight
+              className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
+              aria-hidden="true"
+            />
           </button>
         </motion.div>
       </div>
