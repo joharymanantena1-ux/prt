@@ -235,20 +235,20 @@ const ContactSection = () => {
                     type="submit"
                     size="lg"
                     disabled={isDisabled || !consent}
-                    className="w-full rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-secondary/60 disabled:text-muted-foreground text-sm font-semibold h-12 gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="group w-full rounded-md bg-brand text-brand-foreground hover:bg-brand/90 disabled:bg-secondary/60 disabled:text-muted-foreground text-sm font-semibold h-12 gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     {formState === "loading" ? (
                       <>
                         {reduce ? (
                           <span aria-hidden="true" className="font-bold tracking-widest">…</span>
                         ) : (
-                          <span aria-hidden="true" className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                          <span aria-hidden="true" className="w-4 h-4 border-2 border-brand-foreground/30 border-t-brand-foreground rounded-full animate-spin" />
                         )}
                         {t("contact.sending")}
                       </>
                     ) : (
                       <>
-                        <Send className="w-4 h-4" aria-hidden="true" />
+                        <Send className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none" aria-hidden="true" />
                         {t("contact.send")}
                       </>
                     )}
@@ -278,7 +278,7 @@ const ContactSection = () => {
                     {href ? (
                       <a
                         href={href}
-                        className={`text-sm font-medium hover:text-primary transition-colors block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${breakClass}`}
+                        className={`link-editorial text-sm font-medium hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${breakClass}`}
                       >
                         {value}
                       </a>
@@ -301,10 +301,10 @@ const ContactSection = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Ouvrir ${label} dans un nouvel onglet`}
-                    className="flex-1 min-h-11 flex flex-col items-center justify-center gap-1 p-3 rounded-md bg-secondary/50 hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border border-border/50 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex-1 min-h-11 flex flex-col items-center justify-center gap-1 p-3 rounded-md bg-secondary/50 hover:bg-brand hover:text-brand-foreground transition-colors duration-200 border border-border/50 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <Icon className="w-4 h-4" aria-hidden="true" />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-primary-foreground transition-colors truncate w-full text-center">
+                    <span className="text-xs font-medium text-muted-foreground group-hover:text-brand-foreground transition-colors truncate w-full text-center">
                       {label}
                     </span>
                   </a>
@@ -312,8 +312,8 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Availability — success token; dot pulse handled by the global reduced-motion guard */}
-            <div className="card-swiss p-5 bg-primary/5 border-primary/30">
+            {/* Availability — statut olive (success), texte neutre ; dot pulse handled by the global reduced-motion guard */}
+            <div className="card-swiss p-5 bg-success/5 border-success/25">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
                 <h3 className="text-sm font-display font-semibold">{t("contact.availableTitle")}</h3>

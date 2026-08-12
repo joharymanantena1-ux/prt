@@ -79,7 +79,7 @@ const CookieConsent = () => {
                 type="button"
                 size="sm"
                 onClick={() => decide(true)}
-                className="min-h-11 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="min-h-11 bg-brand text-brand-foreground hover:bg-brand/90 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Accepter
               </Button>

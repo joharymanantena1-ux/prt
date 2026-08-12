@@ -29,6 +29,12 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        // Vermillon de branding pur (#E4572E) — fills, CTA, éléments graphiques.
+        // Pour du petit texte accentué, utiliser `primary` (variante AA par mode).
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",

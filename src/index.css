@@ -5,45 +5,50 @@
 
 @layer base {
   :root {
-    --background: 220 18% 97%;
-    --foreground: 224 28% 12%;
+    /* Palette « Editorial Signal » : ink #11130F · warm bone #F3EBDD
+       · vermilion #E4572E · moss #7A8B4A · graphite #2B2D29 */
+    --background: 38 48% 91%;          /* #F3EBDD */
+    --foreground: 90 12% 6.7%;         /* #11130F */
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 28% 12%;
+    --card: 40 50% 94%;                /* bone à peine plus clair */
+    --card-foreground: 90 12% 6.7%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 28% 12%;
+    --popover: 40 50% 94%;
+    --popover-foreground: 90 12% 6.7%;
 
-    --primary: 174 70% 29%;            /* AA: white-on-teal 4.94:1 · teal-as-text on --background 4.60:1 */
-    --primary-foreground: 0 0% 100%;
+    --brand: 13.5 77% 53.7%;           /* #E4572E — fills & graphiques (ink-on-brand 5.2:1) */
+    --brand-foreground: 90 12% 6.7%;
 
-    --secondary: 220 14% 93%;
-    --secondary-foreground: 220 28% 22%;
+    --primary: 13 72% 42%;             /* vermillon approfondi — AA: as-text 4.7:1 · bone-on-primary 4.7:1 */
+    --primary-foreground: 38 48% 91%;
 
-    --muted: 220 14% 95%;
-    --muted-foreground: 220 12% 42%;   /* AA: body copy now ~4.9:1 */
+    --secondary: 38 32% 85%;           /* bone tassé — chips, surfaces secondaires */
+    --secondary-foreground: 90 5% 17%;
 
-    --accent: 262 64% 50%;             /* AA: white-on-accent 7.2:1, accent-as-text 6.2:1 */
-    --accent-foreground: 0 0% 100%;
+    --muted: 38 35% 87%;
+    --muted-foreground: 75 6% 32%;     /* gris chaud — AA: ~6.3:1 */
 
-    --destructive: 0 72% 45%;          /* AA: deepened so white & tinted text pass in light */
+    --accent: 38 32% 85%;              /* surface hover (menus, listes) */
+    --accent-foreground: 90 12% 6.7%;
+
+    --destructive: 0 72% 45%;          /* AA: 4.9:1 sur bone */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 72% 29%;            /* AA: replaces ad-hoc green-400 (5.1:1 light) */
-    --success-foreground: 0 0% 100%;
+    --success: 76 45% 28%;             /* moss approfondi — AA: 5.2:1 sur bone */
+    --success-foreground: 38 48% 91%;
 
-    --border: 220 14% 86%;
-    --input: 220 14% 86%;
-    --ring: 174 70% 29%;               /* matches primary */
+    --border: 80 6% 74%;               /* graphite délavé — hairline chaude */
+    --input: 80 6% 74%;
+    --ring: 13.5 77% 53.7%;            /* focus = signal vermillon */
 
-    --radius: 0.875rem;
+    --radius: 0.5rem;                  /* éditorial : 8/6/4 px, plus de capsules */
 
-    /* Design tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(174 70% 29%) 0%, hsl(196 80% 40%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 18% 98%) 100%);
+    /* Design tokens — gradients quasi imperceptibles (flat-first) */
+    --gradient-primary: linear-gradient(135deg, hsl(13.5 77% 53.7%) 0%, hsl(13 74% 49%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(40 50% 94%) 0%, hsl(38 48% 92%) 100%);
 
-    --shadow-soft: 0 2px 16px -4px hsl(224 28% 12% / 0.07);
-    --shadow-elevated: 0 12px 40px -8px hsl(224 28% 12% / 0.11);
+    --shadow-soft: 0 2px 16px -4px hsl(90 12% 6.7% / 0.08);
+    --shadow-elevated: 0 12px 40px -8px hsl(90 12% 6.7% / 0.12);
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'DM Sans', sans-serif;
@@ -51,39 +56,42 @@
   }
 
   .dark {
-    --background: 224 24% 7%;
-    --foreground: 220 14% 94%;
+    --background: 90 12% 6.7%;         /* #11130F — noir charbon, pas navy */
+    --foreground: 38 48% 91%;          /* #F3EBDD */
 
-    --card: 224 22% 11%;
-    --card-foreground: 220 14% 94%;
+    --card: 90 7% 10%;                 /* entre ink et graphite */
+    --card-foreground: 38 48% 91%;
 
-    --popover: 224 22% 11%;
-    --popover-foreground: 220 14% 94%;
+    --popover: 90 7% 10%;
+    --popover-foreground: 38 48% 91%;
 
-    --primary: 174 72% 48%;            /* already ~10:1 on dark */
-    --primary-foreground: 224 24% 7%;
+    --brand: 13.5 77% 53.7%;           /* #E4572E — identique dans les deux modes */
+    --brand-foreground: 90 12% 6.7%;
 
-    --secondary: 224 18% 17%;
-    --secondary-foreground: 220 14% 88%;
+    --primary: 13.5 77% 53.7%;         /* vermillon pur — AA sur ink: 5.2:1 as-text */
+    --primary-foreground: 90 12% 6.7%;
 
-    --muted: 224 18% 14%;
-    --muted-foreground: 220 10% 60%;   /* ~5.6:1, extra headroom */
+    --secondary: 90 5% 17%;            /* #2B2D29 graphite */
+    --secondary-foreground: 38 48% 91%;
 
-    --accent: 262 64% 66%;             /* AA: small accent text now ~5.25:1 */
-    --accent-foreground: 0 0% 100%;
+    --muted: 90 8% 9.5%;
+    --muted-foreground: 38 16% 71%;    /* bone atténué — ~9.5:1 */
 
-    --destructive: 0 62% 55%;
+    --accent: 90 5% 17%;               /* surface hover graphite */
+    --accent-foreground: 38 48% 91%;
+
+    --destructive: 0 66% 58%;          /* AA: 4.6:1 sur ink */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 64% 45%;
-    --success-foreground: 224 24% 7%;
+    --success: 76 31% 42%;             /* #7A8B4A moss — AA: 5.1:1 sur ink */
+    --success-foreground: 90 12% 6.7%;
 
-    --border: 224 18% 19%;
-    --input: 224 18% 19%;
-    --ring: 174 72% 48%;
+    --border: 90 5% 19%;               /* variation subtile du graphite */
+    --input: 90 5% 19%;
+    --ring: 13.5 77% 53.7%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(174 72% 48%) 0%, hsl(196 80% 54%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(224 22% 13%) 0%, hsl(224 22% 9%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(13.5 77% 53.7%) 0%, hsl(13 74% 49%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(90 7% 11%) 0%, hsl(90 10% 8%) 100%);
 
     --shadow-soft: 0 2px 16px -4px hsl(0 0% 0% / 0.28);
     --shadow-elevated: 0 12px 40px -8px hsl(0 0% 0% / 0.44);
@@ -106,6 +114,9 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Adoucit uniquement le basculement dark/light — propriétés ciblées,
+       jamais `transition: all` ni de règle `*`. */
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -171,7 +182,7 @@
   }
 
   .nav-dot.active {
-    @apply bg-primary;
+    @apply bg-brand;
     width: 8px;
     height: 22px;
     border-radius: 4px;
@@ -186,10 +197,17 @@
 
   /* Faint engineering grid background (decorative, GPU-cheap) */
   .grid-bg {
+    /* Light : dérivée du graphite (via --border) ; à peine perceptible */
     background-image:
-      linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+      linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
     background-size: 44px 44px;
+  }
+  /* Dark : dérivée du warm bone, très faible — pas de grille colorée */
+  .dark .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
   }
 
   /* Swiss surface card — square-ish corners, hairline border, no glow */
@@ -198,6 +216,41 @@
   }
   .card-swiss:hover {
     @apply border-primary/40;
+  }
+
+  /* ─── Vocabulaire de micro-interactions ─────────────────────────────── */
+  /* Underline éditoriale : sort par la droite, revient par la gauche.
+     Signature commune des liens texte (contact, liens importants). */
+  .link-editorial {
+    position: relative;
+  }
+  .link-editorial::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-editorial:hover::after,
+  .link-editorial:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Curseur terminal — clin d'œil dev, une seule occurrence (kicker du hero).
+     Opacity uniquement ; neutralisé par le bloc prefers-reduced-motion global. */
+  .caret-terminal {
+    display: inline-block;
+    width: 0.45em;
+    height: 1em;
+    margin-left: 3px;
+    background: hsl(var(--brand));
+    animation: caret-blink 1.1s steps(2, jump-none) infinite;
   }
 }
 
@@ -253,6 +306,10 @@
   /* row is duplicated; shifting by -50% loops seamlessly */
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+
+@keyframes caret-blink {
+  50% { opacity: 0; }
 }
 
 /* prefers-reduced-motion — global catch-all (covers CSS + Framer's CSS-driven animations) */

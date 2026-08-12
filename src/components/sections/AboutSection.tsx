@@ -84,8 +84,8 @@ const AboutSection = () => {
               className="group card-swiss p-3 sm:p-4 lg:p-6"
             >
               <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors duration-300">
-                  <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-primary group-hover:text-primary-foreground transition-colors" aria-hidden="true" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-brand transition-colors duration-300">
+                  <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-primary group-hover:text-brand-foreground transition-colors" aria-hidden="true" />
                 </div>
                 <span className="font-mono text-[11px] text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
               </div>

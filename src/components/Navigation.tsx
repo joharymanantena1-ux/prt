@@ -58,10 +58,10 @@ const Navigation = ({
 
   return (
     <>
-      {/* Header flottant — pilule détachée du bord, fond translucide + blur
-          (style historique du site, conservé à la demande). */}
-      <header className="rise fixed top-0 left-0 right-0 z-header">
-        <div className="mx-4 md:mx-8 mt-3 md:mt-4 rounded-2xl bg-background/60 backdrop-blur-xl border border-border/40 shadow-soft max-w-7xl xl:mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+      {/* Header éditorial — barre pleine largeur, fond quasi opaque, filet fin
+          en pied. Pas de pilule flottante ni d'effet verre. */}
+      <header className="rise fixed top-0 left-0 right-0 z-header bg-background/95 backdrop-blur-sm border-b border-border/70">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-3.5 flex items-center justify-between">
           <a
             href="#accueil"
             className="text-xl md:text-2xl font-display font-bold tracking-tight rounded-md cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -95,7 +95,7 @@ const Navigation = ({
                     <motion.span
                       layoutId="activeNav"
                       transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
-                      className="absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-primary"
+                      className="absolute inset-x-3 bottom-1 h-0.5 bg-brand"
                     />
                   )}
                 </button>

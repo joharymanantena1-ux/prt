@@ -39,6 +39,7 @@ const SectionHeading = ({
         transition={reduce ? { duration: 0 } : { duration: 0.4 }}
         className={`kicker !text-primary inline-flex items-center gap-2 ${centered ? "justify-center" : ""}`}
       >
+        {/* Séquence : numéro → ligne qui s'étend → label légèrement après */}
         <span>{index}</span>
         <motion.span
           aria-hidden="true"
@@ -48,7 +49,14 @@ const SectionHeading = ({
           transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.15, ease: EASE }}
           className="h-px w-6 bg-primary/50 origin-left"
         />
-        <span>{label}</span>
+        <motion.span
+          initial={reduce ? false : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={reduce ? { duration: 0 } : { duration: 0.35, delay: 0.3 }}
+        >
+          {label}
+        </motion.span>
       </motion.span>
 
       <div className="overflow-hidden mt-2 pb-1">

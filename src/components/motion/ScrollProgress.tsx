@@ -12,7 +12,7 @@ const ScrollProgress = () => {
     <motion.div
       aria-hidden="true"
       style={{ scaleX }}
-      className="fixed top-0 left-0 right-0 h-0.5 origin-left bg-primary z-loader"
+      className="fixed top-0 left-0 right-0 h-0.5 origin-left bg-brand z-loader"
     />
   );
 };

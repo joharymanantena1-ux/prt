@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MorphingRoles from "@/components/motion/MorphingRoles";
@@ -32,17 +33,48 @@ const SOCIALS = [
 /* ── Zone portrait — composition éditoriale ─────────────────────────────────
    Le portrait détouré s'appuie sur un panneau discret (la tête déborde du
    panneau pour la profondeur), ponctué d'une trame de points et d'une équerre
-   cyan. Le cartouche d'identité (border-left cyan, fond translucide) chevauche
+   vermillon. Le cartouche d'identité (border-left vermillon, fond translucide) chevauche
    le bas du panneau. Aucune animation : c'est l'élément LCP, il peint direct. */
 const HeroPortrait = () => {
   const { t } = useT();
+
+  // Cartouche : fermé au premier rendu, s'ouvre (clip-path) quand la zone du
+  // portrait devient visible, puis reste statique. On observe le CONTENEUR du
+  // portrait, pas le cartouche lui-même : Chrome applique le clip-path à la
+  // géométrie d'intersection, un élément entièrement clippé n'intersecte jamais.
+  // Ouvert d'emblée sous reduced-motion ; observation unique, puis déconnexion.
+  const portraitRef = useRef<HTMLDivElement>(null);
+  const [cartOpen, setCartOpen] = useState(false);
+  useEffect(() => {
+    const el = portraitRef.current;
+    if (
+      !el ||
+      typeof IntersectionObserver === "undefined" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setCartOpen(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setCartOpen(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div className="relative order-2 lg:order-none lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:self-center flex justify-center lg:justify-start">
-      <div className="relative w-[min(78vw,340px)] sm:w-[400px] lg:w-full lg:max-w-[420px] xl:max-w-[460px]">
+      <div ref={portraitRef} className="relative w-[min(78vw,340px)] sm:w-[400px] lg:w-full lg:max-w-[420px] xl:max-w-[460px]">
 
-        {/* Panneau d'appui — commence sous la tête, file jusqu'au sol */}
+        {/* Panneau d'appui — commence sous la tête, file jusqu'au sol (flat, éditorial) */}
         <div
-          className="absolute inset-x-0 top-[14%] bottom-0 rounded-md border border-border/70 bg-gradient-to-b from-secondary/60 to-secondary/20 dark:from-secondary/40 dark:to-secondary/10"
+          className="absolute inset-x-0 top-[14%] bottom-0 rounded-md border border-border/70 bg-secondary/35 dark:bg-secondary/25"
           aria-hidden="true"
         />
 
@@ -50,7 +82,7 @@ const HeroPortrait = () => {
         <div
           className="pointer-events-none absolute top-[8%] -left-5 sm:-left-7 w-24 h-28 opacity-80"
           style={{
-            backgroundImage: "radial-gradient(hsl(var(--primary) / 0.5) 1.5px, transparent 2px)",
+            backgroundImage: "radial-gradient(hsl(var(--brand) / 0.45) 1.5px, transparent 2px)",
             backgroundSize: "13px 13px",
             WebkitMaskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
             maskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
@@ -58,9 +90,9 @@ const HeroPortrait = () => {
           aria-hidden="true"
         />
 
-        {/* Équerre cyan — coin haut-droit du panneau */}
+        {/* Équerre vermillon — coin haut-droit du panneau */}
         <span
-          className="pointer-events-none absolute top-[14%] right-0 w-10 h-10 -translate-y-px translate-x-px border-t-2 border-r-2 border-primary rounded-tr-md"
+          className="pointer-events-none absolute top-[14%] right-0 w-10 h-10 -translate-y-px translate-x-px border-t-2 border-r-2 border-brand rounded-tr-md"
           aria-hidden="true"
         />
 
@@ -75,6 +107,13 @@ const HeroPortrait = () => {
             style={{ writingMode: "vertical-rl" }}
           >
             18.8792° S · 47.5079° E — TNR
+          </span>
+          {/* « Jm » en binaire — détail dev statique, volontairement à peine visible */}
+          <span
+            className="font-mono text-[9px] tracking-[0.18em] text-muted-foreground/35 whitespace-nowrap select-none"
+            style={{ writingMode: "vertical-rl" }}
+          >
+            01001010 01101101
           </span>
         </div>
 
@@ -101,16 +140,24 @@ const HeroPortrait = () => {
           className="absolute inset-x-0 bottom-0 z-10 h-px bg-gradient-to-r from-transparent via-border to-transparent"
         />
 
-        {/* Cartouche d'identité — sobre : filet cyan, fond translucide.
+        {/* Cartouche d'identité — sobre : filet vermillon, fond translucide.
             Le nom n'apparaît ici qu'en ≥lg (en dessous, il est déjà affiché
             juste au-dessus du portrait dans le flux). */}
-        <div className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-primary rounded-r-md bg-background/75 backdrop-blur-[3px] px-4 py-2.5">
-          <p className="hidden lg:block font-display text-base xl:text-lg font-semibold leading-tight">
-            Johary Manantena
-          </p>
-          <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground lg:mt-1">
-            {t("hero.location")}
-          </p>
+        <div
+          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-brand rounded-r-md bg-background/85 px-4 py-2.5"
+          style={{
+            clipPath: cartOpen ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+            transition: "clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        >
+          <div className={`transition-opacity duration-300 ${cartOpen ? "opacity-100 delay-200" : "opacity-0"}`}>
+            <p className="hidden lg:block font-display text-base xl:text-lg font-semibold leading-tight">
+              Johary Manantena
+            </p>
+            <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground lg:mt-1">
+              {t("hero.location")}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -156,6 +203,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 en pause hors écran et sous prefers-reduced-motion. */}
             <span className="kicker !text-primary inline-flex items-center gap-1.5">
               <MorphingRoles items={["React", "Node.js", "TypeScript", "React Native", "Laravel", "Spring Boot"]} />
+              <span className="caret-terminal" aria-hidden="true" />
             </span>
             <span className="h-px w-8 bg-border hidden sm:block" aria-hidden="true" />
             <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
@@ -175,7 +223,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             </span>
             <span className="mt-3 block tracking-tight leading-[0.98] text-[clamp(2.6rem,4.8vw,4.6rem)]">
               <span className="block">{t("hero.roleL1")}</span>
-              <span className="block text-primary">{t("hero.roleL2")}</span>
+              <span className="block">{t("hero.roleL2")}<span className="text-brand">.</span></span>
             </span>
           </h1>
 
@@ -198,7 +246,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           >
             <Button
               size="lg"
-              className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+              className="rounded-md bg-brand hover:bg-brand/90 text-brand-foreground font-semibold px-7 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
               onClick={() => onNavigate("projets")}
             >
               {t("hero.ctaProjects")}
@@ -206,7 +254,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             <Button
               variant="outline"
               size="lg"
-              className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+              className="rounded-md border-foreground/30 hover:bg-foreground hover:text-background hover:border-foreground font-semibold px-7 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
               onClick={() => onNavigate("contact")}
             >
               {t("hero.ctaContact")}
@@ -214,7 +262,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             <Button
               variant="outline"
               size="lg"
-              className="rounded-md border-border hover:border-primary/50 hover:bg-secondary font-semibold px-7 gap-2 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+              className="rounded-md border-foreground/30 hover:bg-foreground hover:text-background hover:border-foreground font-semibold px-7 gap-2 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
               asChild
             >
               <a
@@ -238,7 +286,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-border/60 text-muted-foreground hover:text-primary-foreground hover:bg-primary hover:border-primary transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-border/60 text-foreground/75 hover:text-brand-foreground hover:bg-brand hover:border-brand transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label={`${label} (nouvel onglet)`}
               >
                 <Icon className="w-[18px] h-[18px]" aria-hidden="true" />

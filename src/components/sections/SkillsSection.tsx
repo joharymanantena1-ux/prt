@@ -146,7 +146,7 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
         </div>
         <div>
           <h3 className="text-sm font-display font-bold leading-none mb-1">{tx(category.title, lang)}</h3>
-          <div className="h-0.5 w-6 rounded-full bg-primary" />
+          <div className="h-0.5 w-6 bg-brand" />
         </div>
         <span className="ml-auto font-mono text-xs text-muted-foreground">{String(category.skills.length).padStart(2, "0")}</span>
       </div>
@@ -197,7 +197,7 @@ const SkillsSection = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={reduce ? { duration: 0 } : { duration: 0.28, delay: 0.3 + index * 0.04 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-primary/40 transition-colors duration-200"
+                className="flex items-center gap-2 px-4 py-2 rounded-md bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-primary/40 transition-colors duration-200"
               >
                 <Icon className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
                 {tx(label, lang)}
