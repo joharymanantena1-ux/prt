@@ -29,11 +29,14 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-        // Vermillon de branding pur (#E4572E) — fills, CTA, éléments graphiques.
-        // Pour du petit texte accentué, utiliser `primary` (variante AA par mode).
+        // Bleu roi de branding (#2447A8) — fills, CTA. Pour du petit texte ou
+        // des lignes accentuées, utiliser `primary` (variante AA par mode :
+        // royal en light, royal éclairci en dark). `brand-secondary` = oxblood,
+        // accent rare réservé à quelques détails éditoriaux.
         brand: {
           DEFAULT: "hsl(var(--brand))",
           foreground: "hsl(var(--brand-foreground))",
+          secondary: "hsl(var(--brand-secondary))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

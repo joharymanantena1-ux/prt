@@ -33,7 +33,7 @@ const SOCIALS = [
 /* ── Zone portrait — composition éditoriale ─────────────────────────────────
    Le portrait détouré s'appuie sur un panneau discret (la tête déborde du
    panneau pour la profondeur), ponctué d'une trame de points et d'une équerre
-   vermillon. Le cartouche d'identité (border-left vermillon, fond translucide) chevauche
+   accent. Le cartouche d'identité (border-left accent, fond translucide) chevauche
    le bas du panneau. Aucune animation : c'est l'élément LCP, il peint direct. */
 const HeroPortrait = () => {
   const { t } = useT();
@@ -82,7 +82,7 @@ const HeroPortrait = () => {
         <div
           className="pointer-events-none absolute top-[8%] -left-5 sm:-left-7 w-24 h-28 opacity-80"
           style={{
-            backgroundImage: "radial-gradient(hsl(var(--brand) / 0.45) 1.5px, transparent 2px)",
+            backgroundImage: "radial-gradient(hsl(var(--primary) / 0.45) 1.5px, transparent 2px)",
             backgroundSize: "13px 13px",
             WebkitMaskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
             maskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
@@ -90,9 +90,9 @@ const HeroPortrait = () => {
           aria-hidden="true"
         />
 
-        {/* Équerre vermillon — coin haut-droit du panneau */}
+        {/* Équerre accent — coin haut-droit du panneau */}
         <span
-          className="pointer-events-none absolute top-[14%] right-0 w-10 h-10 -translate-y-px translate-x-px border-t-2 border-r-2 border-brand rounded-tr-md"
+          className="pointer-events-none absolute top-[14%] right-0 w-10 h-10 -translate-y-px translate-x-px border-t-2 border-r-2 border-primary rounded-tr-md"
           aria-hidden="true"
         />
 
@@ -140,11 +140,11 @@ const HeroPortrait = () => {
           className="absolute inset-x-0 bottom-0 z-10 h-px bg-gradient-to-r from-transparent via-border to-transparent"
         />
 
-        {/* Cartouche d'identité — sobre : filet vermillon, fond translucide.
+        {/* Cartouche d'identité — sobre : filet accent, fond translucide.
             Le nom n'apparaît ici qu'en ≥lg (en dessous, il est déjà affiché
             juste au-dessus du portrait dans le flux). */}
         <div
-          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-brand rounded-r-md bg-background/85 px-4 py-2.5"
+          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-primary rounded-r-md bg-background/85 px-4 py-2.5"
           style={{
             clipPath: cartOpen ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
             transition: "clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -223,7 +223,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             </span>
             <span className="mt-3 block tracking-tight leading-[0.98] text-[clamp(2.6rem,4.8vw,4.6rem)]">
               <span className="block">{t("hero.roleL1")}</span>
-              <span className="block">{t("hero.roleL2")}<span className="text-brand">.</span></span>
+              <span className="block">{t("hero.roleL2")}<span className="text-primary">.</span></span>
             </span>
           </h1>
 

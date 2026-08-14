@@ -18,21 +18,18 @@ Node version: 18.18.0 (enforced via `.nvmrc`). Deployment target: Netlify.
 
 This is a single-page portfolio site (French-language) for a full-stack developer. The stack is React 18 + TypeScript + Vite, styled with Tailwind CSS (CSS variable design tokens) and animated heavily with Framer Motion and GSAP.
 
-### Scroll navigation system
+### Scroll navigation
 
-The core of the app is a custom full-screen, section-by-section scroll system in [src/pages/Index.tsx](src/pages/Index.tsx). It manages a `currentSection` index and responds to:
-- Mouse wheel (throttled, 600ms debounce via a custom `useThrottle` hook)
-- Touch gestures (vertical swipe and horizontal slide)
-- Keyboard arrows (Up/Down/Left/Right)
+Natural page scroll (no scroll hijacking). [src/pages/Index.tsx](src/pages/Index.tsx) tracks the active section with an rAF-throttled scroll listener (scrollspy) and exposes `navigateToSection` (smooth `scrollIntoView`) to the nav, side dots and mobile dots. The hero is imported statically (LCP); the other sections are lazy-loaded via `React.lazy` + `Suspense`.
 
-Sections are animated with Framer Motion spring physics and lazy-loaded via `React.lazy` + `Suspense`.
+Animation is Framer Motion only (GSAP is not used). Shared reduced-motion-aware presets live in [src/hooks/useMotionPreset.ts](src/hooks/useMotionPreset.ts); entrance/`whileInView` reveals are transform/opacity only.
 
 ### Sections (in order)
 
 Six portfolio sections live in [src/components/sections/](src/components/sections/):
 `HeroSection` → `AboutSection` → `ExperienceSection` → `SkillsSection` → `ProjectsSection` → `ContactSection`
 
-Each section receives `isActive` and `isMobile` props from `Index.tsx`.
+Each section receives an `onNavigate(id)` callback from `Index.tsx`.
 
 ### UI components
 
@@ -40,11 +37,11 @@ shadcn/ui primitives live in [src/components/ui/](src/components/ui/) (Radix UI 
 
 ### Design tokens
 
-Colors are defined as HSL CSS variables in [src/index.css](src/index.css) and consumed by [tailwind.config.ts](tailwind.config.ts). Primary: cyan/teal (`175°`), Accent: purple (`280°`). Dark mode uses the `class` strategy.
+Colors are defined as HSL CSS variables in [src/index.css](src/index.css) and consumed by [tailwind.config.ts](tailwind.config.ts). Palette « Heritage Royal »: midnight ink `#111722`, warm ivory `#F1ECE2`, royal blue `#2447A8`, oxblood `#6F283A` (rare accent), stone `#B8AD9D`. Two accent tiers: `brand` (raw royal, fills/CTA only) and `primary` (AA-safe per mode — royal in light, lightened royal in dark — for accent text and thin lines); `brand-secondary` is the oxblood. Dark mode uses the `class` strategy, applied pre-paint by an inline script in [index.html](index.html).
 
-Custom utility classes defined in `index.css`: `.text-gradient`, `.glow-primary`, `.section-container`, `.nav-dot`, `.animate-gradient-border`, `.scrollbar-hide`.
+Custom utility classes defined in `index.css`: `.text-gradient`, `.card-floating`, `.card-swiss`, `.section-container`, `.kicker`, `.grid-bg`, `.nav-dot`, `.link-editorial`, `.caret-terminal`, `.scrollbar-hide`, `.rise`.
 
-Fonts: `Syne` (headings/display) and `Space Grotesk` (body), loaded via Google Fonts in [index.html](index.html).
+Fonts: `Space Grotesk` (headings/display), `DM Sans` (body) and `JetBrains Mono` (mono labels), loaded via Google Fonts in [index.html](index.html).
 
 ### TypeScript config
 

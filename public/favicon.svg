@@ -1,11 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Monogramme "Jm" — plaque ink + ticks d'angle vermillon (écho du cadre Hero) -->
-  <rect width="64" height="64" rx="13" fill="#11130f"/>
-  <path d="M9 17v-4a4 4 0 0 1 4-4h4" fill="none" stroke="#e4572e" stroke-width="3" stroke-linecap="round"/>
-  <path d="M55 47v4a4 4 0 0 1-4 4h-4" fill="none" stroke="#e4572e" stroke-width="3" stroke-linecap="round"/>
+  <!-- Monogramme "Jm" — plaque midnight + ticks d'angle royal (écho du cadre Hero).
+       Royal éclairci (#5c7fe0) pour rester lisible à 16px sur la plaque sombre. -->
+  <rect width="64" height="64" rx="13" fill="#111722"/>
+  <path d="M9 17v-4a4 4 0 0 1 4-4h4" fill="none" stroke="#5c7fe0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M55 47v4a4 4 0 0 1-4 4h-4" fill="none" stroke="#5c7fe0" stroke-width="3" stroke-linecap="round"/>
   <text x="32" y="43" text-anchor="middle"
         font-family="ui-sans-serif, -apple-system, 'Helvetica Neue', Arial, sans-serif"
         font-size="31" font-weight="700">
-    <tspan fill="#e4572e">J</tspan><tspan fill="#f3ebdd">m</tspan>
+    <tspan fill="#5c7fe0">J</tspan><tspan fill="#f1ece2">m</tspan>
   </text>
 </svg>

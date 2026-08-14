@@ -52,7 +52,7 @@ export const PROJECT_COLORS: Record<string, string> = {
   "DayByDay CRM": "#4f5fe0", // daybyday indigo
   "ERPNext Migration": "#0089ff", // erpnext blue
   // No-logo projects → explicit brand-ish accents for their monogram fallback.
-  "bank-file-converter": "#e4572e", // vermillon (matches site accent)
+  "bank-file-converter": "#2447a8", // bleu roi (matches site accent)
   "Edu Levitation SaaS": "#7c3aed", // violet (education)
   "EduContent Mobile App": "#2563eb", // blue (mobile)
   "Cryptomoney Cloud": "#f59e0b", // amber (crypto)

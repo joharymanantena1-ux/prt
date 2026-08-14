@@ -131,10 +131,10 @@ const TimelineEntry = ({
         className="absolute left-[13px] top-9 bottom-0 w-px origin-top bg-gradient-to-b from-border via-border to-transparent"
       />
 
-      {/* Point actif = seul marqueur vermillon ; les autres restent graphite */}
+      {/* Point actif = seul marqueur royal ; les autres restent neutres */}
       <div className={`absolute left-0 top-4 w-7 h-7 rounded-md flex items-center justify-center border-2 z-10 ${
         item.current
-          ? "bg-brand border-brand"
+          ? "bg-brand border-primary/60"
           : "bg-background border-border"
       }`}>
         {type === "exp" ? (

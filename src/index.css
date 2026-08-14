@@ -5,50 +5,52 @@
 
 @layer base {
   :root {
-    /* Palette « Editorial Signal » : ink #11130F · warm bone #F3EBDD
-       · vermilion #E4572E · moss #7A8B4A · graphite #2B2D29 */
-    --background: 38 48% 91%;          /* #F3EBDD */
-    --foreground: 90 12% 6.7%;         /* #11130F */
+    /* Palette « Heritage Royal » : midnight ink #111722 · warm ivory #F1ECE2
+       · royal blue #2447A8 · oxblood #6F283A · stone #B8AD9D */
+    --background: 40 35% 92%;          /* #F1ECE2 */
+    --foreground: 219 33% 10%;         /* #111722 */
 
-    --card: 40 50% 94%;                /* bone à peine plus clair */
-    --card-foreground: 90 12% 6.7%;
+    --card: 40 38% 94.5%;              /* ivoire à peine plus clair */
+    --card-foreground: 219 33% 10%;
 
-    --popover: 40 50% 94%;
-    --popover-foreground: 90 12% 6.7%;
+    --popover: 40 38% 94.5%;
+    --popover-foreground: 219 33% 10%;
 
-    --brand: 13.5 77% 53.7%;           /* #E4572E — fills & graphiques (ink-on-brand 5.2:1) */
-    --brand-foreground: 90 12% 6.7%;
+    --brand: 224 65% 40%;              /* #2447A8 — fills & CTA (ivory-on-brand 7.1:1) */
+    --brand-foreground: 40 35% 92%;
 
-    --primary: 13 72% 42%;             /* vermillon approfondi — AA: as-text 4.7:1 · bone-on-primary 4.7:1 */
-    --primary-foreground: 38 48% 91%;
+    --brand-secondary: 345 47% 30%;    /* #6F283A oxblood — accent rare (ivory dessus 8.7:1) */
 
-    --secondary: 38 32% 85%;           /* bone tassé — chips, surfaces secondaires */
-    --secondary-foreground: 90 5% 17%;
+    --primary: 224 65% 40%;            /* royal — AA: as-text 7.1:1 sur ivoire */
+    --primary-foreground: 40 35% 92%;
 
-    --muted: 38 35% 87%;
-    --muted-foreground: 75 6% 32%;     /* gris chaud — AA: ~6.3:1 */
+    --secondary: 38 22% 84%;           /* ivoire tassé vers stone — chips, surfaces secondaires */
+    --secondary-foreground: 219 33% 10%;
 
-    --accent: 38 32% 85%;              /* surface hover (menus, listes) */
-    --accent-foreground: 90 12% 6.7%;
+    --muted: 38 25% 87%;
+    --muted-foreground: 36 10% 34%;    /* stone approfondi — AA: ~6:1 */
 
-    --destructive: 0 72% 45%;          /* AA: 4.9:1 sur bone */
+    --accent: 38 22% 84%;              /* surface hover (menus, listes) */
+    --accent-foreground: 219 33% 10%;
+
+    --destructive: 352 60% 38%;        /* famille oxblood — AA: 6.6:1 sur ivoire */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 76 45% 28%;             /* moss approfondi — AA: 5.2:1 sur bone */
-    --success-foreground: 38 48% 91%;
+    --success: 150 30% 27%;            /* vert sourd fonctionnel — AA: 6.7:1 sur ivoire */
+    --success-foreground: 40 35% 92%;
 
-    --border: 80 6% 74%;               /* graphite délavé — hairline chaude */
-    --input: 80 6% 74%;
-    --ring: 13.5 77% 53.7%;            /* focus = signal vermillon */
+    --border: 36 16% 74%;              /* stone délavé — hairline chaude */
+    --input: 36 16% 74%;
+    --ring: 224 65% 40%;               /* focus = signal royal */
 
     --radius: 0.5rem;                  /* éditorial : 8/6/4 px, plus de capsules */
 
     /* Design tokens — gradients quasi imperceptibles (flat-first) */
-    --gradient-primary: linear-gradient(135deg, hsl(13.5 77% 53.7%) 0%, hsl(13 74% 49%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(40 50% 94%) 0%, hsl(38 48% 92%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(224 65% 40%) 0%, hsl(224 68% 34%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(40 38% 94.5%) 0%, hsl(40 35% 93%) 100%);
 
-    --shadow-soft: 0 2px 16px -4px hsl(90 12% 6.7% / 0.08);
-    --shadow-elevated: 0 12px 40px -8px hsl(90 12% 6.7% / 0.12);
+    --shadow-soft: 0 2px 16px -4px hsl(219 33% 10% / 0.08);
+    --shadow-elevated: 0 12px 40px -8px hsl(219 33% 10% / 0.12);
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'DM Sans', sans-serif;
@@ -56,42 +58,44 @@
   }
 
   .dark {
-    --background: 90 12% 6.7%;         /* #11130F — noir charbon, pas navy */
-    --foreground: 38 48% 91%;          /* #F3EBDD */
+    --background: 219 33% 10%;         /* #111722 — bleu nuit encré */
+    --foreground: 40 35% 92%;          /* #F1ECE2 */
 
-    --card: 90 7% 10%;                 /* entre ink et graphite */
-    --card-foreground: 38 48% 91%;
+    --card: 219 28% 13%;               /* midnight légèrement soulevé */
+    --card-foreground: 40 35% 92%;
 
-    --popover: 90 7% 10%;
-    --popover-foreground: 38 48% 91%;
+    --popover: 219 28% 13%;
+    --popover-foreground: 40 35% 92%;
 
-    --brand: 13.5 77% 53.7%;           /* #E4572E — identique dans les deux modes */
-    --brand-foreground: 90 12% 6.7%;
+    --brand: 224 65% 40%;              /* #2447A8 — fills CTA, label ivoire 7.1:1 */
+    --brand-foreground: 40 35% 92%;
 
-    --primary: 13.5 77% 53.7%;         /* vermillon pur — AA sur ink: 5.2:1 as-text */
-    --primary-foreground: 90 12% 6.7%;
+    --brand-secondary: 345 47% 30%;    /* oxblood — identique, réservé aux fills rares */
 
-    --secondary: 90 5% 17%;            /* #2B2D29 graphite */
-    --secondary-foreground: 38 48% 91%;
+    --primary: 224 72% 65%;            /* royal éclairci — AA: 5.3:1 as-text sur midnight */
+    --primary-foreground: 219 33% 10%;
 
-    --muted: 90 8% 9.5%;
-    --muted-foreground: 38 16% 71%;    /* bone atténué — ~9.5:1 */
+    --secondary: 219 24% 17%;          /* surface secondaire soulevée */
+    --secondary-foreground: 40 35% 92%;
 
-    --accent: 90 5% 17%;               /* surface hover graphite */
-    --accent-foreground: 38 48% 91%;
+    --muted: 219 26% 12%;
+    --muted-foreground: 36 16% 72%;    /* stone éclairci — ~9.4:1 */
 
-    --destructive: 0 66% 58%;          /* AA: 4.6:1 sur ink */
-    --destructive-foreground: 0 0% 100%;
+    --accent: 219 24% 17%;             /* surface hover */
+    --accent-foreground: 40 35% 92%;
 
-    --success: 76 31% 42%;             /* #7A8B4A moss — AA: 5.1:1 sur ink */
-    --success-foreground: 90 12% 6.7%;
+    --destructive: 350 55% 64%;        /* oxblood éclairci — AA: 5.6:1 sur midnight */
+    --destructive-foreground: 219 33% 10%;
 
-    --border: 90 5% 19%;               /* variation subtile du graphite */
-    --input: 90 5% 19%;
-    --ring: 13.5 77% 53.7%;
+    --success: 150 22% 56%;            /* vert sourd éclairci — AA: 6.6:1 */
+    --success-foreground: 219 33% 10%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(13.5 77% 53.7%) 0%, hsl(13 74% 49%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(90 7% 11%) 0%, hsl(90 10% 8%) 100%);
+    --border: 219 24% 19%;             /* variation subtile du midnight */
+    --input: 219 24% 19%;
+    --ring: 224 72% 65%;               /* focus visible sur fond nuit */
+
+    --gradient-primary: linear-gradient(135deg, hsl(224 72% 65%) 0%, hsl(224 65% 55%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(219 28% 14%) 0%, hsl(219 30% 11%) 100%);
 
     --shadow-soft: 0 2px 16px -4px hsl(0 0% 0% / 0.28);
     --shadow-elevated: 0 12px 40px -8px hsl(0 0% 0% / 0.44);
@@ -182,7 +186,7 @@
   }
 
   .nav-dot.active {
-    @apply bg-brand;
+    @apply bg-primary;
     width: 8px;
     height: 22px;
     border-radius: 4px;
@@ -197,7 +201,7 @@
 
   /* Faint engineering grid background (decorative, GPU-cheap) */
   .grid-bg {
-    /* Light : dérivée du graphite (via --border) ; à peine perceptible */
+    /* Light : dérivée du stone (via --border) ; à peine perceptible */
     background-image:
       linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
       linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
@@ -249,7 +253,7 @@
     width: 0.45em;
     height: 1em;
     margin-left: 3px;
-    background: hsl(var(--brand));
+    background: hsl(var(--primary));
     animation: caret-blink 1.1s steps(2, jump-none) infinite;
   }
 }

@@ -95,7 +95,7 @@ const Navigation = ({
                     <motion.span
                       layoutId="activeNav"
                       transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
-                      className="absolute inset-x-3 bottom-1 h-0.5 bg-brand"
+                      className="absolute inset-x-3 bottom-1 h-0.5 bg-primary"
                     />
                   )}
                 </button>

@@ -146,7 +146,7 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
         </div>
         <div>
           <h3 className="text-sm font-display font-bold leading-none mb-1">{tx(category.title, lang)}</h3>
-          <div className="h-0.5 w-6 bg-brand" />
+          <div className="h-0.5 w-6 bg-primary" />
         </div>
         <span className="ml-auto font-mono text-xs text-muted-foreground">{String(category.skills.length).padStart(2, "0")}</span>
       </div>

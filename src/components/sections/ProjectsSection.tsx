@@ -231,9 +231,9 @@ const ProjectLogoHeader = ({ project, index }: { project: Project; index: number
         <span className={`font-mono text-[11px] ${metaClass}`}>№{pad(index + 1)}</span>
       </div>
 
-      {/* Flagship tag — solid vermillon chip, readable on any artwork */}
+      {/* Flagship tag — solid oxblood chip (accent rare), readable on any artwork */}
       {project.featured && (
-        <span className="absolute bottom-2 left-3 z-10 font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-brand text-brand-foreground">
+        <span className="absolute bottom-2 left-3 z-10 font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-brand-secondary text-brand-foreground">
           {t("projects.featured")}
         </span>
       )}
@@ -336,10 +336,10 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       // motion-reduce drops the lift. Neutral elevated shadow — no coloured glow.
       className="relative flex-shrink-0 snap-start w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-elevated hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
     >
-      {/* Accent sweep — vermilion hairline drawn from the left on hover */}
+      {/* Accent sweep — royal hairline drawn from the left on hover */}
       <span
         aria-hidden="true"
-        className="absolute top-0 left-0 z-20 h-0.5 w-full bg-brand origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out motion-reduce:transition-none"
+        className="absolute top-0 left-0 z-20 h-0.5 w-full bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out motion-reduce:transition-none"
       />
       {/* Full-bleed logo header — logo sits on its own brand background */}
       <div className="relative border-b border-border">
@@ -504,7 +504,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
       <div className="mt-3 flex items-center gap-4">
         <div className="flex-1 h-px bg-border relative overflow-hidden" aria-hidden="true">
           <div
-            className="absolute inset-0 bg-brand origin-left transition-transform duration-200 ease-out"
+            className="absolute inset-0 bg-primary origin-left transition-transform duration-200 ease-out"
             style={{ transform: `scaleX(${pos.progress})` }}
           />
         </div>

@@ -186,9 +186,9 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             <svg viewBox="0 0 160 160" className="w-48 h-48 md:w-56 md:h-56" role="presentation">
               <defs>
                 <linearGradient id="loaderRing" x1="0" y1="0" x2="1" y2="1">
-                  {/* vermillon quasi flat, mirrors --gradient-primary */}
-                  <stop offset="0%" stopColor="hsl(var(--brand))" />
-                  <stop offset="100%" stopColor="hsl(13 74% 49%)" />
+                  {/* royal quasi flat — primary→brand, s'adapte aux deux modes */}
+                  <stop offset="0%" stopColor="hsl(var(--primary))" />
+                  <stop offset="100%" stopColor="hsl(var(--brand))" />
                 </linearGradient>
               </defs>
               {/* track */}
