@@ -117,7 +117,7 @@ export const fr = {
     availableDesc: "Ouvert aux missions freelance et projets de développement web full-stack.",
   },
   footer: {
-    tagline: "Développeur full-stack — applications web & mobile, de l'architecture backend à l'interface finale.",
+    tagline: "Développeur full-stack. Applications web et mobile, de l'architecture backend à l'interface finale.",
     navTitle: "Sommaire",
     contactTitle: "Contact",
     localTime: "Antananarivo",

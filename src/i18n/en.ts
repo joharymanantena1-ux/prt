@@ -117,7 +117,7 @@ export const en: typeof import("./fr").fr = {
     availableDesc: "Open to freelance missions and full-stack web development projects.",
   },
   footer: {
-    tagline: "Full-stack developer — web & mobile applications, from backend architecture to the final interface.",
+    tagline: "Full-stack developer. Web and mobile applications, from backend architecture to the final interface.",
     navTitle: "Index",
     contactTitle: "Contact",
     localTime: "Antananarivo",

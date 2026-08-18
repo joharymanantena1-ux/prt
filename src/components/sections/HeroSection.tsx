@@ -150,9 +150,8 @@ const HeroPortrait = () => {
           className="absolute inset-x-0 bottom-0 z-10 h-px bg-gradient-to-r from-transparent via-border to-transparent"
         />
 
-        {/* Cartouche d'identité — sobre : filet accent, fond translucide.
-            Le nom n'apparaît ici qu'en ≥lg (en dessous, il est déjà affiché
-            juste au-dessus du portrait dans le flux). */}
+        {/* Cartouche — localisation seule : le nom vit désormais dans le h1,
+            le répéter ici ferait doublon. */}
         <div
           className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l border-primary rounded-r-md bg-background/85 px-4 py-2.5"
           style={{
@@ -161,10 +160,7 @@ const HeroPortrait = () => {
           }}
         >
           <div className={`transition-opacity duration-300 ${cartOpen ? "opacity-100 delay-200" : "opacity-0"}`}>
-            <p className="hidden lg:block font-display text-base xl:text-lg font-semibold leading-tight">
-              Johary Manantena
-            </p>
-            <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground lg:mt-1">
+            <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
               {t("hero.location")}
             </p>
           </div>
@@ -316,7 +312,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             {stats.map(({ label, value }) => (
               <div key={label} className="flex flex-col gap-1.5">
                 <dt className="order-2 text-sm text-muted-foreground leading-none">{label}</dt>
-                <dd className="order-1 font-display text-2xl sm:text-[1.7rem] font-semibold leading-none">{value}</dd>
+                <dd className="order-1 font-display font-semibold leading-none text-[clamp(1.2rem,5.5vw,1.7rem)]">{value}</dd>
               </div>
             ))}
           </dl>
