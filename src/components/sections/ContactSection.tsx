@@ -115,14 +115,14 @@ const ContactSection = () => {
           </motion.div>
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-14">
+        <div className="grid gap-10 xl:grid-cols-12 xl:gap-x-14">
           {/* Form — panneau surélevé, filet royal en tête (plan avant) */}
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
-            className="relative order-1 lg:order-2 lg:col-span-7 lg:col-start-6 lg:self-start overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10 shadow-elevated"
+            className="relative order-1 xl:order-2 xl:col-span-7 xl:col-start-6 xl:self-start overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10 shadow-elevated"
           >
             <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-brand" />
             <AnimatePresence mode="wait">
@@ -299,11 +299,16 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={reduce ? { duration: 0 } : { duration: 0.55, delay: 0.2 }}
-            className="order-2 lg:order-1 lg:col-span-4 lg:col-start-1 lg:self-start"
+            className="order-2 xl:order-1 xl:col-span-4 xl:col-start-1 xl:self-stretch xl:flex xl:flex-col"
           >
-            <dl>
+            <dl className="grid sm:grid-cols-3 sm:gap-x-8 xl:grid-cols-1">
               {contactItems.slice(1).map(({ label, value, href, breakClass }, index) => (
-                <div key={label} className={`py-4 border-b border-border/70 ${index === 0 ? "pt-0" : ""}`}>
+                /* En rangée (sm→lg) chaque colonne démarre en haut ; en pile
+                   latérale (xl) seul le premier item colle au bord. */
+                <div
+                  key={label}
+                  className={`py-4 border-b border-border/70 sm:pt-0 ${index === 0 ? "pt-0 xl:pt-0" : "xl:pt-4"}`}
+                >
                   <dt className="kicker !text-[11px] mb-1.5">{label}</dt>
                   <dd className="min-w-0">
                     {href ? (
@@ -321,7 +326,7 @@ const ContactSection = () => {
               ))}
 
               {/* Réseaux — même liste, liens texte éditoriaux */}
-              <div className="py-4 border-b border-border/70">
+              <div className="py-4 sm:pt-0 xl:pt-4 border-b border-border/70">
                 <dt className="kicker !text-[11px] mb-1.5">{t("contact.linksTitle")}</dt>
                 <dd className="flex gap-5">
                   {socialLinks.map(({ href, label }) => (
@@ -330,7 +335,7 @@ const ContactSection = () => {
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`Ouvrir ${label} dans un nouvel onglet`}
+                      aria-label={`${t("common.openIn")} ${label} (${t("common.newTab")})`}
                       className="link-editorial inline-flex items-center min-h-11 text-sm font-medium hover:text-primary transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       {label}
@@ -340,8 +345,10 @@ const ContactSection = () => {
               </div>
             </dl>
 
-            {/* Disponibilité — statut sobre, dot pulse couvert par le guard reduced-motion */}
-            <div className="pt-5">
+            {/* Disponibilité — statut sobre, dot pulse couvert par le guard
+                reduced-motion. En vis-à-vis (xl) le bloc descend au pied de la
+                colonne pour s'aligner sur le bas du panneau formulaire. */}
+            <div className="pt-5 xl:mt-auto xl:pb-1">
               <p className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
                 <span className="text-sm font-display font-semibold">{t("contact.availableTitle")}</span>
