@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MorphingRoles from "@/components/motion/MorphingRoles";
@@ -37,6 +38,13 @@ const SOCIALS = [
    le bas du panneau. Aucune animation : c'est l'élément LCP, il peint direct. */
 const HeroPortrait = () => {
   const { t } = useT();
+  const reduce = useReducedMotion();
+
+  // Parallax de sortie : la trame décorative glisse un peu plus lentement que
+  // le scroll (transform-only, hors LCP). Nul sous prefers-reduced-motion.
+  const { scrollY } = useScroll();
+  const rawDotsY = useTransform(scrollY, [0, 700], [0, -46]);
+  const dotsY = reduce ? 0 : rawDotsY;
 
   // Cartouche : fermé au premier rendu, s'ouvre (clip-path) quand la zone du
   // portrait devient visible, puis reste statique. On observe le CONTENEUR du
@@ -78,10 +86,12 @@ const HeroPortrait = () => {
           aria-hidden="true"
         />
 
-        {/* Trame de points — coin haut-gauche, à cheval sur le bord du panneau */}
-        <div
+        {/* Trame de points — coin haut-gauche, à cheval sur le bord du panneau.
+            Parallax de sortie très léger (transform-only, nul sous reduced-motion). */}
+        <motion.div
           className="pointer-events-none absolute top-[8%] -left-5 sm:-left-7 w-24 h-28 opacity-80"
           style={{
+            y: dotsY,
             backgroundImage: "radial-gradient(hsl(var(--primary) / 0.45) 1.5px, transparent 2px)",
             backgroundSize: "13px 13px",
             WebkitMaskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
@@ -175,6 +185,12 @@ const HeroPortrait = () => {
  */
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const { t } = useT();
+  const reduce = useReducedMotion();
+
+  // La trame technique du fond recule légèrement au scroll (profondeur).
+  const { scrollY } = useScroll();
+  const rawGridY = useTransform(scrollY, [0, 700], [0, 70]);
+  const gridY = reduce ? 0 : rawGridY;
 
   const stats: { label: string; value: string }[] = [
     { label: t("hero.statExp"), value: `3${t("hero.statExpSuffix")}` },
@@ -184,10 +200,12 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
 
   return (
     <section className="section-container min-h-[100svh] items-center relative overflow-hidden">
-      {/* Trame technique, statique et discrète (décorative) — dissoute vers les bords */}
-      <div
+      {/* Trame technique discrète (décorative), dissoute vers les bords ;
+          parallax arrière très léger au scroll */}
+      <motion.div
         className="absolute inset-0 grid-bg opacity-[0.28] pointer-events-none"
         style={{
+          y: gridY,
           WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 45% 42%, black 20%, transparent 100%)",
           maskImage: "radial-gradient(ellipse 80% 70% at 45% 42%, black 20%, transparent 100%)",
         }}

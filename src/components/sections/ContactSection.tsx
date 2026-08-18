@@ -95,7 +95,7 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3"
+            className="lg:col-span-3 rounded-lg border border-border bg-card p-6 sm:p-8 shadow-elevated"
           >
             <AnimatePresence mode="wait">
               {formState === "success" ? (
@@ -134,7 +134,7 @@ const ContactSection = () => {
                   />
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                      <label htmlFor="name" className="block text-sm font-medium mb-2 text-foreground">
                         {t("contact.name")}
                       </label>
                       <Input
@@ -151,7 +151,7 @@ const ContactSection = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                      <label htmlFor="email" className="block text-sm font-medium mb-2 text-foreground">
                         {t("contact.email")}
                       </label>
                       <Input
@@ -171,7 +171,7 @@ const ContactSection = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                    <label htmlFor="subject" className="block text-sm font-medium mb-2 text-foreground">
                       {t("contact.subject")}
                     </label>
                     <Input
@@ -188,7 +188,7 @@ const ContactSection = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                    <label htmlFor="message" className="block text-sm font-medium mb-2 text-foreground">
                       {t("contact.message")}
                     </label>
                     <Textarea

@@ -39,9 +39,9 @@ const useLocalTime = () => {
 };
 
 /**
- * Footer colophon — clôture éditoriale : identité et rôle à gauche, sommaire
- * mono au centre, contact à droite ; rangée basse avec heure locale (TNR),
- * copyright et retour en haut. Filets hairline, aucune carte.
+ * Footer — clôture de la bande encre : grand wordmark sérif, une ligne de
+ * navigation et de contact, puis le colophon (heure locale TNR, copyright,
+ * retour en haut). Compact et dense, aucune colonne flottant dans le vide.
  */
 const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
   const { t } = useT();
@@ -50,79 +50,64 @@ const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
 
   return (
     <footer className="dark bg-background text-foreground border-t border-border/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-        {/* ── Rangée principale ─────────────────────────────────────────── */}
-        <div className="grid gap-y-10 md:grid-cols-12 md:gap-x-8 py-12 lg:py-16">
-          <div className="md:col-span-6 lg:col-span-5">
-            <p className="font-display font-bold text-2xl tracking-tight">
-              Johary Manantena<span className="text-primary">.</span>
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-xs">
-              {t("footer.tagline")}
-            </p>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-12 lg:pt-16 pb-6">
+        {/* Wordmark — la fin de page appartient au nom */}
+        <p className="font-display font-semibold leading-[1.05] text-[clamp(2.2rem,7vw,4.8rem)] [text-wrap:balance]">
+          Johary Manantena<span className="text-primary">.</span>
+        </p>
+        <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md">
+          {t("footer.tagline")}
+        </p>
 
-          <nav className="md:col-span-3 lg:col-span-3 lg:col-start-7" aria-label={t("nav.sectionNav")}>
-            <p className="kicker mb-4">{t("footer.navTitle")}</p>
-            <ul className="space-y-2.5">
-              {sectionNames.map((name, index) => (
-                <li key={name}>
-                  <button
-                    type="button"
-                    onClick={() => onNavigate(index)}
-                    className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    {name}
-                  </button>
-                </li>
-              ))}
-            </ul>
+        {/* Navigation + contact — une seule ligne dense, wrap naturel */}
+        <div className="mt-8 lg:mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-3">
+          <nav aria-label={t("nav.sectionNav")} className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+            {sectionNames.map((name, index) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => onNavigate(index)}
+                className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                {name}
+              </button>
+            ))}
           </nav>
-
-          <div className="md:col-span-3 lg:col-span-2 lg:col-start-11">
-            <p className="kicker mb-4">{t("footer.contactTitle")}</p>
-            <ul className="space-y-2.5">
-              <li>
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  {CONTACT_EMAIL}
-                </a>
-              </li>
-              {SOCIALS.map(({ href, label }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${label} (nouvel onglet)`}
-                    className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <span aria-hidden="true" className="hidden sm:block h-3 w-px bg-border self-center" />
+          <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="link-editorial text-sm font-medium text-primary transition-colors break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              {CONTACT_EMAIL}
+            </a>
+            {SOCIALS.map(({ href, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${label} (nouvel onglet)`}
+                className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* ── Rangée basse — colophon ───────────────────────────────────── */}
-        <div className="border-t border-border/70 py-5 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-            © {year} Johary Manantena
-          </p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground/70 hidden sm:block">
-            {t("footer.colophon")}
-          </p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground ml-auto tabular-nums">
-            {t("footer.localTime")} — {time} <span className="text-muted-foreground/60">GMT+3</span>
+        {/* Colophon */}
+        <div className="mt-10 lg:mt-12 border-t border-border/60 pt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <p className="text-xs text-muted-foreground">© {year} Johary Manantena</p>
+          <p className="text-xs text-muted-foreground/70 hidden md:block">{t("footer.colophon")}</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground ml-auto tabular-nums">
+            {t("footer.localTime")} {time} <span className="text-muted-foreground/60">GMT+3</span>
           </p>
           <button
             type="button"
             onClick={() => onNavigate(0)}
             aria-label={t("footer.backToTopAria")}
-            className="group inline-flex items-center gap-1.5 min-h-11 px-2 -mr-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-primary transition-colors cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group inline-flex items-center gap-1.5 min-h-11 px-2 -mr-2 text-xs font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {t("footer.backToTop")}
             <ArrowUp
