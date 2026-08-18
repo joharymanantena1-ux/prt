@@ -66,6 +66,10 @@ export const en: typeof import("./fr").fr = {
     title: "Stack & expertise",
     desc: "Six technologies at the core of my work, and a wider toolkit grown mission after mission.",
     soft: "Soft Skills",
+    coreTitle: "Core stack",
+    countLabel: "technologies used, from prototype to production",
+    certTitle: "Certification",
+    certName: "Generative AI",
   },
   projects: {
     label: "Portfolio",

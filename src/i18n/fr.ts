@@ -66,6 +66,10 @@ export const fr = {
     title: "Stack & expertise",
     desc: "Six technologies au cœur de mes projets, et un socle élargi mission après mission.",
     soft: "Soft Skills",
+    coreTitle: "Stack signature",
+    countLabel: "technologies pratiquées, du prototype à la production",
+    certTitle: "Certification",
+    certName: "IA générative",
   },
   projects: {
     label: "Portfolio",
