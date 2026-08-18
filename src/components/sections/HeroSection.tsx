@@ -144,7 +144,7 @@ const HeroPortrait = () => {
             Le nom n'apparaît ici qu'en ≥lg (en dessous, il est déjà affiché
             juste au-dessus du portrait dans le flux). */}
         <div
-          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-primary rounded-r-md bg-background/85 px-4 py-2.5"
+          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l border-primary rounded-r-md bg-background/85 px-4 py-2.5"
           style={{
             clipPath: cartOpen ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
             transition: "clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
