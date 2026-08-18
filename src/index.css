@@ -52,7 +52,7 @@
     --shadow-soft: 0 2px 16px -4px hsl(219 33% 10% / 0.08);
     --shadow-elevated: 0 12px 40px -8px hsl(219 33% 10% / 0.12);
 
-    --font-display: 'Fraunces', 'Georgia', serif;
+    --font-display: 'Newsreader', 'Georgia', serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }

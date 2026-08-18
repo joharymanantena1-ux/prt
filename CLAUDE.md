@@ -41,7 +41,7 @@ Colors are defined as HSL CSS variables in [src/index.css](src/index.css) and co
 
 Custom utility classes defined in `index.css`: `.text-gradient`, `.card-floating`, `.card-swiss`, `.section-container` (content-driven padding, no min-h — only the hero adds its own `min-h-[100svh]`), `.kicker` (small sans label), `.label-mono` (mono label reserved for data: dates, counters, coordinates), `.grid-bg`, `.nav-dot`, `.link-editorial`, `.caret-terminal`, `.scrollbar-hide`, `.rise`.
 
-Fonts: `Fraunces` (display serif — headings, hero name, footer wordmark), `DM Sans` (body/UI) and `JetBrains Mono` (data labels only), loaded via Google Fonts in [index.html](index.html). Decorative section numbering and systematic uppercase mono kickers were deliberately removed — don't reintroduce them.
+Fonts: `Newsreader` (display serif — headings, hero name, footer wordmark), `DM Sans` (body/UI) and `JetBrains Mono` (data labels only), loaded via Google Fonts in [index.html](index.html). Decorative section numbering and systematic uppercase mono kickers were deliberately removed — don't reintroduce them.
 
 ### TypeScript config
 
