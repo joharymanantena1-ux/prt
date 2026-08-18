@@ -49,18 +49,23 @@ const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="dark bg-background text-foreground border-t border-border/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-12 lg:pt-16 pb-6">
-        {/* Wordmark — la fin de page appartient au nom */}
-        <p className="font-display font-semibold leading-[1.05] text-[clamp(2.2rem,7vw,4.8rem)] [text-wrap:balance]">
-          Johary Manantena<span className="text-primary">.</span>
-        </p>
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md">
-          {t("footer.tagline")}
-        </p>
+    // Nuance navy plus profonde que la bande contact (midnight) : séparation
+    // nette mais dans la palette, identique dans les deux modes.
+    <footer className="dark bg-[hsl(221,36%,6%)] text-foreground border-t border-border/40">
+      {/* pb mobile : dégage la pilule de navigation fixe (masquée dès md) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-10 lg:pt-12 pb-20 md:pb-5">
+        {/* Wordmark — présent mais proportionné, il ne domine plus la page */}
+        <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+          <p className="font-display font-semibold leading-tight text-[clamp(1.5rem,3vw,2.1rem)]">
+            Johary Manantena<span className="text-primary">.</span>
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+            {t("footer.tagline")}
+          </p>
+        </div>
 
         {/* Navigation + contact — une seule ligne dense, wrap naturel */}
-        <div className="mt-8 lg:mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-3">
+        <div className="mt-6 lg:mt-7 flex flex-wrap items-baseline gap-x-6 gap-y-3">
           <nav aria-label={t("nav.sectionNav")} className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
             {sectionNames.map((name, index) => (
               <button
@@ -97,7 +102,7 @@ const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
         </div>
 
         {/* Colophon */}
-        <div className="mt-10 lg:mt-12 border-t border-border/60 pt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <div className="mt-7 lg:mt-8 border-t border-border/50 pt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
           <p className="text-xs text-muted-foreground">© {year} Johary Manantena</p>
           <p className="text-xs text-muted-foreground/70 hidden md:block">{t("footer.colophon")}</p>
           <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground ml-auto tabular-nums">
