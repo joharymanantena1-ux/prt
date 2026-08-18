@@ -115,4 +115,13 @@ export const en: typeof import("./fr").fr = {
     availableTitle: "Available",
     availableDesc: "Open to freelance missions and full-stack web development projects.",
   },
+  footer: {
+    tagline: "Full-stack developer — web & mobile applications, from backend architecture to the final interface.",
+    navTitle: "Index",
+    contactTitle: "Contact",
+    localTime: "Antananarivo",
+    backToTop: "Back to top",
+    backToTopAria: "Back to the top of the page",
+    colophon: "Designed and built with React, TypeScript and Vite",
+  },
 };

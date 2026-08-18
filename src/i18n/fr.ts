@@ -115,4 +115,13 @@ export const fr = {
     availableTitle: "Disponible",
     availableDesc: "Ouvert aux missions freelance et projets de développement web full-stack.",
   },
+  footer: {
+    tagline: "Développeur full-stack — applications web & mobile, de l'architecture backend à l'interface finale.",
+    navTitle: "Sommaire",
+    contactTitle: "Contact",
+    localTime: "Antananarivo",
+    backToTop: "Retour en haut",
+    backToTopAria: "Revenir en haut de la page",
+    colophon: "Conçu et développé avec React, TypeScript et Vite",
+  },
 };

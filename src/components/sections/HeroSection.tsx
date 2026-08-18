@@ -240,8 +240,10 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
 
         {/* ── Actions : CTA → réseaux → stats ───────────────────────────── */}
         <div className="order-3 lg:order-none lg:col-start-2 lg:row-start-2 lg:self-start text-center lg:text-left">
+          {/* Hiérarchie d'action : un seul CTA plein (projets), un contour
+              (contact), et le CV en lien texte éditorial — trois poids nets. */}
           <div
-            className="rise flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start"
+            className="rise flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 justify-center lg:justify-start"
             style={{ animationDelay: "210ms" }}
           >
             <Button
@@ -259,21 +261,15 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             >
               {t("hero.ctaContact")}
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-md border-foreground/30 hover:bg-foreground hover:text-background hover:border-foreground font-semibold px-7 gap-2 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
-              asChild
+            <a
+              href="https://drive.google.com/file/d/1TW1OODP6uhMU2yf7uOci1v-cVwj3qxhh/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-editorial inline-flex items-center justify-center sm:justify-start gap-2 min-h-11 text-sm font-semibold text-foreground/85 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 self-center sm:self-auto"
             >
-              <a
-                href="https://drive.google.com/file/d/1TW1OODP6uhMU2yf7uOci1v-cVwj3qxhh/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="w-4 h-4" aria-hidden="true" />
-                {t("hero.ctaCV")}
-              </a>
-            </Button>
+              <Download className="w-4 h-4 text-primary" aria-hidden="true" />
+              {t("hero.ctaCV")}
+            </a>
           </div>
 
           <div

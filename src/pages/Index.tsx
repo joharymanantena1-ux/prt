@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
 import ScrollProgress from "@/components/motion/ScrollProgress";
 import HeroSection from "@/components/sections/HeroSection";
@@ -99,6 +100,8 @@ const Index = () => {
           </Suspense>
         </div>
       ))}
+
+      <Footer sectionNames={sectionNames} onNavigate={navigateToSection} />
 
       {/* Mobile dots — navigate on click only, never auto-trigger. 44px hit area, FR labels. */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-header md:hidden flex gap-0.5 bg-card/80 backdrop-blur-sm px-2 py-1 rounded-full border border-border/50">
