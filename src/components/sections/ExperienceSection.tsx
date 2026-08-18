@@ -99,14 +99,16 @@ const education: ExpItem[] = [
   },
 ];
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+/* Entrée éditoriale : période en marge gauche (mono), contenu à droite.
+   Les entrées sont séparées par des filets hairline — aucune boîte. */
 const TimelineEntry = ({
   item,
-  type,
   index,
   lang,
 }: {
   item: ExpItem;
-  type: "exp" | "edu";
   index: number;
   lang: Lang;
 }) => {
@@ -114,64 +116,39 @@ const TimelineEntry = ({
   const { t } = useT();
 
   return (
-    <motion.div
-      initial={reduce ? false : { opacity: 0, y: 12 }}
+    <motion.article
+      initial={reduce ? false : { opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={reduce ? { duration: 0 } : { duration: 0.45, delay: index * 0.1 }}
-      className="relative pl-12 pb-8 last:pb-0"
+      transition={reduce ? { duration: 0 } : { duration: 0.5, delay: index * 0.06, ease: EASE }}
+      className="group grid gap-y-2 sm:grid-cols-[10.5rem_1fr] sm:gap-x-8 lg:grid-cols-[12rem_1fr] lg:gap-x-12 border-t border-border py-7 lg:py-8 transition-colors duration-300 hover:border-primary/50"
     >
-      {/* Rail vertical — se déploie en scaleY (transform-only) à l'entrée de l'item */}
-      <motion.div
-        aria-hidden="true"
-        initial={reduce ? false : { scaleY: 0 }}
-        whileInView={{ scaleY: 1 }}
-        viewport={{ once: true, margin: "-40px" }}
-        transition={reduce ? { duration: 0 } : { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-        className="absolute left-[13px] top-9 bottom-0 w-px origin-top bg-gradient-to-b from-border via-border to-transparent"
-      />
-
-      {/* Point actif = seul marqueur royal ; les autres restent neutres */}
-      <div className={`absolute left-0 top-4 w-7 h-7 rounded-md flex items-center justify-center border-2 z-10 ${
-        item.current
-          ? "bg-brand border-primary/60"
-          : "bg-background border-border"
-      }`}>
-        {type === "exp" ? (
-          <Briefcase className={`w-3 h-3 ${item.current ? "text-brand-foreground" : "text-muted-foreground"}`} />
-        ) : (
-          <GraduationCap className="w-3 h-3 text-muted-foreground" />
+      {/* Marge : période + statut */}
+      <div className="flex sm:flex-col items-baseline sm:items-start gap-x-3 gap-y-2">
+        <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground leading-relaxed">
+          {tx(item.period, lang)}
+        </p>
+        {item.current && (
+          <p className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-success">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
+            {t("experience.current")}
+          </p>
+        )}
+        {item.highlight && (
+          <p className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+            <Award className="w-3 h-3" aria-hidden="true" />
+            {tx(item.highlight, lang)}
+          </p>
         )}
       </div>
 
-      <div className={`rounded-md border p-4 sm:p-5 transition-colors duration-300 group ${
-        item.current
-          ? "border-primary/30 bg-primary/5 dark:bg-primary/8"
-          : "border-border bg-card hover:border-primary/40"
-      }`}>
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-secondary/70 text-muted-foreground">
-            {tx(item.period, lang)}
-          </span>
-          {item.current && (
-            <span className="flex items-center gap-1 text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
-              {t("experience.current")}
-            </span>
-          )}
-          {item.highlight && (
-            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-              <Award className="w-3 h-3" />
-              {tx(item.highlight, lang)}
-            </span>
-          )}
-        </div>
-
-        <h3 className="text-base sm:text-lg font-display font-semibold mb-1 leading-snug">
+      {/* Contenu */}
+      <div>
+        <h3 className="font-display font-semibold text-lg sm:text-xl leading-snug tracking-tight">
           {tx(item.title, lang)}
         </h3>
-        <div className="flex items-center gap-1.5 mb-3">
-          <span className="text-sm text-muted-foreground font-medium">
+        <div className="flex items-center gap-1.5 mt-1 mb-3">
+          <span className="text-sm font-medium text-primary">
             {item.company || item.school}
           </span>
           {item.companyUrl && (
@@ -188,19 +165,19 @@ const TimelineEntry = ({
           )}
         </div>
 
-        <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+        <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed max-w-[62ch]">
           {tx(item.description, lang)}
         </p>
 
         {item.result && (
-          <p className="flex items-center gap-1.5 text-xs font-medium text-success bg-success/10 border border-success/20 rounded-md px-3 py-1.5 mb-3 w-fit">
-            <Check className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+          <p className="mt-3 inline-flex items-start gap-1.5 font-mono text-xs text-success leading-snug">
+            <Check className="w-3.5 h-3.5 flex-shrink-0 mt-px" aria-hidden="true" />
             {tx(item.result, lang)}
           </p>
         )}
 
         {item.technologies && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 mt-4">
             {item.technologies.map((tech) => (
               <span
                 key={tech}
@@ -212,7 +189,7 @@ const TimelineEntry = ({
           </div>
         )}
       </div>
-    </motion.div>
+    </motion.article>
   );
 };
 
@@ -220,7 +197,7 @@ const ExperienceSection = () => {
   const { t, lang } = useT();
   return (
     <section className="section-container">
-      <div className="section-content max-w-3xl">
+      <div className="section-content max-w-4xl">
         <SectionHeading
           index="02"
           label={t("experience.label")}
@@ -230,7 +207,7 @@ const ExperienceSection = () => {
         />
 
         <Tabs defaultValue="experience" className="w-full">
-          <TabsList className="grid w-full max-w-xs grid-cols-2 mb-10 h-11 rounded-md">
+          <TabsList className="grid w-full max-w-xs grid-cols-2 mb-8 h-11 rounded-md">
             <TabsTrigger value="experience" className="flex items-center gap-2 text-sm rounded-sm">
               <Briefcase className="w-3.5 h-3.5" />
               {t("experience.tabExp")}
@@ -242,17 +219,17 @@ const ExperienceSection = () => {
           </TabsList>
 
           <TabsContent value="experience">
-            <div className="relative">
+            <div className="border-b border-border">
               {experiences.map((exp, index) => (
-                <TimelineEntry key={tx(exp.title, lang)} item={exp} index={index} type="exp" lang={lang} />
+                <TimelineEntry key={tx(exp.title, lang)} item={exp} index={index} lang={lang} />
               ))}
             </div>
           </TabsContent>
 
           <TabsContent value="education">
-            <div className="relative">
+            <div className="border-b border-border">
               {education.map((edu, index) => (
-                <TimelineEntry key={tx(edu.title, lang)} item={edu} index={index} type="edu" lang={lang} />
+                <TimelineEntry key={tx(edu.title, lang)} item={edu} index={index} lang={lang} />
               ))}
             </div>
           </TabsContent>
