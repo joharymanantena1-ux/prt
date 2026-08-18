@@ -1,6 +1,8 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import SectionHeading from "@/components/SectionHeading";
 import Marquee from "@/components/motion/Marquee";
+import CodeRain from "@/components/motion/CodeRain";
 import { useT, tx, type Bi } from "@/i18n";
 import { techIcons } from "@/data/techIcons";
 
@@ -91,6 +93,23 @@ const softSkills: Bi[] = [
   { fr: "Rigueur", en: "Rigour" },
 ];
 
+/* Composition typographique des soft skills : les graisses, corps et styles
+   alternent selon un motif fixe — pas une suite uniforme de mots. */
+const SOFT_STYLE = [
+  "font-display text-lg sm:text-xl font-medium text-foreground",
+  "text-sm text-muted-foreground",
+  "font-display italic text-base text-foreground/90",
+  "text-sm font-semibold text-foreground",
+  "text-base text-muted-foreground",
+  "font-display text-lg font-medium text-foreground",
+  "text-sm text-muted-foreground",
+  "font-display italic text-base text-foreground/90",
+];
+
+// NOTE : la certification (IA générative — Google Cloud Skill Boost) est
+// volontairement masquée de la grille pour le moment ; les chaînes i18n
+// skills.certTitle / skills.certName restent disponibles pour la réafficher.
+
 const TECH_COUNT = CORE_STACK.length + FAMILIES.reduce((n, f) => n + f.skills.length, 0);
 
 // Brand glyph (simple-icons path) — keeps the official brand colour. Near-black
@@ -110,9 +129,31 @@ const TechIcon = ({ slug, className = "w-5 h-5" }: { slug: string; className?: s
   );
 };
 
-/* ── Bento ─────────────────────────────────────────────────────────────────
-   Tuile de base : surface card sur la bande teintée, lift discret au survol
-   (recherche bento 2025 : ~2% de scale/lift max, ombre qui s'adoucit). */
+/* Compteur : monte de 0 à la valeur à la première entrée dans le viewport. */
+const CountUp = ({ value }: { value: number }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const reduce = useReducedMotion();
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [n, setN] = useState(reduce ? value : 0);
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reduce) { setN(value); return; }
+    const start = performance.now();
+    const duration = 900;
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min((t - start) / duration, 1);
+      setN(Math.round(value * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, reduce, value]);
+
+  return <span ref={ref} className="tabular-nums">{n}</span>;
+};
+
 const TILE =
   "rounded-lg border border-border bg-card p-5 sm:p-6 " +
   "transition-[transform,box-shadow,border-color] duration-300 " +
@@ -140,9 +181,10 @@ const TechItem = ({ skill }: { skill: Skill }) => (
 );
 
 /**
- * Compétences — bento grid dynamique : la vitrine du stack signature occupe
- * la grande case, les familles prennent une largeur dérivée de leur volume
- * (dense flow), ponctuées d'une tuile compteur et d'une tuile certification.
+ * Compétences — bento : vitrine du stack signature, tuile compteur royale
+ * (plan de couleur), fenêtre terminal animée, familles à largeur dérivée du
+ * volume, soft skills en composition typographique. Chaque famille de tuile
+ * réagit différemment au survol, la grille reste une composition d'ensemble.
  */
 const SkillsSection = () => {
   const reduce = useReducedMotion();
@@ -166,7 +208,7 @@ const SkillsSection = () => {
           viewport={{ once: true, margin: "-60px" }}
           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 lg:grid-flow-dense"
         >
-          {/* ── Tuile vitrine : stack signature ── */}
+          {/* ── Tuile vitrine : stack signature (les glyphes s'élèvent un à un) ── */}
           <motion.div
             custom={nextIndex()}
             variants={tileVariants}
@@ -185,31 +227,31 @@ const SkillsSection = () => {
             </div>
           </motion.div>
 
-          {/* ── Tuile compteur — calculée depuis les données ── */}
+          {/* ── Tuile compteur — plan royal, la valeur monte à l'entrée ── */}
           <motion.div
             custom={nextIndex()}
             variants={tileVariants}
-            className={`${TILE} col-span-1 md:col-span-2 lg:col-span-2 flex flex-col justify-between gap-3`}
+            className="group col-span-1 md:col-span-2 lg:col-span-2 rounded-lg bg-brand text-brand-foreground p-5 sm:p-6 flex flex-col justify-between gap-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-elevated motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
-            <p className="font-display font-semibold leading-none text-[clamp(2.4rem,4vw,3.4rem)]">
-              {TECH_COUNT}
+            <p className="font-display font-semibold leading-none text-[clamp(2.4rem,4vw,3.4rem)] transition-transform duration-300 group-hover:scale-[1.04] origin-left motion-reduce:transform-none">
+              <CountUp value={TECH_COUNT} />
             </p>
-            <p className="text-sm text-muted-foreground leading-snug">{t("skills.countLabel")}</p>
+            <p className="text-sm text-brand-foreground/85 leading-snug">{t("skills.countLabel")}</p>
           </motion.div>
 
-          {/* ── Tuile certification (donnée réelle du parcours) ── */}
+          {/* ── Fenêtre terminal — fragments de code qui remontent (Canvas) ── */}
           <motion.div
             custom={nextIndex()}
             variants={tileVariants}
-            className={`${TILE} col-span-1 md:col-span-2 lg:col-span-2 flex flex-col justify-between gap-3`}
+            className="col-span-1 md:col-span-2 lg:col-span-2 rounded-lg border border-border overflow-hidden flex flex-col bg-[hsl(221,36%,8%)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-elevated hover:border-success/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
-            <p className="kicker">{t("skills.certTitle")}</p>
-            <div>
-              <p className="font-display font-semibold text-lg sm:text-xl leading-snug">
-                {t("skills.certName")}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">Google Cloud Skill Boost</p>
+            <div className="flex items-center gap-1.5 px-3.5 pt-3 pb-2" aria-hidden="true">
+              <span className="w-2 h-2 rounded-full bg-white/15" />
+              <span className="w-2 h-2 rounded-full bg-white/15" />
+              <span className="w-2 h-2 rounded-full bg-white/15" />
+              <span className="ml-2 font-mono text-[10px] tracking-[0.08em] text-white/35 select-none">~/dev</span>
             </div>
+            <CodeRain className="w-full flex-1 min-h-[7rem]" />
           </motion.div>
 
           {/* ── Familles — largeur dérivée du volume d'items ── */}
@@ -218,11 +260,13 @@ const SkillsSection = () => {
               key={tx(family.title, lang)}
               custom={nextIndex()}
               variants={tileVariants}
-              className={`${TILE} col-span-2 md:col-span-2 ${
+              className={`${TILE} group col-span-2 md:col-span-2 ${
                 family.skills.length >= 6 ? "lg:col-span-3" : "lg:col-span-2"
               }`}
             >
-              <p className="kicker mb-4">{tx(family.title, lang)}</p>
+              <p className="kicker mb-4 transition-colors duration-300 group-hover:text-primary">
+                {tx(family.title, lang)}
+              </p>
               <div className="flex flex-wrap gap-x-4 gap-y-2.5 text-foreground/90">
                 {family.skills.map((skill) => (
                   <TechItem key={skill.name} skill={skill} />
@@ -231,15 +275,26 @@ const SkillsSection = () => {
             </motion.div>
           ))}
 
-          {/* ── Soft skills ── */}
+          {/* ── Soft skills — composition typographique, mots révélés un à un ── */}
           <motion.div
             custom={nextIndex()}
             variants={tileVariants}
             className={`${TILE} col-span-2 md:col-span-2 lg:col-span-2`}
           >
             <p className="kicker mb-4">{t("skills.soft")}</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {softSkills.map((label) => tx(label, lang)).join(" · ")}
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 leading-snug">
+              {softSkills.map((label, i) => (
+                <motion.span
+                  key={tx(label, lang)}
+                  initial={reduce ? false : { opacity: 0, y: 6 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.3 + i * 0.06, ease: EASE }}
+                  className={`${SOFT_STYLE[i % SOFT_STYLE.length]} transition-colors duration-300 hover:text-primary cursor-default`}
+                >
+                  {tx(label, lang)}
+                </motion.span>
+              ))}
             </p>
           </motion.div>
         </motion.div>
