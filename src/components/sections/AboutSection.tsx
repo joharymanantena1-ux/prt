@@ -38,7 +38,6 @@ const AboutSection = () => {
     <section className="section-container">
       <div className="section-content">
         <SectionHeading
-          index="01"
           label={t("about.label")}
           title={t("about.title")}
           description={t("about.desc")}

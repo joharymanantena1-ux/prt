@@ -199,7 +199,6 @@ const ExperienceSection = () => {
     <section className="section-container">
       <div className="section-content max-w-4xl">
         <SectionHeading
-          index="02"
           label={t("experience.label")}
           title={t("experience.title")}
           description={t("experience.desc")}

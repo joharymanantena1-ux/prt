@@ -166,7 +166,6 @@ const SkillsSection = () => {
     <section className="section-container">
       <div className="section-content">
         <SectionHeading
-          index="03"
           label={t("skills.label")}
           title={t("skills.title")}
           description={t("skills.desc")}

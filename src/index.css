@@ -52,7 +52,7 @@
     --shadow-soft: 0 2px 16px -4px hsl(219 33% 10% / 0.08);
     --shadow-elevated: 0 12px 40px -8px hsl(219 33% 10% / 0.12);
 
-    --font-display: 'Space Grotesk', sans-serif;
+    --font-display: 'Fraunces', 'Georgia', serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
@@ -125,7 +125,9 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    /* Sérif : tracking quasi neutre — le resserrement fort est un réflexe grotesque */
+    letter-spacing: -0.01em;
+    font-optical-sizing: auto;
   }
 
   /* ── Surfaces navigateur — la sélection, le caret et la scrollbar portent
@@ -209,10 +211,18 @@
   }
 
   /* ─── Swiss-tech system ─────────────────────────────────────────────── */
-  /* Monospaced kicker / index label */
+  /* Label éditorial — petit, sans-serif, casse normale. Le mono uppercase
+     n'est plus le réflexe : il est réservé aux vraies données (.label-mono). */
   .kicker {
+    font-family: var(--font-body);
+    @apply text-sm font-semibold text-muted-foreground;
+    letter-spacing: 0.01em;
+  }
+
+  /* Label mono — uniquement pour les données : dates, compteurs, coordonnées */
+  .label-mono {
     font-family: var(--font-mono);
-    @apply text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground;
+    @apply text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground;
   }
 
   /* Faint engineering grid background (decorative, GPU-cheap) */

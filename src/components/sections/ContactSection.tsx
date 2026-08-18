@@ -80,7 +80,6 @@ const ContactSection = () => {
     <section className="section-container">
       <div className="section-content max-w-5xl">
         <SectionHeading
-          index="05"
           label={t("contact.label")}
           title={t("contact.title")}
           description={t("contact.desc")}

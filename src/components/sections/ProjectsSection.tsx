@@ -32,6 +32,7 @@ const professionalProjects: Project[] = [
     technologies: ["ReactJS", "React Native", "GraphQL", "TypeScript"],
     category: "Web & Mobile",
     featured: true,
+    liveUrl: "https://www.beautybay.com",
   },
   {
     title: "Paul Beuscher",
@@ -663,7 +664,6 @@ const ProjectsSection = () => {
     <section className="section-container">
       <div className="section-content">
         <SectionHeading
-          index="04"
           label={t("projects.label")}
           title={t("projects.title")}
           description={

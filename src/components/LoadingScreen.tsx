@@ -229,7 +229,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       {/* L3 — name composing letter-by-letter + percentage readout */}
       <div className="relative z-10 flex flex-col items-center gap-2.5 animate-[loader-in_.7s_cubic-bezier(.22,.61,.36,1)_both]">
         <p
-          className="text-base md:text-lg font-display font-semibold tracking-[0.18em] uppercase"
+          className="text-xl md:text-2xl font-display font-semibold"
           aria-label="Johary Manantena"
         >
           {"Johary Manantena".split("").map((ch, i) => (
@@ -243,8 +243,8 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             </span>
           ))}
         </p>
-        <p className="text-xs text-muted-foreground font-medium tabular-nums tracking-[0.3em]">
-          {progress}% · DÉVELOPPEUR FULL-STACK
+        <p className="text-xs text-muted-foreground font-medium tabular-nums tracking-[0.08em]">
+          {progress}% · Développeur Full-Stack
         </p>
       </div>
     </div>

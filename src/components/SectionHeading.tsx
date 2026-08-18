@@ -2,11 +2,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 interface SectionHeadingProps {
-  /** Two-digit index, e.g. "01". */
-  index: string;
-  /** Mono kicker label, e.g. "À propos". */
-  label: string;
-  /** Section title (clip-revealed on scroll). */
+  /** Petit label sans-serif au-dessus du titre, ex. "À propos". */
+  label?: string;
+  /** Titre de section (révélé par masque au scroll). */
   title: ReactNode;
   description?: ReactNode;
   align?: "left" | "center";
@@ -16,11 +14,10 @@ interface SectionHeadingProps {
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Swiss-tech section header: numbered mono kicker + clip-revealed title.
- * The title slides up from behind a mask when it enters the viewport.
+ * En-tête de section éditorial : label discret + grand titre sérif
+ * révélé par masque quand il entre dans le viewport.
  */
 const SectionHeading = ({
-  index,
   label,
   title,
   description,
@@ -32,40 +29,25 @@ const SectionHeading = ({
 
   return (
     <div className={`${centered ? "text-center mx-auto" : ""} ${className}`}>
-      <motion.span
-        initial={reduce ? false : { opacity: 0, y: 8 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={reduce ? { duration: 0 } : { duration: 0.4 }}
-        className={`kicker !text-primary inline-flex items-center gap-2 ${centered ? "justify-center" : ""}`}
-      >
-        {/* Séquence : numéro → ligne qui s'étend → label légèrement après */}
-        <span>{index}</span>
-        <motion.span
-          aria-hidden="true"
-          initial={reduce ? false : { scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
+      {label && (
+        <motion.p
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.15, ease: EASE }}
-          className="h-px w-6 bg-primary/50 origin-left"
-        />
-        <motion.span
-          initial={reduce ? false : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.35, delay: 0.3 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.4 }}
+          className="kicker !text-primary mb-2"
         >
           {label}
-        </motion.span>
-      </motion.span>
+        </motion.p>
+      )}
 
-      <div className="overflow-hidden mt-2 pb-1">
+      <div className="overflow-hidden pb-1">
         <motion.h2
           initial={reduce ? false : { y: "110%" }}
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={reduce ? { duration: 0 } : { duration: 0.6, ease: EASE }}
-          className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-[1.05] [text-wrap:balance]"
+          className="font-display font-semibold text-[clamp(2.1rem,4.6vw,3.6rem)] leading-[1.06] [text-wrap:balance]"
         >
           {title}
         </motion.h2>
@@ -77,7 +59,7 @@ const SectionHeading = ({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.15 }}
-          className={`text-base text-muted-foreground mt-3 max-w-xl ${centered ? "mx-auto" : ""}`}
+          className={`text-base sm:text-lg text-muted-foreground mt-4 max-w-xl leading-relaxed ${centered ? "mx-auto" : ""}`}
         >
           {description}
         </motion.p>

@@ -201,7 +201,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           <div className="rise flex flex-wrap items-center gap-x-3 gap-y-1.5 justify-center lg:justify-start">
             {/* Technologies en défilement automatique — un mot à la fois,
                 en pause hors écran et sous prefers-reduced-motion. */}
-            <span className="kicker !text-primary inline-flex items-center gap-1.5">
+            <span className="label-mono !text-primary inline-flex items-center gap-1.5">
               <MorphingRoles items={["React", "Node.js", "TypeScript", "React Native", "Laravel", "Spring Boot"]} />
               <span className="caret-terminal" aria-hidden="true" />
             </span>
@@ -216,14 +216,14 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             {t("hero.greeting")}
           </p>
 
-          {/* Un seul h1 : nom + métier (SEO), le métier reste l'élément dominant */}
-          <h1 className="rise mt-1.5 font-display font-bold" style={{ animationDelay: "90ms" }}>
-            <span className="block text-[clamp(1.35rem,2.3vw,1.9rem)] uppercase tracking-[0.04em] leading-tight">
-              Johary Manantena
+          {/* Un seul h1 : nom + métier (SEO). Le nom porte le grand sérif —
+              c'est lui la marque ; le métier suit en sous-titre net. */}
+          <h1 className="rise mt-1.5" style={{ animationDelay: "90ms" }}>
+            <span className="block font-display font-semibold leading-[1.04] [text-wrap:balance] text-[clamp(2.5rem,5vw,4.4rem)]">
+              Johary Manantena<span className="text-primary">.</span>
             </span>
-            <span className="mt-3 block tracking-tight leading-[0.98] text-[clamp(2.6rem,4.8vw,4.6rem)]">
-              <span className="block">{t("hero.roleL1")}</span>
-              <span className="block">{t("hero.roleL2")}<span className="text-primary">.</span></span>
+            <span className="mt-4 block font-body font-medium tracking-normal text-[clamp(1.15rem,1.7vw,1.5rem)] text-foreground/80 leading-snug">
+              {t("hero.roleL1")} {t("hero.roleL2")}
             </span>
           </h1>
 
@@ -297,10 +297,8 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           >
             {stats.map(({ label, value }) => (
               <div key={label} className="flex flex-col gap-1.5">
-                <dt className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-muted-foreground leading-none">
-                  {label}
-                </dt>
-                <dd className="font-display text-xl sm:text-2xl font-bold leading-none">{value}</dd>
+                <dt className="order-2 text-sm text-muted-foreground leading-none">{label}</dt>
+                <dd className="order-1 font-display text-2xl sm:text-[1.7rem] font-semibold leading-none">{value}</dd>
               </div>
             ))}
           </dl>
