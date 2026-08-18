@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Github, Globe, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucide-react";
+import { Check, Github, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucide-react";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import SectionHeading from "@/components/SectionHeading";
@@ -41,6 +41,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Shopify", "Liquid", "Python", "Shopify API"],
     category: "E-commerce",
+    liveUrl: "https://www.paul-beuscher.com",
   },
   {
     title: "fingerinthenose.com",
@@ -50,6 +51,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Shopify", "Liquid", "JavaScript", "CSS"],
     category: "E-commerce",
+    liveUrl: "https://fingerinthenose.com",
   },
   {
     title: "The Cool Republic",
@@ -59,6 +61,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
     category: "Automation",
+    liveUrl: "https://thecoolrepublic.com",
   },
   {
     title: "Musier Paris",
@@ -68,6 +71,7 @@ const professionalProjects: Project[] = [
     },
     technologies: ["Shopify", "Liquid", "JavaScript"],
     category: "E-commerce",
+    liveUrl: "https://musier-paris.com",
   },
   {
     title: "OTA Server",
@@ -96,6 +100,7 @@ const professionalProjects: Project[] = [
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
     category: "SaaS",
     featured: true,
+    liveUrl: "https://edu.levitation.mg",
   },
   {
     title: "EduContent Mobile App",
@@ -324,9 +329,12 @@ const TechTags = ({ technologies, max = 4 }: { technologies: string[]; max?: num
 );
 
 // ─── PROFESSIONAL PROJECT CARD (image-free Swiss cover) ──────────────────────
+// Quand le projet a une URL publique, toute la card devient cliquable via un
+// lien « étiré » (overlay), signalé par une flèche ↗ discrète près du titre.
 const ProfessionalCard = ({ project, index }: { project: Project; index: number }) => {
   const { reduce } = useMotionPreset();
   const { t, lang } = useT();
+  const clickable = Boolean(project.liveUrl);
   return (
     <motion.article
       initial={reduce ? false : { opacity: 0, y: 16 }}
@@ -336,6 +344,19 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       // motion-reduce drops the lift. Neutral elevated shadow — no coloured glow.
       className="relative flex-shrink-0 snap-start w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-elevated hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
     >
+      {/* Lien étiré — z-[15] : au-dessus du contenu, sous les liens d'icônes (z-20).
+          draggable=false pour ne pas déclencher un drag natif de lien dans le
+          carrousel ; ring-inset car la card est en overflow-hidden. */}
+      {clickable && (
+        <a
+          href={project.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          draggable={false}
+          aria-label={`${t("projects.liveOf")} ${project.title} (${lang === "fr" ? "nouvel onglet" : "new tab"})`}
+          className="absolute inset-0 z-[15] rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+        />
+      )}
       {/* Accent sweep — royal hairline drawn from the left on hover */}
       <span
         aria-hidden="true"
@@ -349,16 +370,18 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
       <div className="p-5 flex flex-col gap-3.5 flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-lg font-display font-semibold leading-snug line-clamp-2 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none">{project.title}</h3>
-          <div className="flex gap-0.5 flex-shrink-0 -mr-2 -mt-1">
+          <div className="relative z-20 flex items-center gap-0.5 flex-shrink-0 -mr-2 -mt-1">
             {project.githubUrl && (
               <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
                 <Github className="w-4 h-4" aria-hidden="true" />
               </IconLink>
             )}
-            {project.liveUrl && (
-              <IconLink href={project.liveUrl} label={`${t("projects.liveOf")} ${project.title}`} variant="primary">
-                <Globe className="w-4 h-4" aria-hidden="true" />
-              </IconLink>
+            {/* Indicateur passif de lien externe — le lien, c'est la card */}
+            {clickable && (
+              <ArrowUpRight
+                aria-hidden="true"
+                className="w-4 h-4 mt-2 mr-2 text-muted-foreground/70 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
+              />
             )}
           </div>
         </div>
@@ -432,12 +455,18 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
     });
   }, [projects.length]);
 
+  // Drag à la souris uniquement (le tactile garde le scroll natif). La capture
+  // du pointeur n'est posée qu'après un vrai déplacement (> 6px) : la poser au
+  // pointerdown redirigerait le `click` vers le conteneur et rendrait les cards
+  // cliquables inertes. Après un drag, le clic résiduel est neutralisé.
+  const dragDistance = useRef(0);
+
   const onPointerDown = useCallback((e: React.PointerEvent) => {
-    if (!scrollRef.current) return;
+    if (!scrollRef.current || e.pointerType !== "mouse") return;
     isDragging.current = true;
+    dragDistance.current = 0;
     startX.current = e.pageX - scrollRef.current.offsetLeft;
     startScroll.current = scrollRef.current.scrollLeft;
-    scrollRef.current.setPointerCapture(e.pointerId);
   }, []);
 
   const stop = useCallback(() => {
@@ -447,13 +476,26 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging.current || !scrollRef.current) return;
     const pageX = e.pageX;
+    const x = pageX - scrollRef.current.offsetLeft;
+    dragDistance.current = Math.max(dragDistance.current, Math.abs(x - startX.current));
+    if (dragDistance.current > 6 && !scrollRef.current.hasPointerCapture(e.pointerId)) {
+      scrollRef.current.setPointerCapture(e.pointerId);
+    }
     if (rafId.current != null) return;
     rafId.current = requestAnimationFrame(() => {
       rafId.current = null;
       if (!scrollRef.current) return;
-      const x = pageX - scrollRef.current.offsetLeft;
       scrollRef.current.scrollLeft = startScroll.current - (x - startX.current) * 1.5;
     });
+  }, []);
+
+  // Un clic qui conclut un drag ne doit pas naviguer.
+  const onClickCapture = useCallback((e: React.MouseEvent) => {
+    if (dragDistance.current > 6) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragDistance.current = 0;
+    }
   }, []);
 
   const scrollByCards = useCallback((dir: 1 | -1) => {
@@ -485,6 +527,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
         onPointerUp={stop}
         onPointerLeave={stop}
         onPointerMove={onPointerMove}
+        onClickCapture={onClickCapture}
         onKeyDown={onKeyDown}
         onScroll={onScroll}
         className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide select-none cursor-grab active:cursor-grabbing snap-x snap-proximity rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
