@@ -77,7 +77,9 @@ const ContactSection = () => {
     "rounded-none border-x-0 border-t-0 border-b border-border bg-transparent px-1 text-sm placeholder:text-muted-foreground/90 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[0_1px_0_0_hsl(var(--primary))] transition-[border-color,box-shadow] duration-200";
 
   return (
-    <section className="section-container">
+    // Bande encre : la classe `dark` bascule les tokens sur la palette midnight
+    // même en mode clair — la fin de page (contact + footer) vit sur fond nuit.
+    <section className="dark section-container bg-background text-foreground">
       <div className="section-content max-w-5xl">
         <SectionHeading
           label={t("contact.label")}

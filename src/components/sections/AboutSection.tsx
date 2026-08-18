@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import SectionHeading from "@/components/SectionHeading";
 import { useT, tx, type Bi } from "@/i18n";
 
-/* Principes de travail — liste éditoriale numérotée (filets, pas de cartes). */
+/* Principes de travail — liste typographique fluide, sans cartes ni filets. */
 const values: { title: Bi; description: Bi }[] = [
   {
     title: "Clean Code",
@@ -25,10 +25,10 @@ const values: { title: Bi; description: Bi }[] = [
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * À propos — composition éditoriale asymétrique : le récit (colonne large)
- * face à la philosophie (colonne étroite, filet hairline), puis les principes
- * en liste numérotée sur filets. Aucune carte : la hiérarchie est portée par
- * la typographie et les espacements.
+ * À propos — un seul geste éditorial : titre, grand chapeau sérif, puis le
+ * récit face à la philosophie (panneau teinté calme), et les principes en
+ * liste typographique fluide. Un unique filet, fonctionnel, avant les
+ * principes.
  */
 const AboutSection = () => {
   const reduce = useReducedMotion();
@@ -36,16 +36,26 @@ const AboutSection = () => {
 
   return (
     <section className="section-container">
-      <div className="section-content">
+      <div className="section-content max-w-6xl">
         <SectionHeading
           label={t("about.label")}
           title={t("about.title")}
-          description={t("about.desc")}
-          className="mb-10 md:mb-14 lg:mb-20"
+          className="mb-6"
         />
 
-        {/* ── Récit / philosophie — asymétrie 7/4 sur douze colonnes ────── */}
-        <div className="grid gap-y-10 lg:grid-cols-12 lg:gap-x-10 mb-14 md:mb-16 lg:mb-24">
+        {/* Chapeau — la description devient une vraie phrase d'ouverture */}
+        <motion.p
+          initial={reduce ? false : { opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
+          className="font-display text-[clamp(1.25rem,2vw,1.65rem)] leading-[1.4] text-foreground/90 max-w-3xl mb-12 md:mb-16 [text-wrap:pretty]"
+        >
+          {t("about.desc")}
+        </motion.p>
+
+        {/* Récit / philosophie — 7/5, le panneau teinté donne le contrepoint */}
+        <div className="grid gap-y-8 lg:grid-cols-12 lg:gap-x-12 mb-14 md:mb-20">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -53,28 +63,25 @@ const AboutSection = () => {
             transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
             className="lg:col-span-7"
           >
-            <span className="kicker">{t("about.journeyKicker")}</span>
-            <h3 className="mt-3 mb-5 font-display font-semibold text-2xl sm:text-3xl lg:text-[2.1rem] leading-[1.12] tracking-tight max-w-md">
+            <h3 className="font-display font-semibold text-xl sm:text-2xl leading-snug mb-4">
               {t("about.journeyTitle")}
             </h3>
-            {/* Premier paragraphe légèrement plus grand : entrée de lecture */}
-            <p className="text-lg text-foreground/85 leading-relaxed mb-4 max-w-[62ch]">
+            <p className="text-base sm:text-lg text-foreground/85 leading-relaxed mb-4 max-w-[60ch]">
               {t("about.journeyP1")}
             </p>
-            <p className="text-base text-muted-foreground leading-relaxed max-w-[62ch]">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-[60ch]">
               {t("about.journeyP2")}
             </p>
           </motion.div>
 
-          <motion.div
+          <motion.aside
             initial={reduce ? false : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.12, ease: EASE }}
-            className="lg:col-span-4 lg:col-start-9 lg:pt-16 border-t lg:border-t-0 lg:border-l border-border pt-8 lg:pl-10"
+            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.1, ease: EASE }}
+            className="lg:col-span-5 rounded-md bg-muted/70 p-7 sm:p-8 lg:self-start"
           >
-            <span className="kicker">{t("about.philoKicker")}</span>
-            <h3 className="mt-3 mb-4 font-display font-semibold text-xl sm:text-2xl leading-snug tracking-tight">
+            <h3 className="font-display font-semibold text-xl leading-snug mb-4">
               {t("about.philoTitle")}
             </h3>
             <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed mb-3">
@@ -83,32 +90,27 @@ const AboutSection = () => {
             <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed">
               {t("about.philoP2")}
             </p>
-          </motion.div>
+          </motion.aside>
         </div>
 
-        {/* ── Principes — rangées sur filets, numérotation mono ──────────── */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
-          {values.map(({ title, description }, index) => (
-            <motion.div
-              key={tx(title, lang)}
-              initial={reduce ? false : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={reduce ? { duration: 0 } : { duration: 0.45, delay: 0.07 * index, ease: EASE }}
-              className="group border-t border-border pt-5 transition-colors duration-300 hover:border-primary/60"
-            >
-              <div className="flex items-baseline justify-between mb-3">
-                <h4 className="font-display font-semibold text-base lg:text-lg tracking-tight">
-                  {tx(title, lang)}
-                </h4>
-                <span className="font-mono text-[11px] text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{tx(description, lang)}</p>
-            </motion.div>
-          ))}
-        </div>
+        {/* Principes — texte courant sur deux colonnes, titre en gras enchâssé */}
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-30px" }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
+          className="border-t border-border pt-8 md:pt-10"
+        >
+          <p className="kicker mb-6">{t("about.valuesTitle")}</p>
+          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-5 max-w-4xl">
+            {values.map(({ title, description }) => (
+              <p key={tx(title, lang)} className="text-[0.95rem] leading-relaxed text-muted-foreground">
+                <strong className="font-semibold text-foreground">{tx(title, lang)}.</strong>{" "}
+                {tx(description, lang)}
+              </p>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

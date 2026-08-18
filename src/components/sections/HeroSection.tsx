@@ -183,7 +183,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   ];
 
   return (
-    <section className="section-container items-center relative overflow-hidden">
+    <section className="section-container min-h-[100svh] items-center relative overflow-hidden">
       {/* Trame technique, statique et discrète (décorative) — dissoute vers les bords */}
       <div
         className="absolute inset-0 grid-bg opacity-[0.28] pointer-events-none"

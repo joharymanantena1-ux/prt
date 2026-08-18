@@ -51,6 +51,7 @@ export const en: typeof import("./fr").fr = {
     philoTitle: "Simple, solid, shipped",
     philoP1: "I believe in simple, well-architected solutions that answer the actual business need rather than the trend of the moment — and that stay maintainable over time.",
     philoP2: "Curious about new technologies, especially generative AI (Google Cloud certified), I keep refining my craft to ship reliable products, from the first commit to production.",
+    valuesTitle: "What guides my work",
   },
   experience: {
     label: "Journey",

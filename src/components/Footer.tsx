@@ -49,7 +49,7 @@ const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border">
+    <footer className="dark bg-background text-foreground border-t border-border/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
         {/* ── Rangée principale ─────────────────────────────────────────── */}
         <div className="grid gap-y-10 md:grid-cols-12 md:gap-x-8 py-12 lg:py-16">

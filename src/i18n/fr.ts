@@ -51,6 +51,7 @@ export const fr = {
     philoTitle: "Simple, solide, livré",
     philoP1: "Je crois aux solutions simples et bien architecturées, qui répondent précisément au besoin métier plutôt qu'à la tendance du moment — et qui restent maintenables dans le temps.",
     philoP2: "Curieux des nouvelles technologies, notamment l'IA générative (certifié Google Cloud), je cherche à affiner ma pratique et à livrer des produits fiables, du premier commit à la production.",
+    valuesTitle: "Ce qui guide mon travail",
   },
   experience: {
     label: "Parcours",
