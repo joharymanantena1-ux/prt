@@ -136,7 +136,14 @@ const CodeRain = ({ className = "" }: { className?: string }) => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
+  // Le canvas est positionné en absolu : son attribut `height` (piloté par le
+  // ResizeObserver) ne doit jamais alimenter la hauteur de la tuile, sinon
+  // chaque mesure agrandit le conteneur, que l'observer relit — boucle sans fin.
+  return (
+    <div className={`relative ${className}`}>
+      <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full" aria-hidden="true" />
+    </div>
+  );
 };
 
 export default CodeRain;
