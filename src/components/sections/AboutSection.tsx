@@ -79,7 +79,9 @@ const AboutSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.1, ease: EASE }}
-            className="lg:col-span-5 rounded-md bg-muted/70 p-7 sm:p-8 lg:self-start"
+            // Panneau nuit : contrepoint de plan dans la page ivoire (tokens
+            // dark → surface card relevée, AA garanti dans les deux modes).
+            className="dark bg-card text-foreground lg:col-span-5 rounded-lg border border-border/60 p-7 sm:p-8 lg:self-start"
           >
             <h3 className="font-display font-semibold text-xl leading-snug mb-4">
               {t("about.philoTitle")}

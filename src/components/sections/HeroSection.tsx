@@ -230,14 +230,21 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             {t("hero.greeting")}
           </p>
 
-          {/* Un seul h1 : nom + métier (SEO). Le nom porte le grand sérif —
-              c'est lui la marque ; le métier suit en sous-titre net. */}
+          {/* Un seul h1 : nom + métier (SEO). Le nom porte le grand sérif sur
+              deux lignes légèrement décalées ; le métier suit, « Full-Stack »
+              en italique sérif royal — le contraste typographique fait l'accent. */}
           <h1 className="rise mt-1.5" style={{ animationDelay: "90ms" }}>
-            <span className="block font-display font-semibold leading-[1.04] [text-wrap:balance] text-[clamp(2.5rem,5vw,4.4rem)]">
-              Johary Manantena<span className="text-primary">.</span>
+            <span className="block font-display font-semibold leading-[1.02] text-[clamp(2.5rem,5vw,4.5rem)]">
+              <span className="block">Johary</span>
+              <span className="block lg:pl-[0.75em]">
+                Manantena<span className="text-primary">.</span>
+              </span>
             </span>
             <span className="mt-4 block font-body font-medium tracking-normal text-[clamp(1.15rem,1.7vw,1.5rem)] text-foreground/80 leading-snug">
-              {t("hero.roleL1")} {t("hero.roleL2")}
+              {t("hero.roleL1")}{" "}
+              <em className="font-display italic font-medium text-primary text-[1.12em]">
+                {t("hero.roleL2")}
+              </em>
             </span>
           </h1>
 
