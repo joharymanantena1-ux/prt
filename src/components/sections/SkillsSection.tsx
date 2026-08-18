@@ -1,5 +1,4 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Monitor, Server, Database, Terminal, Target, Layers, Users, Zap, Rocket, RefreshCw, MessageSquare, CheckCircle2 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import Marquee from "@/components/motion/Marquee";
 import { useT, tx, type Bi } from "@/i18n";
@@ -21,14 +20,12 @@ interface Skill {
 
 interface Category {
   title: Bi;
-  Icon: React.ComponentType<{ className?: string }>;
   skills: Skill[];
 }
 
 const categories: Category[] = [
   {
     title: "Frontend",
-    Icon: Monitor,
     skills: [
       { name: "React / Next.js", slug: "siReact" },
       { name: "TypeScript",      slug: "siTypescript" },
@@ -43,7 +40,6 @@ const categories: Category[] = [
   },
   {
     title: "Backend",
-    Icon: Server,
     skills: [
       { name: "PHP / Laravel",   slug: "siLaravel" },
       { name: "Symfony",         slug: "siSymfony" },
@@ -59,7 +55,6 @@ const categories: Category[] = [
   },
   {
     title: { fr: "Bases de données", en: "Databases" },
-    Icon: Database,
     skills: [
       { name: "MySQL",           slug: "siMysql" },
       { name: "PostgreSQL",      slug: "siPostgresql" },
@@ -70,7 +65,6 @@ const categories: Category[] = [
   },
   {
     title: { fr: "DevOps & Outils", en: "DevOps & Tools" },
-    Icon: Terminal,
     skills: [
       { name: "Git / GitHub",    slug: "siGit" },
       { name: "Docker",          slug: "siDocker" },
@@ -81,15 +75,15 @@ const categories: Category[] = [
   },
 ];
 
-const softSkills: { label: Bi; Icon: typeof Target }[] = [
-  { label: { fr: "Analyse des besoins", en: "Requirements analysis" }, Icon: Target },
-  { label: { fr: "Architecture logicielle", en: "Software architecture" }, Icon: Layers },
-  { label: { fr: "Travail en équipe", en: "Teamwork" }, Icon: Users },
-  { label: { fr: "Résolution de problèmes", en: "Problem solving" }, Icon: Zap },
-  { label: { fr: "Autonomie", en: "Autonomy" }, Icon: Rocket },
-  { label: { fr: "Adaptabilité", en: "Adaptability" }, Icon: RefreshCw },
-  { label: "Communication", Icon: MessageSquare },
-  { label: { fr: "Rigueur", en: "Rigour" }, Icon: CheckCircle2 },
+const softSkills: Bi[] = [
+  { fr: "Analyse des besoins", en: "Requirements analysis" },
+  { fr: "Architecture logicielle", en: "Software architecture" },
+  { fr: "Travail en équipe", en: "Teamwork" },
+  { fr: "Résolution de problèmes", en: "Problem solving" },
+  { fr: "Autonomie", en: "Autonomy" },
+  { fr: "Adaptabilité", en: "Adaptability" },
+  "Communication",
+  { fr: "Rigueur", en: "Rigour" },
 ];
 
 // Brand glyph (simple-icons path) — keeps the official brand colour. Near-black
@@ -127,31 +121,31 @@ const TechChip = ({ skill }: { skill: Skill }) => (
   </div>
 );
 
-const CategoryCard = ({ category, index }: { category: Category; index: number }) => {
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+/* Rangée de la table : intitulé + index à gauche, chips à droite. */
+const CategoryRow = ({ category, index }: { category: Category; index: number }) => {
   const reduce = useReducedMotion();
   const { lang } = useT();
-  const { Icon } = category;
 
   return (
     <motion.div
-      initial={reduce ? false : { opacity: 0, y: 24 }}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
-      transition={reduce ? { duration: 0 } : { duration: 0.5, delay: index * 0.08 }}
-      className="card-swiss p-5 lg:p-6 flex flex-col gap-4"
+      transition={reduce ? { duration: 0 } : { duration: 0.5, delay: index * 0.05, ease: EASE }}
+      className="group grid gap-y-4 lg:grid-cols-12 lg:gap-x-10 border-t border-border py-7 lg:py-9 transition-colors duration-300 hover:border-primary/50"
     >
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
-          <Icon className="w-4 h-4" />
-        </div>
-        <div>
-          <h3 className="text-sm font-display font-bold leading-none mb-1">{tx(category.title, lang)}</h3>
-          <div className="h-0.5 w-6 bg-primary" />
-        </div>
-        <span className="ml-auto font-mono text-xs text-muted-foreground">{String(category.skills.length).padStart(2, "0")}</span>
+      <div className="lg:col-span-3 flex lg:flex-col items-baseline lg:items-start justify-between lg:justify-start gap-2">
+        <h3 className="font-display font-semibold text-lg lg:text-xl tracking-tight leading-tight">
+          {tx(category.title, lang)}
+        </h3>
+        <span className="font-mono text-[11px] text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
+          {String(index + 1).padStart(2, "0")} · {String(category.skills.length).padStart(2, "0")}
+        </span>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="lg:col-span-9 flex flex-wrap gap-2">
         {category.skills.map((skill) => (
           <TechChip key={skill.name} skill={skill} />
         ))}
@@ -160,6 +154,11 @@ const CategoryCard = ({ category, index }: { category: Category; index: number }
   );
 };
 
+/**
+ * Compétences — table suisse : chaque catégorie est une rangée pleine largeur
+ * sur filet hairline (intitulé à gauche, technologies à droite). Les soft
+ * skills ferment la table en liste inline ponctuée — pas de nuage de badges.
+ */
 const SkillsSection = () => {
   const reduce = useReducedMotion();
   const { t, lang } = useT();
@@ -174,40 +173,39 @@ const SkillsSection = () => {
           className="mb-10 md:mb-14"
         />
 
-        <div className="grid sm:grid-cols-2 gap-4 lg:gap-5 mb-10 md:mb-12">
+        <div>
           {categories.map((category, index) => (
-            <CategoryCard key={tx(category.title, lang)} category={category} index={index} />
+            <CategoryRow key={tx(category.title, lang)} category={category} index={index} />
           ))}
+
+          {/* Soft skills — dernière rangée de la même table */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.2, ease: EASE }}
+            className="grid gap-y-4 lg:grid-cols-12 lg:gap-x-10 border-y border-border py-7 lg:py-9"
+          >
+            <div className="lg:col-span-3">
+              <h3 className="font-display font-semibold text-lg lg:text-xl tracking-tight leading-tight">
+                {t("skills.soft")}
+              </h3>
+            </div>
+            <ul className="lg:col-span-9 flex flex-wrap items-baseline gap-y-2.5 text-[0.95rem] font-medium leading-snug">
+              {softSkills.map((label, index) => (
+                <li key={tx(label, lang)} className="flex items-baseline">
+                  {index > 0 && (
+                    <span aria-hidden="true" className="mx-3 text-muted-foreground/50 select-none">·</span>
+                  )}
+                  {tx(label, lang)}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
         </div>
 
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.25 }}
-        >
-          <div className="text-center mb-5">
-            <h3 className="text-lg font-display font-semibold">{t("skills.soft")}</h3>
-          </div>
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5">
-            {softSkills.map(({ label, Icon }, index) => (
-              <motion.div
-                key={tx(label, lang)}
-                initial={reduce ? false : { opacity: 0, scale: 0.88 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={reduce ? { duration: 0 } : { duration: 0.28, delay: 0.3 + index * 0.04 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-md bg-secondary/60 border border-border/50 text-sm font-medium cursor-default hover:bg-secondary hover:border-primary/40 transition-colors duration-200"
-              >
-                <Icon className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-                {tx(label, lang)}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Tech ticker — seamless scrolling strip */}
-        <Marquee items={MARQUEE_TECH} speed={34} className="mt-10 md:mt-12 py-4 border-y border-border/50" />
+        <Marquee items={MARQUEE_TECH} speed={34} className="mt-12 md:mt-16 py-4 border-y border-border/50" />
       </div>
     </section>
   );
