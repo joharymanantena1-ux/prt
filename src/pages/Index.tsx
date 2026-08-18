@@ -84,7 +84,6 @@ const Index = () => {
       <ScrollProgress />
       <Navigation
         currentSection={currentSection}
-        totalSections={sections.length}
         onNavigate={navigateToSection}
         sectionNames={sectionNames}
       />

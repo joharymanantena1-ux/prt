@@ -200,18 +200,6 @@
     @apply w-full max-w-7xl mx-auto;
   }
 
-  /* Navigation dots (visual only — 44px hit area provided by the button wrapper) */
-  .nav-dot {
-    @apply w-2 h-2 rounded-full bg-muted-foreground/30 transition-all duration-300 hover:bg-muted-foreground/60;
-  }
-
-  .nav-dot.active {
-    @apply bg-primary;
-    width: 8px;
-    height: 22px;
-    border-radius: 4px;
-  }
-
   /* ─── Swiss-tech system ─────────────────────────────────────────────── */
   /* Label éditorial — petit, sans-serif, casse normale. Le mono uppercase
      n'est plus le réflexe : il est réservé aux vraies données (.label-mono). */
