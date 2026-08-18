@@ -128,6 +128,22 @@
     letter-spacing: -0.02em;
   }
 
+  /* ── Surfaces navigateur — la sélection, le caret et la scrollbar portent
+     aussi l'identité (royal sur ivoire, filets stone). ─────────────────── */
+  ::selection {
+    background: hsl(var(--brand));
+    color: hsl(var(--brand-foreground));
+  }
+
+  input,
+  textarea {
+    caret-color: hsl(var(--primary));
+  }
+
+  html {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
   /* Chrome/Safari autofill — kill the forced white background so inputs keep
      the dark theme. `box-shadow` is the only way to override the UA's yellow/
      white fill; the long transition keeps it from flashing back on blur. */

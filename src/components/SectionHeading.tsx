@@ -65,7 +65,7 @@ const SectionHeading = ({
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={reduce ? { duration: 0 } : { duration: 0.6, ease: EASE }}
-          className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-[1.05]"
+          className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-[1.05] [text-wrap:balance]"
         >
           {title}
         </motion.h2>

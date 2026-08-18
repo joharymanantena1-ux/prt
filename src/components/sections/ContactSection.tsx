@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, MapPin, Phone, Send, Github, Linkedin, CheckCircle2, AlertCircle } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,17 +59,22 @@ const ContactSection = () => {
   };
 
   const contactItems = [
-    { icon: Mail, label: t("contact.infoEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
-    { icon: Phone, label: t("contact.infoPhone"), value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
-    { icon: MapPin, label: t("contact.infoLocation"), value: t("contact.locationValue"), href: null, breakClass: "break-words" },
+    { label: t("contact.infoEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
+    { label: t("contact.infoPhone"), value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
+    { label: t("contact.infoLocation"), value: t("contact.locationValue"), href: null, breakClass: "break-words" },
   ];
 
   const socialLinks = [
-    { icon: Github, href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
+    { href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
+    { href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
   ];
 
   const isDisabled = formState === "loading" || formState === "success";
+
+  // Champs éditoriaux : ligne de base seule, qui passe au royal (et s'épaissit
+  // via box-shadow, sans décalage de layout) au focus.
+  const FIELD =
+    "rounded-none border-x-0 border-t-0 border-b border-border bg-transparent px-1 text-sm placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[0_1px_0_0_hsl(var(--primary))] transition-[border-color,box-shadow] duration-200";
 
   return (
     <section className="section-container">
@@ -89,7 +94,7 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3 card-swiss p-6 lg:p-8"
+            className="lg:col-span-3"
           >
             <AnimatePresence mode="wait">
               {formState === "success" ? (
@@ -141,7 +146,7 @@ const ContactSection = () => {
                         required
                         maxLength={100}
                         disabled={isDisabled}
-                        className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
+                        className={`h-11 ${FIELD}`}
                       />
                     </div>
                     <div>
@@ -159,7 +164,7 @@ const ContactSection = () => {
                         required
                         maxLength={150}
                         disabled={isDisabled}
-                        className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
+                        className={`h-11 ${FIELD}`}
                       />
                     </div>
                   </div>
@@ -177,7 +182,7 @@ const ContactSection = () => {
                       required
                       maxLength={150}
                       disabled={isDisabled}
-                      className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
+                      className={`h-11 ${FIELD}`}
                     />
                   </div>
 
@@ -195,7 +200,7 @@ const ContactSection = () => {
                       required
                       maxLength={3000}
                       disabled={isDisabled}
-                      className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring resize-none text-sm"
+                      className={`resize-none ${FIELD}`}
                     />
                   </div>
 
@@ -264,17 +269,14 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
-            className="lg:col-span-2 space-y-4"
+            className="lg:col-span-2 lg:border-l lg:border-border lg:pl-10"
           >
-            {/* Contact items — full value stays readable on 375px */}
-            <div className="card-swiss p-5 space-y-3">
-              {contactItems.map(({ icon: Icon, label, value, href, breakClass }) => (
-                <div key={label} className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-primary" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="kicker !text-[11px]">{label}</p>
+            {/* Coordonnées — liste éditoriale sur filets, lisible à 375px */}
+            <dl>
+              {contactItems.map(({ label, value, href, breakClass }, index) => (
+                <div key={label} className={`py-4 border-b border-border/70 ${index === 0 ? "pt-0" : ""}`}>
+                  <dt className="kicker !text-[11px] mb-1.5">{label}</dt>
+                  <dd className="min-w-0">
                     {href ? (
                       <a
                         href={href}
@@ -285,39 +287,36 @@ const ContactSection = () => {
                     ) : (
                       <p className={`text-sm font-medium ${breakClass}`}>{value}</p>
                     )}
-                  </div>
+                  </dd>
                 </div>
               ))}
-            </div>
 
-            {/* Social links — 44px hit area, focus ring, 12px label floor */}
-            <div className="card-swiss p-5">
-              <h3 className="text-sm font-display font-semibold mb-3">{t("contact.linksTitle")}</h3>
-              <div className="flex gap-2">
-                {socialLinks.map(({ icon: Icon, href, label }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Ouvrir ${label} dans un nouvel onglet`}
-                    className="flex-1 min-h-11 flex flex-col items-center justify-center gap-1 p-3 rounded-md bg-secondary/50 hover:bg-brand hover:text-brand-foreground transition-colors duration-200 border border-border/50 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    <Icon className="w-4 h-4" aria-hidden="true" />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-brand-foreground transition-colors truncate w-full text-center">
+              {/* Réseaux — même liste, liens texte éditoriaux */}
+              <div className="py-4 border-b border-border/70">
+                <dt className="kicker !text-[11px] mb-1.5">{t("contact.linksTitle")}</dt>
+                <dd className="flex gap-5">
+                  {socialLinks.map(({ href, label }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Ouvrir ${label} dans un nouvel onglet`}
+                      className="link-editorial inline-flex items-center min-h-11 text-sm font-medium hover:text-primary transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
                       {label}
-                    </span>
-                  </a>
-                ))}
+                    </a>
+                  ))}
+                </dd>
               </div>
-            </div>
+            </dl>
 
-            {/* Availability — statut olive (success), texte neutre ; dot pulse handled by the global reduced-motion guard */}
-            <div className="card-swiss p-5 bg-success/5 border-success/25">
-              <div className="flex items-center gap-2 mb-2">
+            {/* Disponibilité — statut sobre, dot pulse couvert par le guard reduced-motion */}
+            <div className="pt-5">
+              <p className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
-                <h3 className="text-sm font-display font-semibold">{t("contact.availableTitle")}</h3>
-              </div>
+                <span className="text-sm font-display font-semibold">{t("contact.availableTitle")}</span>
+              </p>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {t("contact.availableDesc")}
               </p>
