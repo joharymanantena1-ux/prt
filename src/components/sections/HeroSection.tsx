@@ -132,7 +132,7 @@ const HeroPortrait = () => {
           <source type="image/webp" srcSet={PORTRAIT.webp} sizes={SIZES} />
           <img
             src={PORTRAIT.png}
-            alt="Johary Manantena, développeur full-stack"
+            alt={t("common.portraitAlt")}
             width={PORTRAIT.width}
             height={PORTRAIT.height}
             decoding="async"
@@ -240,11 +240,20 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 Manantena<span className="text-primary">.</span>
               </span>
             </span>
+            {/* L'italique royale porte sur « Full-Stack », quelle que soit sa
+                position dans la langue (FR : Développeur Full-Stack ;
+                EN : Full-Stack Developer). */}
             <span className="mt-4 block font-body font-medium tracking-normal text-[clamp(1.15rem,1.7vw,1.5rem)] text-foreground/80 leading-snug">
-              {t("hero.roleL1")}{" "}
-              <em className="font-display italic font-medium text-primary text-[1.12em]">
-                {t("hero.roleL2")}
-              </em>
+              {[t("hero.roleL1"), t("hero.roleL2")].map((part, i) => (
+                <span key={part}>
+                  {i > 0 && " "}
+                  {/^full-stack$/i.test(part) ? (
+                    <em className="font-display italic font-medium text-primary text-[1.12em]">{part}</em>
+                  ) : (
+                    part
+                  )}
+                </span>
+              ))}
             </span>
           </h1>
 
@@ -304,7 +313,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-border/60 text-foreground/75 hover:text-brand-foreground hover:bg-brand hover:border-brand transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                aria-label={`${label} (nouvel onglet)`}
+                aria-label={`${label} (${t("common.newTab")})`}
               >
                 <Icon className="w-[18px] h-[18px]" aria-hidden="true" />
               </a>
