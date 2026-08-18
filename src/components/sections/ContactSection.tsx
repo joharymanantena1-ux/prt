@@ -80,22 +80,25 @@ const ContactSection = () => {
     // Bande encre : la classe `dark` bascule les tokens sur la palette midnight
     // même en mode clair — la fin de page (contact + footer) vit sur fond nuit.
     <section className="dark section-container bg-background text-foreground">
-      <div className="section-content max-w-5xl">
-        <SectionHeading
-          label={t("contact.label")}
-          title={t("contact.title")}
-          description={t("contact.desc")}
-          className="mb-10 md:mb-14"
-        />
+      <div className="section-content max-w-6xl">
+        {/* Composition : en-tête et coordonnées en colonne gauche, formulaire
+            en regard sur deux rangées — sur mobile l'ordre naturel reste
+            en-tête → formulaire → coordonnées. */}
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-x-14 lg:gap-y-10">
+          <SectionHeading
+            label={t("contact.label")}
+            title={t("contact.title")}
+            description={t("contact.desc")}
+            className="lg:col-span-5"
+          />
 
-        <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10">
-          {/* Form — wider col */}
+          {/* Form — panneau surélevé, en regard des deux rangées gauche */}
           <motion.div
-            initial={reduce ? false : { opacity: 0, x: -40 }}
+            initial={reduce ? false : { opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3 rounded-lg border border-border bg-card p-6 sm:p-8 shadow-elevated"
+            viewport={{ once: true, margin: "-60px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.15 }}
+            className="lg:col-span-7 lg:row-span-2 lg:col-start-6 lg:self-start rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10 shadow-elevated"
           >
             <AnimatePresence mode="wait">
               {formState === "success" ? (
@@ -119,7 +122,7 @@ const ContactSection = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onSubmit={handleSubmit}
-                  className="space-y-5"
+                  className="space-y-5 lg:space-y-6"
                 >
                   {/* Honeypot — off-screen & hidden from AT; only bots fill it. */}
                   <input
@@ -264,13 +267,13 @@ const ContactSection = () => {
             </AnimatePresence>
           </motion.div>
 
-          {/* Contact info */}
+          {/* Contact info — sous l'en-tête, colonne gauche */}
           <motion.div
-            initial={reduce ? false : { opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
-            className="lg:col-span-2 lg:border-l lg:border-border lg:pl-10"
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.55, delay: 0.1 }}
+            className="lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:self-start"
           >
             {/* Coordonnées — liste éditoriale sur filets, lisible à 375px */}
             <dl>
