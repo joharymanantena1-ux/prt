@@ -74,7 +74,7 @@ const ContactSection = () => {
   // Champs éditoriaux : ligne de base seule, qui passe au royal (et s'épaissit
   // via box-shadow, sans décalage de layout) au focus.
   const FIELD =
-    "rounded-none border-x-0 border-t-0 border-b border-border bg-transparent px-1 text-sm placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[0_1px_0_0_hsl(var(--primary))] transition-[border-color,box-shadow] duration-200";
+    "rounded-none border-x-0 border-t-0 border-b border-border bg-transparent px-1 text-sm placeholder:text-muted-foreground/90 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[0_1px_0_0_hsl(var(--primary))] transition-[border-color,box-shadow] duration-200";
 
   return (
     <section className="section-container">
