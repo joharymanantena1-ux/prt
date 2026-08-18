@@ -24,14 +24,18 @@ const CodeRain = ({ className = "" }: { className?: string }) => {
     if (!ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Teinte du token success ("150 40% 45%" par ex.), repli vert sobre.
-    const successRaw =
+    // Teinte du token success ("150 40% 45%" par ex.), repli vert sobre. La
+    // fenêtre est toujours sombre : on relève la luminosité au plancher lisible
+    // (le vert « light mode » du token serait trop éteint sur du noir).
+    const [h = "150", s = "40%", l = "45%"] = (
       getComputedStyle(document.documentElement).getPropertyValue("--success").trim() ||
-      "150 40% 45%";
-    const color = (alpha: number) => `hsla(${successRaw.split(" ").join(", ")}, ${alpha})`;
+      "150 40% 45%"
+    ).split(/\s+/);
+    const lum = Math.max(parseFloat(l) || 45, 58);
+    const color = (alpha: number) => `hsla(${h}, ${s}, ${lum}%, ${alpha})`;
 
-    const FONT = 12;
-    const LINE = FONT + 3;
+    const FONT = 13;
+    const LINE = FONT + 4;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let cols: Column[] = [];
     let raf = 0;
@@ -54,7 +58,7 @@ const CodeRain = ({ className = "" }: { className?: string }) => {
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.font = `${FONT}px "JetBrains Mono", ui-monospace, monospace`;
-      const n = Math.max(4, Math.floor(width / 20));
+      const n = Math.max(4, Math.floor(width / 26));
       const step = width / n;
       cols = Array.from({ length: n }, (_, i) => spawn((i + 0.5) * step, height, true));
     };
@@ -62,7 +66,7 @@ const CodeRain = ({ className = "" }: { className?: string }) => {
     const drawColumn = (c: Column) => {
       c.chars.forEach((ch, j) => {
         // La tête de colonne est la plus lumineuse, la traîne s'éteint.
-        ctx.fillStyle = color(Math.max(0.08, 0.5 - j * 0.11));
+        ctx.fillStyle = color(Math.max(0.14, 0.92 - j * 0.17));
         ctx.fillText(ch, c.x, c.y + j * LINE);
       });
     };

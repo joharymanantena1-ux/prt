@@ -171,6 +171,16 @@ const tileVariants = {
   }),
 };
 
+/* Mots des soft skills — apparition décalée après la tuile qui les porte. */
+const softVariants = {
+  hidden: { opacity: 0, y: 6 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, delay: 0.45 + i * 0.06, ease: EASE },
+  }),
+};
+
 /* Item technologie : petit glyphe de marque + nom ; typographie seule quand
    aucun logo fiable n'existe (pas d'icône générique inventée). */
 const TechItem = ({ skill }: { skill: Skill }) => (
@@ -214,8 +224,10 @@ const SkillsSection = () => {
             variants={tileVariants}
             className={`${TILE} col-span-2 md:col-span-4 lg:col-span-4 lg:row-span-2 flex flex-col`}
           >
-            <p className="kicker mb-5">{t("skills.coreTitle")}</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-6 sm:gap-y-8 my-auto">
+            <p className="kicker mb-6">{t("skills.coreTitle")}</p>
+            {/* Bloc centré dans la tuile (qui couvre deux lignes de grille) :
+                le vide restant se répartit également au-dessus et en dessous. */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-9 lg:gap-y-10 my-auto">
               {CORE_STACK.map((skill) => (
                 <div key={skill.name} className="group/core flex flex-col gap-2.5">
                   <span className="transition-transform duration-300 group-hover/core:-translate-y-0.5 motion-reduce:transform-none">
@@ -282,14 +294,14 @@ const SkillsSection = () => {
             className={`${TILE} col-span-2 md:col-span-2 lg:col-span-2`}
           >
             <p className="kicker mb-4">{t("skills.soft")}</p>
+            {/* Les mots sont animés par la propagation de variants de la grille
+                (un `whileInView` local serait écrasé par cette propagation). */}
             <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 leading-snug">
               {softSkills.map((label, i) => (
                 <motion.span
                   key={tx(label, lang)}
-                  initial={reduce ? false : { opacity: 0, y: 6 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.3 + i * 0.06, ease: EASE }}
+                  custom={i}
+                  variants={softVariants}
                   className={`${SOFT_STYLE[i % SOFT_STYLE.length]} transition-colors duration-300 hover:text-primary cursor-default`}
                 >
                   {tx(label, lang)}
