@@ -14,8 +14,7 @@ const SOCIALS = [
   { href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
 ];
 
-/* Horloge locale (Antananarivo, GMT+3) — détail humain du colophon.
-   Mise à jour toutes les 30 s ; format 24 h, stable FR/EN. */
+/* Horloge locale (Antananarivo, GMT+3) — mise à jour toutes les 30 s. */
 const useLocalTime = () => {
   const [time, setTime] = useState(() =>
     new Intl.DateTimeFormat("fr-FR", {
@@ -39,75 +38,76 @@ const useLocalTime = () => {
 };
 
 /**
- * Footer — clôture de la bande encre : grand wordmark sérif, une ligne de
- * navigation et de contact, puis le colophon (heure locale TNR, copyright,
- * retour en haut). Compact et dense, aucune colonne flottant dans le vide.
+ * Footer — colophon éditorial asymétrique sur navy profond (nuance distincte
+ * de la bande contact) : identité et liens à gauche, la grande horloge
+ * d'Antananarivo comme élément graphique à droite, navigation et copyright
+ * en pied. Le nom reste volontairement discret.
  */
 const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
   const { t } = useT();
   const time = useLocalTime();
   const year = new Date().getFullYear();
 
+  const linkClass =
+    "link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+
   return (
-    // Nuance navy plus profonde que la bande contact (midnight) : séparation
-    // nette mais dans la palette, identique dans les deux modes.
     <footer className="dark bg-[hsl(221,36%,6%)] text-foreground border-t border-border/40">
       {/* pb mobile : dégage la pilule de navigation fixe (masquée dès md) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-10 lg:pt-12 pb-20 md:pb-5">
-        {/* Wordmark — présent mais proportionné, il ne domine plus la page */}
-        <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
-          <p className="font-display font-semibold leading-tight text-[clamp(1.5rem,3vw,2.1rem)]">
-            Johary Manantena<span className="text-primary">.</span>
-          </p>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-            {t("footer.tagline")}
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-10 lg:pt-14 pb-20 md:pb-5">
+        {/* ── Rangée principale : identité ↔ horloge graphique ── */}
+        <div className="grid gap-y-8 md:grid-cols-12 md:gap-x-8 md:items-end">
+          <div className="md:col-span-7">
+            <p className="font-display font-semibold text-xl sm:text-2xl leading-tight">
+              Johary Manantena<span className="text-primary">.</span>
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed max-w-md">
+              {t("footer.tagline")}
+            </p>
+            <div className="mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-2">
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="link-editorial text-sm font-medium text-primary break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                {CONTACT_EMAIL}
+              </a>
+              {SOCIALS.map(({ href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${label} (nouvel onglet)`}
+                  className={linkClass}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* L'heure locale comme signe graphique : grand sérif tabulaire */}
+          <div className="md:col-span-5 md:text-right">
+            <p className="font-display font-medium leading-none tabular-nums text-[clamp(2.6rem,5vw,4rem)] text-foreground/95">
+              {time}
+            </p>
+            <p className="mt-2 kicker">
+              {t("footer.localTime")} · GMT+3
+            </p>
+          </div>
         </div>
 
-        {/* Navigation + contact — une seule ligne dense, wrap naturel */}
-        <div className="mt-6 lg:mt-7 flex flex-wrap items-baseline gap-x-6 gap-y-3">
-          <nav aria-label={t("nav.sectionNav")} className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+        {/* ── Pied : navigation, copyright, retour en haut ── */}
+        <div className="mt-8 lg:mt-10 border-t border-border/50 pt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+          <nav aria-label={t("nav.sectionNav")} className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
             {sectionNames.map((name, index) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => onNavigate(index)}
-                className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
+              <button key={name} type="button" onClick={() => onNavigate(index)} className={`${linkClass} text-xs`}>
                 {name}
               </button>
             ))}
           </nav>
-          <span aria-hidden="true" className="hidden sm:block h-3 w-px bg-border self-center" />
-          <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="link-editorial text-sm font-medium text-primary transition-colors break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {CONTACT_EMAIL}
-            </a>
-            {SOCIALS.map(({ href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${label} (nouvel onglet)`}
-                className="link-editorial text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                {label}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* Colophon */}
-        <div className="mt-7 lg:mt-8 border-t border-border/50 pt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-          <p className="text-xs text-muted-foreground">© {year} Johary Manantena</p>
-          <p className="text-xs text-muted-foreground/70 hidden md:block">{t("footer.colophon")}</p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground ml-auto tabular-nums">
-            {t("footer.localTime")} {time} <span className="text-muted-foreground/60">GMT+3</span>
-          </p>
+          <p className="text-xs text-muted-foreground ml-auto">© {year} Johary Manantena</p>
+          <p className="text-xs text-muted-foreground/70 hidden lg:block">{t("footer.colophon")}</p>
           <button
             type="button"
             onClick={() => onNavigate(0)}
