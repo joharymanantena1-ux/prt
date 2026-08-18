@@ -192,12 +192,21 @@ const Navigation = ({
                         setIsMenuOpen(false);
                       }}
                       aria-current={active ? "page" : undefined}
-                      className={`min-h-11 text-base font-medium text-left px-4 py-3 rounded-md border-l-2 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                      className={`relative min-h-11 text-base font-medium text-left px-4 py-3 rounded-md cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                         active
-                          ? "border-primary text-foreground bg-secondary/60"
-                          : "border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                          ? "text-foreground bg-secondary/60"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                       }`}
                     >
+                      {/* Même vocabulaire que le desktop : un filet royal fin
+                          qui glisse d'un item à l'autre (layout partagé). */}
+                      {active && (
+                        <motion.span
+                          layoutId="activeNavMobile"
+                          transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+                          className="absolute left-0 inset-y-2 w-px bg-primary"
+                        />
+                      )}
                       {name}
                     </button>
                   );
