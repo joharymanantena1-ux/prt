@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Cookie } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/i18n";
 
 const STORAGE_KEY = "cookie-consent"; // "granted" | "denied"
 
@@ -25,6 +26,7 @@ const updateConsent = (granted: boolean) => {
  */
 const CookieConsent = () => {
   const reduce = useReducedMotion();
+  const { t } = useT();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ const CookieConsent = () => {
         <motion.div
           role="dialog"
           aria-modal="false"
-          aria-label="Consentement aux cookies"
+          aria-label={t("cookies.aria")}
           initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
@@ -61,8 +63,7 @@ const CookieConsent = () => {
                 <Cookie className="w-4 h-4 text-primary" aria-hidden="true" />
               </span>
               <p className="text-sm text-foreground leading-relaxed">
-                Ce site utilise des cookies de mesure d'audience (Google Analytics) pour
-                améliorer votre expérience. Aucune donnée n'est collectée sans votre accord.
+                {t("cookies.text")}
               </p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
@@ -73,7 +74,7 @@ const CookieConsent = () => {
                 onClick={() => decide(false)}
                 className="min-h-11 border-primary/40 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Refuser
+                {t("cookies.refuse")}
               </Button>
               <Button
                 type="button"
@@ -81,7 +82,7 @@ const CookieConsent = () => {
                 onClick={() => decide(true)}
                 className="min-h-11 bg-brand text-brand-foreground hover:bg-brand/90 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Accepter
+                {t("cookies.accept")}
               </Button>
             </div>
           </div>

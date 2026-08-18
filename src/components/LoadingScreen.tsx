@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/i18n";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -11,6 +12,7 @@ const RING_C = 2 * Math.PI * RING_R;
 const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
+  const { t } = useT();
   const rootRef = useRef<HTMLDivElement>(null);
   const progressRaf = useRef<number | null>(null);
   const parallaxRaf = useRef<number | null>(null);
@@ -93,7 +95,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={progress}
-      aria-label="Chargement du portfolio"
+      aria-label={t("loader.aria")}
       className={`fixed inset-0 z-loader flex flex-col items-center justify-center gap-9 overflow-hidden bg-background transition-[opacity,transform] duration-500 ease-out ${
         exiting ? "opacity-0 scale-[1.03] pointer-events-none" : "opacity-100"
       }`}
@@ -244,7 +246,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
           ))}
         </p>
         <p className="text-xs text-muted-foreground font-medium tabular-nums tracking-[0.08em]">
-          {progress}% · Développeur Full-Stack
+          {progress}% · {t("loader.role")}
         </p>
       </div>
     </div>

@@ -1,6 +1,23 @@
 /* English interface (chrome) strings. Same shape as `fr` — `t()` falls back to
    FR then to the key if a value is missing. */
 export const en: typeof import("./fr").fr = {
+  common: {
+    /* External-link suffix appended to aria-labels. */
+    newTab: "new tab",
+    openIn: "Open",
+    carousel: "carousel",
+    portraitAlt: "Johary Manantena, full-stack developer",
+  },
+  loader: {
+    aria: "Loading the portfolio",
+    role: "Full-Stack Developer",
+  },
+  cookies: {
+    aria: "Cookie consent",
+    text: "This site uses audience-measurement cookies (Google Analytics) to improve your experience. No data is collected without your consent.",
+    refuse: "Decline",
+    accept: "Accept",
+  },
   nav: {
     home: "Home",
     about: "About",

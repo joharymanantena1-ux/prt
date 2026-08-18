@@ -354,7 +354,7 @@ const ProfessionalCard = ({ project, index }: { project: Project; index: number 
           target="_blank"
           rel="noopener noreferrer"
           draggable={false}
-          aria-label={`${t("projects.liveOf")} ${project.title} (${lang === "fr" ? "nouvel onglet" : "new tab"})`}
+          aria-label={`${t("projects.liveOf")} ${project.title} (${t("common.newTab")})`}
           className="absolute inset-0 z-[15] rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         />
       )}
@@ -521,7 +521,7 @@ const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
       <div
         ref={scrollRef}
         role="region"
-        aria-roledescription="carrousel"
+        aria-roledescription={t("common.carousel")}
         aria-label={t("projects.carousel")}
         tabIndex={0}
         onPointerDown={onPointerDown}

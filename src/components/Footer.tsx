@@ -77,7 +77,7 @@ const Footer = ({ sectionNames, onNavigate }: FooterProps) => {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`${label} (nouvel onglet)`}
+                  aria-label={`${label} (${t("common.newTab")})`}
                   className={linkClass}
                 >
                   {label}

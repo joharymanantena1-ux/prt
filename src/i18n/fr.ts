@@ -1,6 +1,23 @@
 /* Chaînes d'interface (chrome) en français. Les contenus de données (projets,
    expériences…) sont traduits en ligne via `tx({fr,en})` dans chaque section. */
 export const fr = {
+  common: {
+    /* Suffixe des liens externes, ajouté aux aria-labels. */
+    newTab: "nouvel onglet",
+    openIn: "Ouvrir",
+    carousel: "carrousel",
+    portraitAlt: "Johary Manantena, développeur full-stack",
+  },
+  loader: {
+    aria: "Chargement du portfolio",
+    role: "Développeur Full-Stack",
+  },
+  cookies: {
+    aria: "Consentement aux cookies",
+    text: "Ce site utilise des cookies de mesure d'audience (Google Analytics) pour améliorer votre expérience. Aucune donnée n'est collectée sans votre accord.",
+    refuse: "Refuser",
+    accept: "Accepter",
+  },
   nav: {
     home: "Accueil",
     about: "À propos",

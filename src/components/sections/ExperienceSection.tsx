@@ -157,7 +157,7 @@ const TimelineEntry = ({
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center p-2 -m-1 rounded-md text-primary hover:text-primary/70 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              aria-label={`${item.company} (${lang === "fr" ? "nouvel onglet" : "new tab"})`}
+              aria-label={`${item.company} (${t("common.newTab")})`}
               title={item.company}
             >
               <ExternalLink className="w-3 h-3" aria-hidden="true" />
