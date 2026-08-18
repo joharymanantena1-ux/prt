@@ -6,14 +6,12 @@ import { useT } from "@/i18n";
 
 interface NavigationProps {
   currentSection: number;
-  totalSections: number;
   onNavigate: (index: number) => void;
   sectionNames: string[];
 }
 
 const Navigation = ({
   currentSection,
-  totalSections,
   onNavigate,
   sectionNames,
 }: NavigationProps) => {
@@ -64,14 +62,18 @@ const Navigation = ({
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-3.5 flex items-center justify-between">
           <a
             href="#accueil"
-            className="text-xl md:text-2xl font-display font-bold tracking-tight rounded-md cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group text-xl md:text-2xl font-display font-bold tracking-tight rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label={t("nav.backHome")}
             onClick={(e) => {
               e.preventDefault();
               onNavigate(0);
             }}
           >
-            J<span className="text-muted-foreground/40">-</span>
+            {/* Micro-animation : le trait d'union s'étire et prend l'accent au survol */}
+            J
+            <span className="inline-block text-muted-foreground/40 transition-[transform,color] duration-300 group-hover:scale-x-150 group-hover:text-primary motion-reduce:transform-none" aria-hidden="true">
+              -
+            </span>
             <span className="text-primary">m</span>
           </a>
 
@@ -190,12 +192,21 @@ const Navigation = ({
                         setIsMenuOpen(false);
                       }}
                       aria-current={active ? "page" : undefined}
-                      className={`min-h-11 text-base font-medium text-left px-4 py-3 rounded-md border-l-2 cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                      className={`relative min-h-11 text-base font-medium text-left px-4 py-3 rounded-md cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                         active
-                          ? "border-primary text-foreground bg-secondary/60"
-                          : "border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                          ? "text-foreground bg-secondary/60"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                       }`}
                     >
+                      {/* Même vocabulaire que le desktop : un filet royal fin
+                          qui glisse d'un item à l'autre (layout partagé). */}
+                      {active && (
+                        <motion.span
+                          layoutId="activeNavMobile"
+                          transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+                          className="absolute left-0 inset-y-2 w-px bg-primary"
+                        />
+                      )}
                       {name}
                     </button>
                   );
@@ -206,31 +217,6 @@ const Navigation = ({
         )}
       </AnimatePresence>
 
-      {/* Side navigation dots */}
-      <motion.div
-        initial={reduce ? false : { opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.8 }}
-        className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-header hidden md:flex flex-col gap-1"
-        aria-label={t("nav.sectionNav")}
-      >
-        {Array.from({ length: totalSections }).map((_, index) => {
-          const active = currentSection === index;
-          const name = sectionNames[index] ?? `Section ${index + 1}`;
-          return (
-            <button
-              key={index}
-              type="button"
-              onClick={() => onNavigate(index)}
-              aria-label={`${t("nav.goTo")} : ${name}`}
-              aria-current={active ? "true" : undefined}
-              className="flex items-center justify-center min-h-11 min-w-11 cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <span className={`nav-dot ${active ? "active" : ""}`} />
-            </button>
-          );
-        })}
-      </motion.div>
     </>
   );
 };

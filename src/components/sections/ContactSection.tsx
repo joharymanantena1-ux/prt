@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, MapPin, Phone, Send, Github, Linkedin, CheckCircle2, AlertCircle } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,38 +59,72 @@ const ContactSection = () => {
   };
 
   const contactItems = [
-    { icon: Mail, label: t("contact.infoEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
-    { icon: Phone, label: t("contact.infoPhone"), value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
-    { icon: MapPin, label: t("contact.infoLocation"), value: t("contact.locationValue"), href: null, breakClass: "break-words" },
+    { label: t("contact.infoEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
+    { label: t("contact.infoPhone"), value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
+    { label: t("contact.infoLocation"), value: t("contact.locationValue"), href: null, breakClass: "break-words" },
   ];
 
   const socialLinks = [
-    { icon: Github, href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
+    { href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
+    { href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
   ];
 
   const isDisabled = formState === "loading" || formState === "success";
 
+  // Champs éditoriaux : ligne de base seule, qui passe au royal (et s'épaissit
+  // via box-shadow, sans décalage de layout) au focus.
+  const FIELD =
+    "rounded-none border-x-0 border-t-0 border-b border-border bg-transparent px-1 text-sm placeholder:text-muted-foreground/90 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[0_1px_0_0_hsl(var(--primary))] transition-[border-color,box-shadow] duration-200";
+
   return (
-    <section className="section-container">
-      <div className="section-content max-w-5xl">
+    // Bande encre : la classe `dark` bascule les tokens sur la palette midnight
+    // même en mode clair — la fin de page (contact + footer) vit sur fond nuit.
+    <section className="dark section-container bg-background text-foreground">
+      <div className="section-content max-w-6xl">
+        {/* ── Invitation — l'entrée de section est la plus grande voix de la
+            page : titre surdimensionné, puis description face à l'email
+            direct en gros sérif (le premier CTA, avant même le formulaire). */}
         <SectionHeading
-          index="05"
           label={t("contact.label")}
           title={t("contact.title")}
-          description={t("contact.desc")}
-          className="mb-10 md:mb-14"
+          className="[&_h2]:text-[clamp(2.7rem,6.5vw,4.6rem)] [&_h2]:leading-[1.03]"
         />
-
-        <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10">
-          {/* Form — wider col */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+        <div className="mt-5 mb-12 md:mb-16 grid gap-x-12 gap-y-5 lg:grid-cols-12 lg:items-end">
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3 card-swiss p-6 lg:p-8"
+            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.15 }}
+            className="lg:col-span-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl"
           >
+            {t("contact.desc")}
+          </motion.p>
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.25 }}
+            className="lg:col-span-6 lg:text-right"
+          >
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="link-editorial font-display font-medium text-[clamp(1.25rem,2.4vw,1.9rem)] text-primary break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              {CONTACT_EMAIL}
+            </a>
+          </motion.div>
+        </div>
+
+        <div className="grid gap-10 xl:grid-cols-12 xl:gap-x-14">
+          {/* Form — panneau surélevé, filet royal en tête (plan avant) */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
+            className="relative order-1 xl:order-2 xl:col-span-7 xl:col-start-6 xl:self-start overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10 shadow-elevated"
+          >
+            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-brand" />
             <AnimatePresence mode="wait">
               {formState === "success" ? (
                 <motion.div
@@ -113,7 +147,7 @@ const ContactSection = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onSubmit={handleSubmit}
-                  className="space-y-5"
+                  className="space-y-5 lg:space-y-6"
                 >
                   {/* Honeypot — off-screen & hidden from AT; only bots fill it. */}
                   <input
@@ -127,8 +161,8 @@ const ContactSection = () => {
                     className="absolute -left-[9999px] h-0 w-0 opacity-0"
                   />
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                    <div className="group/field">
+                      <label htmlFor="name" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
                         {t("contact.name")}
                       </label>
                       <Input
@@ -141,11 +175,11 @@ const ContactSection = () => {
                         required
                         maxLength={100}
                         disabled={isDisabled}
-                        className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
+                        className={`h-11 ${FIELD}`}
                       />
                     </div>
-                    <div>
-                      <label htmlFor="email" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                    <div className="group/field">
+                      <label htmlFor="email" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
                         {t("contact.email")}
                       </label>
                       <Input
@@ -159,13 +193,13 @@ const ContactSection = () => {
                         required
                         maxLength={150}
                         disabled={isDisabled}
-                        className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
+                        className={`h-11 ${FIELD}`}
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="subject" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                  <div className="group/field">
+                    <label htmlFor="subject" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
                       {t("contact.subject")}
                     </label>
                     <Input
@@ -177,12 +211,12 @@ const ContactSection = () => {
                       required
                       maxLength={150}
                       disabled={isDisabled}
-                      className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring text-sm h-11"
+                      className={`h-11 ${FIELD}`}
                     />
                   </div>
 
-                  <div>
-                    <label htmlFor="message" className="block text-xs font-semibold mb-2 text-foreground uppercase tracking-wider">
+                  <div className="group/field">
+                    <label htmlFor="message" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
                       {t("contact.message")}
                     </label>
                     <Textarea
@@ -195,7 +229,7 @@ const ContactSection = () => {
                       required
                       maxLength={3000}
                       disabled={isDisabled}
-                      className="bg-secondary/40 border-border/60 placeholder:text-muted-foreground/90 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring resize-none text-sm"
+                      className={`resize-none ${FIELD}`}
                     />
                   </div>
 
@@ -258,23 +292,25 @@ const ContactSection = () => {
             </AnimatePresence>
           </motion.div>
 
-          {/* Contact info */}
+          {/* Contact info — colonne gauche (l'email vit déjà en grand dans
+              l'invitation : la liste commence au téléphone) */}
           <motion.div
-            initial={reduce ? false : { opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
-            className="lg:col-span-2 space-y-4"
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={reduce ? { duration: 0 } : { duration: 0.55, delay: 0.2 }}
+            className="order-2 xl:order-1 xl:col-span-4 xl:col-start-1 xl:self-stretch xl:flex xl:flex-col"
           >
-            {/* Contact items — full value stays readable on 375px */}
-            <div className="card-swiss p-5 space-y-3">
-              {contactItems.map(({ icon: Icon, label, value, href, breakClass }) => (
-                <div key={label} className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-primary" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="kicker !text-[11px]">{label}</p>
+            <dl className="grid sm:grid-cols-3 sm:gap-x-8 xl:grid-cols-1">
+              {contactItems.slice(1).map(({ label, value, href, breakClass }, index) => (
+                /* En rangée (sm→lg) chaque colonne démarre en haut ; en pile
+                   latérale (xl) seul le premier item colle au bord. */
+                <div
+                  key={label}
+                  className={`py-4 border-b border-border/70 sm:pt-0 ${index === 0 ? "pt-0 xl:pt-0" : "xl:pt-4"}`}
+                >
+                  <dt className="kicker !text-[11px] mb-1.5">{label}</dt>
+                  <dd className="min-w-0">
                     {href ? (
                       <a
                         href={href}
@@ -285,39 +321,38 @@ const ContactSection = () => {
                     ) : (
                       <p className={`text-sm font-medium ${breakClass}`}>{value}</p>
                     )}
-                  </div>
+                  </dd>
                 </div>
               ))}
-            </div>
 
-            {/* Social links — 44px hit area, focus ring, 12px label floor */}
-            <div className="card-swiss p-5">
-              <h3 className="text-sm font-display font-semibold mb-3">{t("contact.linksTitle")}</h3>
-              <div className="flex gap-2">
-                {socialLinks.map(({ icon: Icon, href, label }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Ouvrir ${label} dans un nouvel onglet`}
-                    className="flex-1 min-h-11 flex flex-col items-center justify-center gap-1 p-3 rounded-md bg-secondary/50 hover:bg-brand hover:text-brand-foreground transition-colors duration-200 border border-border/50 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    <Icon className="w-4 h-4" aria-hidden="true" />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-brand-foreground transition-colors truncate w-full text-center">
+              {/* Réseaux — même liste, liens texte éditoriaux */}
+              <div className="py-4 sm:pt-0 xl:pt-4 border-b border-border/70">
+                <dt className="kicker !text-[11px] mb-1.5">{t("contact.linksTitle")}</dt>
+                <dd className="flex gap-5">
+                  {socialLinks.map(({ href, label }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${t("common.openIn")} ${label} (${t("common.newTab")})`}
+                      className="link-editorial inline-flex items-center min-h-11 text-sm font-medium hover:text-primary transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
                       {label}
-                    </span>
-                  </a>
-                ))}
+                    </a>
+                  ))}
+                </dd>
               </div>
-            </div>
+            </dl>
 
-            {/* Availability — statut olive (success), texte neutre ; dot pulse handled by the global reduced-motion guard */}
-            <div className="card-swiss p-5 bg-success/5 border-success/25">
-              <div className="flex items-center gap-2 mb-2">
+            {/* Disponibilité — statut sobre, dot pulse couvert par le guard
+                reduced-motion. En vis-à-vis (xl) le bloc descend au pied de la
+                colonne pour s'aligner sur le bas du panneau formulaire. */}
+            <div className="pt-5 xl:mt-auto xl:pb-1">
+              <p className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
-                <h3 className="text-sm font-display font-semibold">{t("contact.availableTitle")}</h3>
-              </div>
+                <span className="text-sm font-display font-semibold">{t("contact.availableTitle")}</span>
+              </p>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {t("contact.availableDesc")}
               </p>

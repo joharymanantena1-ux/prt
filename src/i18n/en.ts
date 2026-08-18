@@ -1,6 +1,23 @@
 /* English interface (chrome) strings. Same shape as `fr` — `t()` falls back to
    FR then to the key if a value is missing. */
 export const en: typeof import("./fr").fr = {
+  common: {
+    /* External-link suffix appended to aria-labels. */
+    newTab: "new tab",
+    openIn: "Open",
+    carousel: "carousel",
+    portraitAlt: "Johary Manantena, full-stack developer",
+  },
+  loader: {
+    aria: "Loading the portfolio",
+    role: "Full-Stack Developer",
+  },
+  cookies: {
+    aria: "Cookie consent",
+    text: "This site uses audience-measurement cookies (Google Analytics) to improve your experience. No data is collected without your consent.",
+    refuse: "Decline",
+    accept: "Accept",
+  },
   nav: {
     home: "Home",
     about: "About",
@@ -26,7 +43,7 @@ export const en: typeof import("./fr").fr = {
     roleL2: "Developer",
     available: "Available",
     greeting: "Hi, I'm",
-    lead: "I design and build modern web & mobile applications — from backend architecture to the final interface.",
+    lead: "I design and build web and mobile applications, from backend architecture to the final interface.",
     ctaProjects: "View my work",
     ctaContact: "Get in touch",
     ctaCV: "Download my resume",
@@ -42,15 +59,16 @@ export const en: typeof import("./fr").fr = {
   about: {
     label: "About",
     title: "Who am I?",
-    desc: "A full-stack developer, I build web & mobile applications end to end — from the data model to the final interface.",
+    desc: "A full-stack developer, I build web and mobile applications end to end, from the data model to the final interface.",
     journeyKicker: "My journey",
     journeyTitle: "From study to the field",
     journeyP1: "With a Bachelor's in Computer Science (IT-University, 2022–2025), I specialised in full-stack development: Java, Python, PHP, C/C#, and the React, React Native, Spring Boot, Laravel and Symfony frameworks.",
     journeyP2: "Since then I've shipped real-world projects: digitalising staff transport at Konecta, a school SaaS platform at Levitation, and today freelance web & mobile development for a cosmetics brand.",
     philoKicker: "My philosophy",
     philoTitle: "Simple, solid, shipped",
-    philoP1: "I believe in simple, well-architected solutions that answer the actual business need rather than the trend of the moment — and that stay maintainable over time.",
+    philoP1: "I believe in simple, well-architected solutions that answer the actual business need rather than the trend of the moment, and that stay maintainable over time.",
     philoP2: "Curious about new technologies, especially generative AI (Google Cloud certified), I keep refining my craft to ship reliable products, from the first commit to production.",
+    valuesTitle: "What guides my work",
   },
   experience: {
     label: "Journey",
@@ -63,8 +81,12 @@ export const en: typeof import("./fr").fr = {
   skills: {
     label: "Skills",
     title: "Stack & expertise",
-    desc: "A modern, versatile full-stack toolkit, continuously enriched project after project.",
+    desc: "Six technologies at the core of my work, and a wider toolkit grown mission after mission.",
     soft: "Soft Skills",
+    coreTitle: "Core stack",
+    countLabel: "technologies used, from prototype to production",
+    certTitle: "Certification",
+    certName: "Generative AI",
   },
   projects: {
     label: "Portfolio",
@@ -114,5 +136,14 @@ export const en: typeof import("./fr").fr = {
     linksTitle: "Networks & Links",
     availableTitle: "Available",
     availableDesc: "Open to freelance missions and full-stack web development projects.",
+  },
+  footer: {
+    tagline: "Full-stack developer. Web and mobile applications, from backend architecture to the final interface.",
+    navTitle: "Index",
+    contactTitle: "Contact",
+    localTime: "Antananarivo",
+    backToTop: "Back to top",
+    backToTopAria: "Back to the top of the page",
+    colophon: "Designed and built with React, TypeScript and Vite",
   },
 };

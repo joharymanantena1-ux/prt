@@ -52,7 +52,7 @@
     --shadow-soft: 0 2px 16px -4px hsl(219 33% 10% / 0.08);
     --shadow-elevated: 0 12px 40px -8px hsl(219 33% 10% / 0.12);
 
-    --font-display: 'Space Grotesk', sans-serif;
+    --font-display: 'Newsreader', 'Georgia', serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
@@ -125,7 +125,25 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    /* Sérif : tracking quasi neutre — le resserrement fort est un réflexe grotesque */
+    letter-spacing: -0.01em;
+    font-optical-sizing: auto;
+  }
+
+  /* ── Surfaces navigateur — la sélection, le caret et la scrollbar portent
+     aussi l'identité (royal sur ivoire, filets stone). ─────────────────── */
+  ::selection {
+    background: hsl(var(--brand));
+    color: hsl(var(--brand-foreground));
+  }
+
+  input,
+  textarea {
+    caret-color: hsl(var(--primary));
+  }
+
+  html {
+    scrollbar-color: hsl(var(--border)) transparent;
   }
 
   /* Chrome/Safari autofill — kill the forced white background so inputs keep
@@ -163,12 +181,14 @@
     box-shadow: var(--shadow-elevated);
   }
 
-  /* Full-height section layout — natural page scroll, no overflow trapping */
+  /* Section layout — le rythme vertical suit le contenu, pas le viewport
+     (plus de min-h-screen à moitié vide) ; seul le hero garde la pleine
+     hauteur via sa propre classe min-h. */
   .section-container {
-    @apply min-h-screen w-full flex items-start justify-center
+    @apply w-full flex items-start justify-center
            px-4 sm:px-6 md:px-8 lg:px-12;
-    padding-top: clamp(5rem, 10vh, 7rem);
-    padding-bottom: clamp(3rem, 6vh, 5rem);
+    padding-top: clamp(4.5rem, 9vw, 8rem);
+    padding-bottom: clamp(4.5rem, 9vw, 8rem);
   }
 
   /* Offset anchor scroll so content clears the fixed navbar */
@@ -180,23 +200,19 @@
     @apply w-full max-w-7xl mx-auto;
   }
 
-  /* Navigation dots (visual only — 44px hit area provided by the button wrapper) */
-  .nav-dot {
-    @apply w-2 h-2 rounded-full bg-muted-foreground/30 transition-all duration-300 hover:bg-muted-foreground/60;
-  }
-
-  .nav-dot.active {
-    @apply bg-primary;
-    width: 8px;
-    height: 22px;
-    border-radius: 4px;
-  }
-
   /* ─── Swiss-tech system ─────────────────────────────────────────────── */
-  /* Monospaced kicker / index label */
+  /* Label éditorial — petit, sans-serif, casse normale. Le mono uppercase
+     n'est plus le réflexe : il est réservé aux vraies données (.label-mono). */
   .kicker {
+    font-family: var(--font-body);
+    @apply text-sm font-semibold text-muted-foreground;
+    letter-spacing: 0.01em;
+  }
+
+  /* Label mono — uniquement pour les données : dates, compteurs, coordonnées */
+  .label-mono {
     font-family: var(--font-mono);
-    @apply text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground;
+    @apply text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground;
   }
 
   /* Faint engineering grid background (decorative, GPU-cheap) */

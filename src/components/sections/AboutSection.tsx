@@ -1,99 +1,118 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Code, Palette, Rocket, Users } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import { useT, tx, type Bi } from "@/i18n";
 
-const values: { icon: typeof Code; title: Bi; description: Bi }[] = [
+/* Principes de travail — liste typographique fluide, sans cartes ni filets. */
+const values: { title: Bi; description: Bi }[] = [
   {
-    icon: Code,
     title: "Clean Code",
     description: { fr: "Du code maintenable, lisible et documenté, pensé pour durer.", en: "Maintainable, readable, documented code built to last." },
   },
   {
-    icon: Palette,
     title: { fr: "Produit", en: "Product" },
     description: { fr: "Des interfaces claires et utiles, au service de l'usage réel.", en: "Clear, useful interfaces serving real-world use." },
   },
   {
-    icon: Rocket,
     title: "Performance",
     description: { fr: "J'optimise chaque couche pour une expérience fluide.", en: "I optimise every layer for a smooth experience." },
   },
   {
-    icon: Users,
     title: "Collaboration",
     description: { fr: "Communication directe et travail efficace en équipe.", en: "Direct communication and effective teamwork." },
   },
 ];
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+/**
+ * À propos — un seul geste éditorial : titre, grand chapeau sérif, puis le
+ * récit face à la philosophie (panneau teinté calme), et les principes en
+ * liste typographique fluide. Un unique filet, fonctionnel, avant les
+ * principes.
+ */
 const AboutSection = () => {
   const reduce = useReducedMotion();
   const { t, lang } = useT();
 
   return (
     <section className="section-container">
-      <div className="section-content">
+      <div className="section-content max-w-6xl">
         <SectionHeading
-          index="01"
           label={t("about.label")}
           title={t("about.title")}
-          description={t("about.desc")}
-          className="mb-8 md:mb-12 lg:mb-16"
+          className="mb-6"
         />
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 md:mb-12 lg:mb-16">
+        {/* Chapeau — la description devient une vraie phrase d'ouverture */}
+        <motion.p
+          initial={reduce ? false : { opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
+          className="font-display text-[clamp(1.25rem,2vw,1.65rem)] leading-[1.4] text-foreground/90 max-w-3xl mb-12 md:mb-16 [text-wrap:pretty]"
+        >
+          {t("about.desc")}
+        </motion.p>
+
+        {/* Récit / philosophie — 7/5, le panneau teinté donne le contrepoint */}
+        <div className="grid gap-y-8 lg:grid-cols-12 lg:gap-x-12 mb-14 md:mb-20">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.45 }}
-            className="card-swiss p-5 sm:p-6 lg:p-8"
+            transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
+            className="lg:col-span-7"
           >
-            <span className="kicker">{t("about.journeyKicker")}</span>
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mt-1.5 mb-3 sm:mb-4">
+            <h3 className="font-display font-semibold text-xl sm:text-2xl leading-snug mb-4">
               {t("about.journeyTitle")}
             </h3>
-            <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">{t("about.journeyP1")}</p>
-            <p className="text-base text-muted-foreground leading-relaxed">{t("about.journeyP2")}</p>
+            <p className="text-base sm:text-lg text-foreground/85 leading-relaxed mb-4 max-w-[60ch]">
+              {t("about.journeyP1")}
+            </p>
+            <p className="text-base text-muted-foreground leading-relaxed max-w-[60ch]">
+              {t("about.journeyP2")}
+            </p>
           </motion.div>
 
-          <motion.div
+          <motion.aside
             initial={reduce ? false : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.45, delay: 0.08 }}
-            className="card-swiss p-5 sm:p-6 lg:p-8"
+            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.1, ease: EASE }}
+            // Panneau nuit : contrepoint de plan dans la page ivoire (tokens
+            // dark → surface card relevée, AA garanti dans les deux modes).
+            className="dark bg-card text-foreground lg:col-span-5 rounded-lg border border-border/60 p-7 sm:p-8 lg:self-start"
           >
-            <span className="kicker">{t("about.philoKicker")}</span>
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-display font-semibold mt-1.5 mb-3 sm:mb-4">
+            <h3 className="font-display font-semibold text-xl leading-snug mb-4">
               {t("about.philoTitle")}
             </h3>
-            <p className="text-base text-muted-foreground leading-relaxed mb-3 sm:mb-4">{t("about.philoP1")}</p>
-            <p className="text-base text-muted-foreground leading-relaxed">{t("about.philoP2")}</p>
-          </motion.div>
+            <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed mb-3">
+              {t("about.philoP1")}
+            </p>
+            <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed">
+              {t("about.philoP2")}
+            </p>
+          </motion.aside>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-          {values.map(({ icon: Icon, title, description }, index) => (
-            <motion.div
-              key={tx(title, lang)}
-              initial={reduce ? false : { opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.06 * index }}
-              className="group card-swiss p-3 sm:p-4 lg:p-6"
-            >
-              <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-brand transition-colors duration-300">
-                  <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-primary group-hover:text-brand-foreground transition-colors" aria-hidden="true" />
-                </div>
-                <span className="font-mono text-[11px] text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
-              </div>
-              <h4 className="text-sm sm:text-base lg:text-lg font-display font-semibold mb-1 sm:mb-2">{tx(title, lang)}</h4>
-              <p className="text-sm text-muted-foreground line-clamp-3">{tx(description, lang)}</p>
-            </motion.div>
-          ))}
-        </div>
+        {/* Principes — texte courant sur deux colonnes, titre en gras enchâssé */}
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-30px" }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
+          className="border-t border-border pt-8 md:pt-10"
+        >
+          <p className="kicker mb-6">{t("about.valuesTitle")}</p>
+          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-5 max-w-4xl">
+            {values.map(({ title, description }) => (
+              <p key={tx(title, lang)} className="text-[0.95rem] leading-relaxed text-muted-foreground">
+                <strong className="font-semibold text-foreground">{tx(title, lang)}.</strong>{" "}
+                {tx(description, lang)}
+              </p>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

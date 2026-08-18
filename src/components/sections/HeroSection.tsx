@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ArrowDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MorphingRoles from "@/components/motion/MorphingRoles";
@@ -37,6 +38,13 @@ const SOCIALS = [
    le bas du panneau. Aucune animation : c'est l'élément LCP, il peint direct. */
 const HeroPortrait = () => {
   const { t } = useT();
+  const reduce = useReducedMotion();
+
+  // Parallax de sortie : la trame décorative glisse un peu plus lentement que
+  // le scroll (transform-only, hors LCP). Nul sous prefers-reduced-motion.
+  const { scrollY } = useScroll();
+  const rawDotsY = useTransform(scrollY, [0, 700], [0, -46]);
+  const dotsY = reduce ? 0 : rawDotsY;
 
   // Cartouche : fermé au premier rendu, s'ouvre (clip-path) quand la zone du
   // portrait devient visible, puis reste statique. On observe le CONTENEUR du
@@ -78,10 +86,12 @@ const HeroPortrait = () => {
           aria-hidden="true"
         />
 
-        {/* Trame de points — coin haut-gauche, à cheval sur le bord du panneau */}
-        <div
+        {/* Trame de points — coin haut-gauche, à cheval sur le bord du panneau.
+            Parallax de sortie très léger (transform-only, nul sous reduced-motion). */}
+        <motion.div
           className="pointer-events-none absolute top-[8%] -left-5 sm:-left-7 w-24 h-28 opacity-80"
           style={{
+            y: dotsY,
             backgroundImage: "radial-gradient(hsl(var(--primary) / 0.45) 1.5px, transparent 2px)",
             backgroundSize: "13px 13px",
             WebkitMaskImage: "linear-gradient(135deg, black 30%, transparent 80%)",
@@ -122,7 +132,7 @@ const HeroPortrait = () => {
           <source type="image/webp" srcSet={PORTRAIT.webp} sizes={SIZES} />
           <img
             src={PORTRAIT.png}
-            alt="Johary Manantena, développeur full-stack"
+            alt={t("common.portraitAlt")}
             width={PORTRAIT.width}
             height={PORTRAIT.height}
             decoding="async"
@@ -140,21 +150,17 @@ const HeroPortrait = () => {
           className="absolute inset-x-0 bottom-0 z-10 h-px bg-gradient-to-r from-transparent via-border to-transparent"
         />
 
-        {/* Cartouche d'identité — sobre : filet accent, fond translucide.
-            Le nom n'apparaît ici qu'en ≥lg (en dessous, il est déjà affiché
-            juste au-dessus du portrait dans le flux). */}
+        {/* Cartouche — localisation seule : le nom vit désormais dans le h1,
+            le répéter ici ferait doublon. */}
         <div
-          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l-2 border-primary rounded-r-md bg-background/85 px-4 py-2.5"
+          className="absolute left-3 sm:left-4 bottom-4 sm:bottom-6 z-20 border-l border-primary rounded-r-md bg-background/85 px-4 py-2.5"
           style={{
             clipPath: cartOpen ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
             transition: "clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         >
           <div className={`transition-opacity duration-300 ${cartOpen ? "opacity-100 delay-200" : "opacity-0"}`}>
-            <p className="hidden lg:block font-display text-base xl:text-lg font-semibold leading-tight">
-              Johary Manantena
-            </p>
-            <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground lg:mt-1">
+            <p className="font-mono text-[10px] xl:text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
               {t("hero.location")}
             </p>
           </div>
@@ -175,6 +181,12 @@ const HeroPortrait = () => {
  */
 const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const { t } = useT();
+  const reduce = useReducedMotion();
+
+  // La trame technique du fond recule légèrement au scroll (profondeur).
+  const { scrollY } = useScroll();
+  const rawGridY = useTransform(scrollY, [0, 700], [0, 70]);
+  const gridY = reduce ? 0 : rawGridY;
 
   const stats: { label: string; value: string }[] = [
     { label: t("hero.statExp"), value: `3${t("hero.statExpSuffix")}` },
@@ -183,11 +195,13 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   ];
 
   return (
-    <section className="section-container items-center relative overflow-hidden">
-      {/* Trame technique, statique et discrète (décorative) — dissoute vers les bords */}
-      <div
+    <section className="section-container min-h-[100svh] items-center relative overflow-hidden">
+      {/* Trame technique discrète (décorative), dissoute vers les bords ;
+          parallax arrière très léger au scroll */}
+      <motion.div
         className="absolute inset-0 grid-bg opacity-[0.28] pointer-events-none"
         style={{
+          y: gridY,
           WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 45% 42%, black 20%, transparent 100%)",
           maskImage: "radial-gradient(ellipse 80% 70% at 45% 42%, black 20%, transparent 100%)",
         }}
@@ -201,7 +215,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           <div className="rise flex flex-wrap items-center gap-x-3 gap-y-1.5 justify-center lg:justify-start">
             {/* Technologies en défilement automatique — un mot à la fois,
                 en pause hors écran et sous prefers-reduced-motion. */}
-            <span className="kicker !text-primary inline-flex items-center gap-1.5">
+            <span className="label-mono !text-primary inline-flex items-center gap-1.5">
               <MorphingRoles items={["React", "Node.js", "TypeScript", "React Native", "Laravel", "Spring Boot"]} />
               <span className="caret-terminal" aria-hidden="true" />
             </span>
@@ -216,14 +230,30 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             {t("hero.greeting")}
           </p>
 
-          {/* Un seul h1 : nom + métier (SEO), le métier reste l'élément dominant */}
-          <h1 className="rise mt-1.5 font-display font-bold" style={{ animationDelay: "90ms" }}>
-            <span className="block text-[clamp(1.35rem,2.3vw,1.9rem)] uppercase tracking-[0.04em] leading-tight">
-              Johary Manantena
+          {/* Un seul h1 : nom + métier (SEO). Le nom porte le grand sérif sur
+              deux lignes légèrement décalées ; le métier suit, « Full-Stack »
+              en italique sérif royal — le contraste typographique fait l'accent. */}
+          <h1 className="rise mt-1.5" style={{ animationDelay: "90ms" }}>
+            <span className="block font-display font-semibold leading-[1.02] text-[clamp(2.5rem,5vw,4.5rem)]">
+              <span className="block">Johary</span>
+              <span className="block lg:pl-[0.75em]">
+                Manantena<span className="text-primary">.</span>
+              </span>
             </span>
-            <span className="mt-3 block tracking-tight leading-[0.98] text-[clamp(2.6rem,4.8vw,4.6rem)]">
-              <span className="block">{t("hero.roleL1")}</span>
-              <span className="block">{t("hero.roleL2")}<span className="text-primary">.</span></span>
+            {/* L'italique royale porte sur « Full-Stack », quelle que soit sa
+                position dans la langue (FR : Développeur Full-Stack ;
+                EN : Full-Stack Developer). */}
+            <span className="mt-4 block font-body font-medium tracking-normal text-[clamp(1.15rem,1.7vw,1.5rem)] text-foreground/80 leading-snug">
+              {[t("hero.roleL1"), t("hero.roleL2")].map((part, i) => (
+                <span key={part}>
+                  {i > 0 && " "}
+                  {/^full-stack$/i.test(part) ? (
+                    <em className="font-display italic font-medium text-primary text-[1.12em]">{part}</em>
+                  ) : (
+                    part
+                  )}
+                </span>
+              ))}
             </span>
           </h1>
 
@@ -240,8 +270,10 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
 
         {/* ── Actions : CTA → réseaux → stats ───────────────────────────── */}
         <div className="order-3 lg:order-none lg:col-start-2 lg:row-start-2 lg:self-start text-center lg:text-left">
+          {/* Hiérarchie d'action : un seul CTA plein (projets), un contour
+              (contact), et le CV en lien texte éditorial — trois poids nets. */}
           <div
-            className="rise flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start"
+            className="rise flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 justify-center lg:justify-start"
             style={{ animationDelay: "210ms" }}
           >
             <Button
@@ -259,21 +291,15 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             >
               {t("hero.ctaContact")}
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-md border-foreground/30 hover:bg-foreground hover:text-background hover:border-foreground font-semibold px-7 gap-2 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
-              asChild
+            <a
+              href="https://drive.google.com/file/d/1TW1OODP6uhMU2yf7uOci1v-cVwj3qxhh/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-editorial inline-flex items-center justify-center sm:justify-start gap-2 min-h-11 text-sm font-semibold text-foreground/85 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 self-center sm:self-auto"
             >
-              <a
-                href="https://drive.google.com/file/d/1TW1OODP6uhMU2yf7uOci1v-cVwj3qxhh/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="w-4 h-4" aria-hidden="true" />
-                {t("hero.ctaCV")}
-              </a>
-            </Button>
+              <Download className="w-4 h-4 text-primary" aria-hidden="true" />
+              {t("hero.ctaCV")}
+            </a>
           </div>
 
           <div
@@ -287,7 +313,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-border/60 text-foreground/75 hover:text-brand-foreground hover:bg-brand hover:border-brand transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                aria-label={`${label} (nouvel onglet)`}
+                aria-label={`${label} (${t("common.newTab")})`}
               >
                 <Icon className="w-[18px] h-[18px]" aria-hidden="true" />
               </a>
@@ -301,10 +327,8 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           >
             {stats.map(({ label, value }) => (
               <div key={label} className="flex flex-col gap-1.5">
-                <dt className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-muted-foreground leading-none">
-                  {label}
-                </dt>
-                <dd className="font-display text-xl sm:text-2xl font-bold leading-none">{value}</dd>
+                <dt className="order-2 text-sm text-muted-foreground leading-none">{label}</dt>
+                <dd className="order-1 font-display font-semibold leading-none text-[clamp(1.2rem,5.5vw,1.7rem)]">{value}</dd>
               </div>
             ))}
           </dl>

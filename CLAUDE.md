@@ -37,11 +37,11 @@ shadcn/ui primitives live in [src/components/ui/](src/components/ui/) (Radix UI 
 
 ### Design tokens
 
-Colors are defined as HSL CSS variables in [src/index.css](src/index.css) and consumed by [tailwind.config.ts](tailwind.config.ts). Palette « Heritage Royal »: midnight ink `#111722`, warm ivory `#F1ECE2`, royal blue `#2447A8`, oxblood `#6F283A` (rare accent), stone `#B8AD9D`. Two accent tiers: `brand` (raw royal, fills/CTA only) and `primary` (AA-safe per mode — royal in light, lightened royal in dark — for accent text and thin lines); `brand-secondary` is the oxblood. Dark mode uses the `class` strategy, applied pre-paint by an inline script in [index.html](index.html).
+Colors are defined as HSL CSS variables in [src/index.css](src/index.css) and consumed by [tailwind.config.ts](tailwind.config.ts). Palette « Heritage Royal »: midnight ink `#111722`, warm ivory `#F1ECE2`, royal blue `#2447A8`, oxblood `#6F283A` (rare accent), stone `#B8AD9D`. Two accent tiers: `brand` (raw royal, fills/CTA only) and `primary` (AA-safe per mode — royal in light, lightened royal in dark — for accent text and thin lines); `brand-secondary` is the oxblood. Dark mode uses the `class` strategy, applied pre-paint by an inline script in [index.html](index.html). Page depth comes from three background planes: ivory, a tinted band (`bg-muted/60` on Skills), and an "ink ending" — ContactSection and Footer wrap themselves in the `dark` class so the page always closes on midnight, in both modes.
 
-Custom utility classes defined in `index.css`: `.text-gradient`, `.card-floating`, `.card-swiss`, `.section-container`, `.kicker`, `.grid-bg`, `.nav-dot`, `.link-editorial`, `.caret-terminal`, `.scrollbar-hide`, `.rise`.
+Custom utility classes defined in `index.css`: `.text-gradient`, `.card-floating`, `.card-swiss`, `.section-container` (content-driven padding, no min-h — only the hero adds its own `min-h-[100svh]`), `.kicker` (small sans label), `.label-mono` (mono label reserved for data: dates, counters, coordinates), `.grid-bg`, `.nav-dot`, `.link-editorial`, `.caret-terminal`, `.scrollbar-hide`, `.rise`.
 
-Fonts: `Space Grotesk` (headings/display), `DM Sans` (body) and `JetBrains Mono` (mono labels), loaded via Google Fonts in [index.html](index.html).
+Fonts: `Newsreader` (display serif — headings, hero name, footer wordmark), `DM Sans` (body/UI) and `JetBrains Mono` (data labels only), loaded via Google Fonts in [index.html](index.html). Decorative section numbering and systematic uppercase mono kickers were deliberately removed — don't reintroduce them.
 
 ### TypeScript config
 
