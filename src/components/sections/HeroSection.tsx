@@ -292,7 +292,7 @@ const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               {t("hero.ctaContact")}
             </Button>
             <a
-              href="https://drive.google.com/file/d/1TW1OODP6uhMU2yf7uOci1v-cVwj3qxhh/view?usp=sharing"
+              href="https://drive.google.com/file/d/1yJRJjEtqKmmKQsksbJHn5eYcRBE6KP-O/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               className="link-editorial inline-flex items-center justify-center sm:justify-start gap-2 min-h-11 text-sm font-semibold text-foreground/85 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 self-center sm:self-auto"
