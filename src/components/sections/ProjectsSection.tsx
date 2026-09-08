@@ -1,49 +1,136 @@
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Github, ChevronLeft, ChevronRight, ArrowUpRight, X } from "lucide-react";
+import {
+  Check,
+  Github,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpRight,
+  X,
+  Layers,
+  Sparkles,
+  ExternalLink,
+  Target,
+  Wrench,
+  TrendingUp,
+} from "lucide-react";
 import { useMotionPreset } from "@/hooks/useMotionPreset";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import SectionHeading from "@/components/SectionHeading";
 import { useT, tx, type Bi, type Lang } from "@/i18n";
 import { PROJECT_LOGOS, PROJECT_COLORS, hueFromString } from "@/data/projectLogos";
 
-interface Project {
+export interface Project {
   title: string;
   description: Bi;
   technologies: string[];
   category: string;
   githubUrl?: string;
   liveUrl?: string;
-  /** Marks the flagship work — renders a small "Sélection" tag on the card. */
   featured?: boolean;
-  /** Short functional highlights — rendered as a compact mono checklist. */
+  problem?: Bi;
+  solution?: Bi;
+  result?: Bi;
   keyPoints?: Bi[];
 }
 
-// ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
-// Descriptions volontairement factuelles et discrètes (contribution réelle).
-const professionalProjects: Project[] = [
+// ─── PROJETS PROFESSIONNELS PHARE (Case Studies) ─────────────────────────────
+const featuredCaseStudies: Project[] = [
   {
     title: "BeautyBay – Web & Mobile",
     description: {
-      fr: "Applications web et mobile pour une marque de cosmétiques : interfaces clientes, API GraphQL et composants partagés entre React et React Native.",
-      en: "Web and mobile apps for a cosmetics brand: customer-facing interfaces, a GraphQL API and components shared across React and React Native.",
+      fr: "Écosystème e-commerce complet : web app React, application mobile React Native et API GraphQL centralisée pour une marque internationale.",
+      en: "Complete e-commerce ecosystem: React web app, React Native mobile app and centralized GraphQL API for an international brand.",
     },
-    technologies: ["ReactJS", "React Native", "GraphQL", "TypeScript"],
+    problem: {
+      fr: "Nécessité d'unifier l'expérience client entre web et mobile avec une synchronisation en temps réel des stocks, paniers et catalogues sous fort trafic.",
+      en: "Need to unify customer experience across web and mobile with real-time sync of stock, carts, and catalogs under heavy concurrent traffic.",
+    },
+    solution: {
+      fr: "Architecture full-stack modulaire avec GraphQL unifié, composants partagés React / React Native, et infrastructure cloud AWS pour le stockage et les assets.",
+      en: "Modular full-stack architecture with unified GraphQL API, shared React / React Native components, and AWS cloud storage and CDN pipeline.",
+    },
+    result: {
+      fr: "Écosystème unifié en production, réduction mesurable du délai de chargement et fluidité cross-platform.",
+      en: "Unified ecosystem shipped to production, measurable latency reduction, and seamless cross-platform consistency.",
+    },
+    technologies: ["ReactJS", "React Native", "GraphQL", "TypeScript", "AWS"],
     category: "Web & Mobile",
     featured: true,
     liveUrl: "https://www.beautybay.com",
   },
   {
-    title: "Paul Beuscher",
+    title: "Edu Levitation SaaS",
     description: {
-      fr: "Boutique Shopify : refonte des emails transactionnels (Liquid) aux couleurs de la marque, et script Python de détection/nettoyage des produits en doublon via l'API Admin Shopify.",
-      en: "Shopify store: redesign of transactional emails (Liquid) in the brand's colours, and a Python script to detect and clean up duplicate products via the Admin API.",
+      fr: "Plateforme SaaS scolaire tout-en-un pour la gestion administrative, académique et financière de multiples établissements.",
+      en: "All-in-one school SaaS platform for administrative, academic, and billing management across multiple partner institutions.",
     },
-    technologies: ["Shopify", "Liquid", "Python", "Shopify API"],
-    category: "E-commerce",
-    liveUrl: "https://www.paul-beuscher.com",
+    problem: {
+      fr: "Gestion manuelle fastidieuse des notes, lenteur dans la génération des bulletins et absence d'automatisation des relances de facturation.",
+      en: "Tedious manual grade management, slow report card generation, and lack of automated billing and attendance notifications.",
+    },
+    solution: {
+      fr: "Plateforme SaaS multi-tenant sous Laravel & ReactJS, automatisation des workflows email/SMS via n8n, génération PDF de bulletins et API REST sécurisée.",
+      en: "Multi-tenant SaaS platform built on Laravel & ReactJS, automated email/SMS workflows via n8n, dynamic PDF generation, and secure REST API.",
+    },
+    result: {
+      fr: "Plateforme déployée et active en production sur edu.levitation.mg, adoptée par les établissements partenaires.",
+      en: "Platform live in production at edu.levitation.mg, actively used daily by partner educational institutions.",
+    },
+    technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
+    category: "SaaS",
+    featured: true,
+    liveUrl: "https://edu.levitation.mg",
   },
+  {
+    title: "Transport Interne Konecta",
+    description: {
+      fr: "Application web et mobile de digitalisation et d'optimisation en temps réel du transport du personnel d'entreprise.",
+      en: "Web and mobile fleet management app for real-time dispatch, route optimization, and corporate employee transit.",
+    },
+    problem: {
+      fr: "Temps d'attente excessifs et manque de visibilité en temps réel sur les tournées des navettes transportant des centaines d'employés à Antananarivo.",
+      en: "Unpredictable wait times and zero real-time visibility on shuttle routes transporting hundreds of corporate staff in Antananarivo.",
+    },
+    solution: {
+      fr: "App mobile React Native pour les chauffeurs, tableau de bord dispatch ReactJS pour les RH et intégration du moteur d'optimisation d'itinéraires OSRM.",
+      en: "React Native mobile app for drivers, ReactJS dispatch dashboard for HR/admin, and OSRM route optimization engine integration.",
+    },
+    result: {
+      fr: "Réduction mesurée de 30% des temps d'attente et traçabilité temps réel complète de la flotte.",
+      en: "Measured 30% reduction in passenger wait times and 100% live fleet geolocation tracking.",
+    },
+    technologies: ["React Native", "TypeScript", "React", "MySQL", "OSRM"],
+    category: "Entreprise",
+    featured: true,
+  },
+  {
+    title: "The Cool Republic & Paul Beuscher",
+    description: {
+      fr: "Automatisation d'ingestion de données et refonte e-commerce Shopify pour deux marques de référence (mobilier & instruments de musique).",
+      en: "Catalog ingestion automation and Shopify e-commerce engineering for two premier design and music brands.",
+    },
+    problem: {
+      fr: "Importation manuelle chronophage de milliers de références produits hétérogènes et risque élevé de doublons d'inventaire.",
+      en: "Time-consuming manual ingestion of thousands of vendor catalog items and high risk of inventory duplicates.",
+    },
+    solution: {
+      fr: "Pipeline Python couplé à l'API Admin Shopify, base PostgreSQL de mapping et déduplication, et refonte des templates transactionnels Liquid.",
+      en: "Python automation pipeline interfacing with Shopify Admin API, PostgreSQL deduplication database, and Liquid theme customisation.",
+    },
+    result: {
+      fr: "Des centaines d'heures de travail économisées et synchronisation automatisée et fiable des catalogues.",
+      en: "Hundreds of manual operational hours saved with reliable, automated catalog synchronization.",
+    },
+    technologies: ["Python", "Shopify API", "PostgreSQL", "Liquid", "JavaScript"],
+    category: "Automation & E-commerce",
+    featured: true,
+    liveUrl: "https://thecoolrepublic.com",
+  },
+];
+
+// Autres missions et réalisations professionnelles
+const otherProfessionalProjects: Project[] = [
   {
     title: "fingerinthenose.com",
     description: {
@@ -53,16 +140,6 @@ const professionalProjects: Project[] = [
     technologies: ["Shopify", "Liquid", "JavaScript", "CSS"],
     category: "E-commerce",
     liveUrl: "https://fingerinthenose.com",
-  },
-  {
-    title: "The Cool Republic",
-    description: {
-      fr: "Automatisation Python de l'import des données produits designers vers la boutique Shopify (mobilier & décoration) : mapping des catalogues, base de données et export CSV.",
-      en: "Python automation for importing designer product data into the Shopify store (furniture & decor): catalogue mapping, database and CSV export.",
-    },
-    technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
-    category: "Automation",
-    liveUrl: "https://thecoolrepublic.com",
   },
   {
     title: "Musier Paris",
@@ -93,17 +170,6 @@ const professionalProjects: Project[] = [
     category: "Script",
   },
   {
-    title: "Edu Levitation SaaS",
-    description: {
-      fr: "Plateforme SaaS scolaire : gestion des notes, bulletins, facturation, workflows automatisés (email/SMS), multi-établissements.",
-      en: "School SaaS platform: grades, report cards, billing, automated email/SMS workflows, multi-school management.",
-    },
-    technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
-    category: "SaaS",
-    featured: true,
-    liveUrl: "https://edu.levitation.mg",
-  },
-  {
     title: "EduContent Mobile App",
     description: {
       fr: "Application mobile React Native/Expo pour la consultation et la gestion de contenu éducatif en ligne.",
@@ -111,16 +177,6 @@ const professionalProjects: Project[] = [
     },
     technologies: ["React Native", "Expo", "JavaScript"],
     category: "Mobile",
-  },
-  {
-    title: "Transport Interne Konecta",
-    description: {
-      fr: "Digitalisation du transport du personnel : planification, optimisation OSRM, suivi temps réel, reporting multi-profils.",
-      en: "Digitalising staff transport: planning, OSRM optimisation, real-time tracking, multi-role reporting.",
-    },
-    technologies: ["TypeScript", "React", "MySQL", "OSRM"],
-    category: "Entreprise",
-    featured: true,
   },
   {
     title: "ERPNext Migration",
@@ -186,544 +242,481 @@ const academicProjects: Project[] = [
   { title: "Atelier Réparation PC", description: { fr: "Application web de gestion d'atelier : suivi des interventions, devis et facturation clients.", en: "Workshop-management web app: job tracking, quotes and client billing." }, technologies: ["Spring Boot", "Postgres", "Bootstrap"], category: "Framework", githubUrl: "https://github.com/joharymanantena1-ux" },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const CATEGORY_EN: Record<string, string> = {
-  Entreprise: "Company",
-  Réseaux: "Networks",
-  Jeu: "Game",
-  Géomatique: "GIS",
-};
-const catLabel = (cat: string, lang: Lang) => (lang === "en" ? CATEGORY_EN[cat] ?? cat : cat);
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-const getMonogram = (title: string) => {
-  const words = title.replace(/[^a-zA-Z0-9\s-]/g, " ").split(/[\s-]+/).filter(Boolean);
-  const letters = words.length > 1 ? words.map((w) => w[0]).join("") : words[0] ?? "";
-  return letters.slice(0, 2).toUpperCase();
+const catLabel = (cat: string, lang: Lang) => {
+  const map: Record<string, string> = {
+    Entreprise: "Company",
+    Réseaux: "Networks",
+    Jeu: "Game",
+    Géomatique: "GIS",
+  };
+  return lang === "en" ? map[cat] ?? cat : cat;
 };
 
-const pad = (n: number) => String(n).padStart(2, "0");
-
-// Resolve a project's brand accent: explicit colour, else a stable hue from title.
-const projectAccent = (title: string): string =>
-  PROJECT_COLORS[title] ?? `hsl(${hueFromString(title)} 70% 55%)`;
-
-// Full-bleed logo header. The logo sits on its own native brand background
-// (white / black / brand colour), so dark logos never get a jarring white box.
-// `object-contain` keeps every logo's aspect ratio. Projects without a mapped
-// logo fall back to a big monogram on a brand-tinted backdrop. The category +
-// index overlay the artwork with a top scrim so they stay readable on any bg.
-const ProjectLogoHeader = ({ project, index }: { project: Project; index: number }) => {
-  const { t, lang } = useT();
-  const logo = PROJECT_LOGOS[project.title];
-  const accent = projectAccent(project.title);
-  const lightBg = logo ? ["#ffffff", "#fff"].includes(logo.bg.toLowerCase()) : false;
-  // Meta text colour adapts to the backdrop for contrast.
-  const metaClass = lightBg ? "text-foreground/55" : "text-white/75";
-
-  return (
-    <div
-      className="relative h-32 w-full overflow-hidden flex items-center justify-center"
-      style={logo ? { backgroundColor: logo.bg } : { background: `linear-gradient(135deg, ${accent}, ${accent}bb)` }}
-    >
-      {/* Top scrim so the meta row reads on busy/dark/light artwork alike */}
-      <div
-        aria-hidden="true"
-        className={`absolute inset-x-0 top-0 h-12 ${lightBg ? "bg-gradient-to-b from-black/[0.04] to-transparent" : "bg-gradient-to-b from-black/25 to-transparent"}`}
-      />
-      <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 py-2.5">
-        <span className={`font-mono text-[11px] uppercase tracking-wider ${metaClass}`}>
-          {catLabel(project.category, lang)}
-        </span>
-        <span className={`font-mono text-[11px] ${metaClass}`}>№{pad(index + 1)}</span>
-      </div>
-
-      {/* Flagship tag — solid oxblood chip (accent rare), readable on any artwork */}
-      {project.featured && (
-        <span className="absolute bottom-2 left-3 z-10 font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-brand-secondary text-brand-foreground">
-          {t("projects.featured")}
-        </span>
-      )}
-
-      {logo ? (
-        <img
-          src={logo.src}
-          alt={`Logo ${project.title}`}
-          // Padded logos (baked-in transparent margin) display larger to compensate.
-          // Subtle zoom on card hover (transform-only); skipped under reduced-motion.
-          className={`object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${logo.padded ? "max-h-[80%] max-w-[88%]" : "max-h-[52%] max-w-[70%]"}`}
-          loading="lazy"
-          draggable={false}
-        />
-      ) : (
-        // No logo → just the big ghost monogram on the brand-tinted backdrop.
-        <span aria-hidden="true" className="absolute -bottom-6 -right-2 font-display font-black text-[8rem] leading-none text-white/15 select-none">
-          {getMonogram(project.title)}
-        </span>
-      )}
-    </div>
-  );
-};
-
-const IconLink = ({
-  href,
-  label,
-  variant = "neutral",
-  children,
+// ─── CASE STUDY CARD (Problem, Solution, Impact) ─────────────────────────────
+const CaseStudyCard = ({
+  project,
+  index,
+  onOpenDetails,
 }: {
-  href: string;
-  label: string;
-  variant?: "neutral" | "primary";
-  children: ReactNode;
-}) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label={label}
-    title={label}
-    className={`inline-flex items-center justify-center min-h-11 min-w-11 rounded-md cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-      variant === "primary"
-        ? "text-primary hover:bg-brand hover:text-brand-foreground"
-        : "text-muted-foreground hover:bg-foreground hover:text-background"
-    }`}
-  >
-    {children}
-  </a>
-);
-
-const CategoryTag = ({ category, accent = false }: { category: string; accent?: boolean }) => {
-  const { lang } = useT();
-  return (
-    <span className={`kicker !text-[11px] !tracking-wider ${accent ? "!text-primary" : ""}`}>
-      {catLabel(category, lang)}
-    </span>
-  );
-};
-
-// Compact mono checklist for a project's functional highlights. Capped at 4 so
-// it never pushes card heights out of alignment with the rest of the carousel.
-const KeyPoints = ({ points, max = 4 }: { points: Bi[]; max?: number }) => {
-  const { lang } = useT();
-  return (
-    <ul className="flex flex-col gap-1">
-      {points.slice(0, max).map((point) => (
-        <li key={tx(point, lang)} className="flex items-start gap-1.5 font-mono text-[11px] leading-snug text-muted-foreground">
-          <Check className="w-3 h-3 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <span>{tx(point, lang)}</span>
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-const TechTags = ({ technologies, max = 4 }: { technologies: string[]; max?: number }) => (
-  <div className="flex flex-wrap gap-1.5">
-    {technologies.slice(0, max).map((tech) => (
-      <span key={tech} className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-secondary border border-border/50 text-secondary-foreground">
-        {tech}
-      </span>
-    ))}
-    {technologies.length > max && (
-      <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">+{technologies.length - max}</span>
-    )}
-  </div>
-);
-
-// ─── PROFESSIONAL PROJECT CARD (image-free Swiss cover) ──────────────────────
-// Quand le projet a une URL publique, toute la card devient cliquable via un
-// lien « étiré » (overlay), signalé par une flèche ↗ discrète près du titre.
-const ProfessionalCard = ({ project, index }: { project: Project; index: number }) => {
-  const { reduce } = useMotionPreset();
+  project: Project;
+  index: number;
+  onOpenDetails: (p: Project) => void;
+}) => {
   const { t, lang } = useT();
-  const clickable = Boolean(project.liveUrl);
+  const reduce = useReducedMotion();
+
   return (
     <motion.article
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={reduce ? { duration: 0 } : { duration: 0.35, delay: (index % 6) * 0.06 }}
-      // Halo glow + subtle lift on hover — transform/shadow only (GPU-cheap),
-      // motion-reduce drops the lift. Neutral elevated shadow — no coloured glow.
-      className="relative flex-shrink-0 snap-start w-[min(86vw,340px)] sm:w-[380px] lg:w-[400px] card-swiss overflow-hidden group flex flex-col transition-[transform,box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-elevated hover:-translate-y-1 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      initial={reduce ? false : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: EASE }}
+      className="group relative flex flex-col justify-between rounded-2xl border border-border/80 bg-card/70 backdrop-blur-md p-6 sm:p-8 shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg"
     >
-      {/* Lien étiré — z-[15] : au-dessus du contenu, sous les liens d'icônes (z-20).
-          draggable=false pour ne pas déclencher un drag natif de lien dans le
-          carrousel ; ring-inset car la card est en overflow-hidden. */}
-      {clickable && (
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          draggable={false}
-          aria-label={`${t("projects.liveOf")} ${project.title} (${t("common.newTab")})`}
-          className="absolute inset-0 z-[15] rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-        />
-      )}
-      {/* Accent sweep — royal hairline drawn from the left on hover */}
-      <span
-        aria-hidden="true"
-        className="absolute top-0 left-0 z-20 h-0.5 w-full bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out motion-reduce:transition-none"
-      />
-      {/* Full-bleed logo header — logo sits on its own brand background */}
-      <div className="relative border-b border-border">
-        <ProjectLogoHeader project={project} index={index} />
-      </div>
-
-      <div className="p-5 flex flex-col gap-3.5 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-display font-semibold leading-snug line-clamp-2 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none">{project.title}</h3>
-          <div className="relative z-20 flex items-center gap-0.5 flex-shrink-0 -mr-2 -mt-1">
-            {project.githubUrl && (
-              <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
-                <Github className="w-4 h-4" aria-hidden="true" />
-              </IconLink>
-            )}
-            {/* Indicateur passif de lien externe — le lien, c'est la card */}
-            {clickable && (
-              <ArrowUpRight
-                aria-hidden="true"
-                className="w-4 h-4 mt-2 mr-2 text-muted-foreground/70 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
-              />
-            )}
+      <div>
+        {/* Header meta */}
+        <div className="flex items-center justify-between gap-2 pb-4 border-b border-border/60 mb-5">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+              {t("projects.caseStudy")} #{index + 1}
+            </span>
+            <span className="text-muted-foreground/40">·</span>
+            <span className="font-mono text-xs text-muted-foreground">
+              {project.category}
+            </span>
           </div>
+
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${t("projects.liveOf")} ${project.title}`}
+              className="inline-flex items-center gap-1 text-xs font-mono font-medium text-primary hover:underline"
+            >
+              <span>Live</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
+          )}
         </div>
-        <p className="text-sm sm:text-[0.95rem] text-muted-foreground dark:text-foreground/80 line-clamp-4 leading-relaxed flex-1">
+
+        {/* Project Title */}
+        <h3 className="font-display font-semibold text-2xl sm:text-3xl text-foreground mb-4 group-hover:text-primary transition-colors duration-200">
+          {project.title}
+        </h3>
+
+        <p className="text-sm sm:text-base text-foreground/85 leading-relaxed mb-6">
           {tx(project.description, lang)}
         </p>
-        {project.keyPoints && <KeyPoints points={project.keyPoints} />}
-        <TechTags technologies={project.technologies} max={5} />
+
+        {/* Structured 3-Part Case Study Breakdown */}
+        <div className="flex flex-col gap-4 p-4 sm:p-5 rounded-xl bg-secondary/30 border border-border/50 mb-6">
+          {project.problem && (
+            <div className="flex items-start gap-3 text-xs sm:text-sm">
+              <div className="w-6 h-6 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Target className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground block mb-0.5">
+                  {t("projects.problemLabel")}
+                </span>
+                <span className="text-foreground/90 leading-snug">
+                  {tx(project.problem, lang)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {project.solution && (
+            <div className="flex items-start gap-3 text-xs sm:text-sm">
+              <div className="w-6 h-6 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Wrench className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground block mb-0.5">
+                  {t("projects.solutionLabel")}
+                </span>
+                <span className="text-foreground/90 leading-snug">
+                  {tx(project.solution, lang)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {project.result && (
+            <div className="flex items-start gap-3 text-xs sm:text-sm">
+              <div className="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <TrendingUp className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold block mb-0.5">
+                  {t("projects.impactLabel")}
+                </span>
+                <span className="text-foreground font-medium leading-snug">
+                  {tx(project.result, lang)}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Footer Tags & Actions */}
+      <div className="pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {project.technologies.map((tech) => (
+            <span
+              key={tech}
+              className="font-mono text-[11px] px-2.5 py-1 rounded-md bg-secondary text-secondary-foreground"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onOpenDetails(project)}
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground hover:underline cursor-pointer"
+        >
+          <span>{t("projects.viewCaseStudy")}</span>
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </button>
       </div>
     </motion.article>
   );
 };
 
-// ─── ACADEMIC PROJECT CARD (compact, image-free) ─────────────────────────────
-const AcademicCard = ({ project, index }: { project: Project; index: number }) => {
-  const { reduce } = useMotionPreset();
-  const { t, lang } = useT();
-  return (
-    <motion.article
-      layout={!reduce}
-      initial={reduce ? false : { opacity: 0, scale: 0.92 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
-      transition={reduce ? { duration: 0 } : { duration: 0.3, delay: (index % 12) * 0.02, layout: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
-      style={{ transition: "box-shadow .3s, border-color .3s" }}
-      className="card-swiss p-3.5 flex flex-col gap-2 group hover:border-primary/40 hover:shadow-elevated"
-    >
-      <div className="flex items-center justify-between">
-        <CategoryTag category={project.category} accent />
-        {project.githubUrl && (
-          <IconLink href={project.githubUrl} label={`${t("projects.sourceOf")} ${project.title}`}>
-            <Github className="w-4 h-4" aria-hidden="true" />
-          </IconLink>
-        )}
-      </div>
-      <h3 className="text-sm font-display font-semibold leading-snug line-clamp-1">{project.title}</h3>
-      <p className="text-sm text-muted-foreground dark:text-foreground/80 line-clamp-2 leading-relaxed">
-        {tx(project.description, lang)}
-      </p>
-      <TechTags technologies={project.technologies} max={3} />
-    </motion.article>
-  );
-};
-
-// ─── ACCESSIBLE CAROUSEL (professional only) ─────────────────────────────────
-const AccessibleCarousel = ({ projects }: { projects: Project[] }) => {
-  const { t } = useT();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const startScroll = useRef(0);
-  const rafId = useRef<number | null>(null);
-  const scrollRafId = useRef<number | null>(null);
-  // Reading position: drives the left edge fade, the mono counter and the
-  // hairline progress bar under the track.
-  const [pos, setPos] = useState({ atStart: true, index: 0, progress: 0 });
-
-  const onScroll = useCallback(() => {
-    if (scrollRafId.current != null) return;
-    scrollRafId.current = requestAnimationFrame(() => {
-      scrollRafId.current = null;
-      const el = scrollRef.current;
-      if (!el) return;
-      const step = (el.querySelector("article")?.clientWidth ?? 380) + 16;
-      const max = el.scrollWidth - el.clientWidth;
-      setPos({
-        atStart: el.scrollLeft < 24,
-        index: Math.min(Math.round(el.scrollLeft / step), projects.length - 1),
-        progress: max > 0 ? Math.min(el.scrollLeft / max, 1) : 0,
-      });
-    });
-  }, [projects.length]);
-
-  // Drag à la souris uniquement (le tactile garde le scroll natif). La capture
-  // du pointeur n'est posée qu'après un vrai déplacement (> 6px) : la poser au
-  // pointerdown redirigerait le `click` vers le conteneur et rendrait les cards
-  // cliquables inertes. Après un drag, le clic résiduel est neutralisé.
-  const dragDistance = useRef(0);
-
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    if (!scrollRef.current || e.pointerType !== "mouse") return;
-    isDragging.current = true;
-    dragDistance.current = 0;
-    startX.current = e.pageX - scrollRef.current.offsetLeft;
-    startScroll.current = scrollRef.current.scrollLeft;
-  }, []);
-
-  const stop = useCallback(() => {
-    isDragging.current = false;
-  }, []);
-
-  const onPointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging.current || !scrollRef.current) return;
-    const pageX = e.pageX;
-    const x = pageX - scrollRef.current.offsetLeft;
-    dragDistance.current = Math.max(dragDistance.current, Math.abs(x - startX.current));
-    if (dragDistance.current > 6 && !scrollRef.current.hasPointerCapture(e.pointerId)) {
-      scrollRef.current.setPointerCapture(e.pointerId);
-    }
-    if (rafId.current != null) return;
-    rafId.current = requestAnimationFrame(() => {
-      rafId.current = null;
-      if (!scrollRef.current) return;
-      scrollRef.current.scrollLeft = startScroll.current - (x - startX.current) * 1.5;
-    });
-  }, []);
-
-  // Un clic qui conclut un drag ne doit pas naviguer.
-  const onClickCapture = useCallback((e: React.MouseEvent) => {
-    if (dragDistance.current > 6) {
-      e.preventDefault();
-      e.stopPropagation();
-      dragDistance.current = 0;
-    }
-  }, []);
-
-  const scrollByCards = useCallback((dir: 1 | -1) => {
-    // One card width + gap (cards are ~380–400px on ≥sm, narrower on mobile).
-    const step = scrollRef.current?.querySelector("article")?.clientWidth ?? 380;
-    scrollRef.current?.scrollBy({ left: dir * (step + 16), behavior: "smooth" });
-  }, []);
-
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (!scrollRef.current) return;
-      if (e.key === "ArrowRight") { e.preventDefault(); scrollByCards(1); }
-      else if (e.key === "ArrowLeft") { e.preventDefault(); scrollByCards(-1); }
-      else if (e.key === "Home") { e.preventDefault(); scrollRef.current.scrollTo({ left: 0, behavior: "smooth" }); }
-      else if (e.key === "End") { e.preventDefault(); scrollRef.current.scrollTo({ left: scrollRef.current.scrollWidth, behavior: "smooth" }); }
-    },
-    [scrollByCards],
-  );
+// ─── SECONDARY PROFESSIONAL PROJECT CARD ────────────────────────────────────
+const SecondaryCard = ({ project }: { project: Project }) => {
+  const { lang, t } = useT();
 
   return (
-    <div className="relative">
-      <div
-        ref={scrollRef}
-        role="region"
-        aria-roledescription={t("common.carousel")}
-        aria-label={t("projects.carousel")}
-        tabIndex={0}
-        onPointerDown={onPointerDown}
-        onPointerUp={stop}
-        onPointerLeave={stop}
-        onPointerMove={onPointerMove}
-        onClickCapture={onClickCapture}
-        onKeyDown={onKeyDown}
-        onScroll={onScroll}
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide select-none cursor-grab active:cursor-grabbing snap-x snap-proximity rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
-        {projects.map((p, i) => <ProfessionalCard key={p.title} project={p} index={i} />)}
-        <div className="flex-shrink-0 w-4" aria-hidden="true" />
+    <div className="flex flex-col justify-between p-5 rounded-xl border border-border/60 bg-card/40 hover:bg-card hover:border-primary/40 transition-all duration-200">
+      <div>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            {project.category}
+          </span>
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${t("projects.liveOf")} ${project.title}`}
+              className="text-primary hover:text-primary/80"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+        <h4 className="font-display font-semibold text-lg text-foreground mb-2">
+          {project.title}
+        </h4>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
+          {tx(project.description, lang)}
+        </p>
       </div>
 
-      {/* Edge fades — the left one only appears once the track has scrolled */}
-      <div
-        className={`pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-background to-transparent transition-opacity duration-300 ${pos.atStart ? "opacity-0" : "opacity-100"}`}
-        aria-hidden="true"
-      />
-      <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background to-transparent" aria-hidden="true" />
-
-      {/* Reading position: hairline progress + mono counter + arrows */}
-      <div className="mt-3 flex items-center gap-4">
-        <div className="flex-1 h-px bg-border relative overflow-hidden" aria-hidden="true">
-          <div
-            className="absolute inset-0 bg-primary origin-left transition-transform duration-200 ease-out"
-            style={{ transform: `scaleX(${pos.progress})` }}
-          />
-        </div>
-        <span className="font-mono text-xs text-muted-foreground tabular-nums" aria-hidden="true">
-          {pad(pos.index + 1)} / {pad(projects.length)}
-        </span>
-        <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => scrollByCards(-1)}
-          aria-label={t("projects.prev")}
-          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-brand/50 text-primary hover:bg-brand hover:text-brand-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <ChevronLeft className="w-5 h-5" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollByCards(1)}
-          aria-label={t("projects.next")}
-          className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-brand/50 text-primary hover:bg-brand hover:text-brand-foreground cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <ChevronRight className="w-5 h-5" aria-hidden="true" />
-        </button>
-        </div>
+      <div className="flex flex-wrap gap-1">
+        {project.technologies.slice(0, 4).map((tech) => (
+          <span
+            key={tech}
+            className="font-mono text-[10px] px-2 py-0.5 rounded bg-secondary text-muted-foreground"
+          >
+            {tech}
+          </span>
+        ))}
       </div>
     </div>
   );
 };
 
-const filterCategories = ["Tous", "Java", "C#", "C++", "Flutter", "Web", "PHP", "Algo", "Réseaux", "Jeu", "Géomatique", "Framework"];
-
-// ─── ACADEMIC DRAWER (hidden by default, full-screen, slides up) ─────────────
-const AcademicDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => {
-  const { reduce } = useMotionPreset();
+export const ProjectsSection = () => {
   const { t, lang } = useT();
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<Project | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Tous");
 
-  const filtered = activeFilter === "Tous"
+  const filterCategories = [
+    "Tous",
+    "Java",
+    "C#",
+    "C++",
+    "Flutter",
+    "Web",
+    "PHP",
+    "Algo",
+    "Réseaux",
+    "Jeu",
+  ];
+
+  const filteredAcademic = activeFilter === "Tous"
     ? academicProjects
     : academicProjects.filter((p) => p.category === activeFilter);
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[92vh] card-swiss !rounded-b-none focus-visible:outline-none">
-        <div className="mx-auto w-full max-w-7xl flex flex-col h-full min-h-0 px-4 sm:px-6 pb-6">
-          <div className="flex items-center justify-between gap-4 pt-2 pb-4 border-b border-border">
-            <div>
-              <span className="kicker !text-primary">{t("projects.drawerKicker")}</span>
-              <h2 className="text-xl sm:text-2xl font-display font-bold mt-1">
-                {t("projects.drawerTitle")}
-                <span className="font-mono text-sm text-muted-foreground ml-2">{academicProjects.length}</span>
-              </h2>
-            </div>
-            <DrawerClose asChild>
-              <button
-                type="button"
-                aria-label={t("projects.close")}
-                className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md border border-border hover:bg-secondary cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <X className="w-5 h-5" aria-hidden="true" />
-              </button>
-            </DrawerClose>
-          </div>
-
-          <div role="group" aria-label={t("projects.filterGroup")} className="flex gap-2 overflow-x-auto py-4 scrollbar-hide flex-shrink-0">
-            {filterCategories.map((cat) => {
-              const active = activeFilter === cat;
-              const count = cat === "Tous" ? academicProjects.length : academicProjects.filter((p) => p.category === cat).length;
-              const label = cat === "Tous" ? t("projects.filterAll") : catLabel(cat, lang);
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setActiveFilter(cat)}
-                  className={`flex-shrink-0 inline-flex items-center gap-1.5 min-h-11 px-4 rounded-md font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                    active
-                      ? "bg-brand text-brand-foreground"
-                      : "border border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  }`}
-                >
-                  {label}
-                  <span className="opacity-70">{count}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide -mx-1 px-1 pb-4">
-            {/* Fluid layout: cards keep stable keys and animate their position when the
-                filter changes (magic-move) instead of a wholesale fade. */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-              <AnimatePresence mode="popLayout">
-                {filtered.map((project, index) => (
-                  <AcademicCard key={project.title} project={project} index={index} />
-                ))}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
-  );
-};
-
-// ─── SECTION ─────────────────────────────────────────────────────────────────
-const ProjectsSection = () => {
-  const { reduce } = useMotionPreset();
-  const { t } = useT();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  return (
-    <section className="section-container">
-      <div className="section-content">
+    <section className="section-container relative overflow-hidden py-24 sm:py-32">
+      <div className="section-content max-w-6xl mx-auto">
+        
+        {/* Section Heading */}
         <SectionHeading
           label={t("projects.label")}
-          title={t("projects.title")}
-          description={
-            <>
-              {t("projects.descBefore")}
-              <span className="font-mono text-sm">{academicProjects.length}</span>
-              {t("projects.descAfter")}
-            </>
+          title={lang === "fr" ? "Études de cas & Projets réels." : "Case Studies & Production Work."}
+          description={lang === "fr"
+            ? "Conception orientée résultat : chaque projet répond à un défi métier concret avec une architecture pérenne."
+            : "Outcome-driven engineering: every system addresses concrete business needs with resilient code."
           }
-          className="mb-10 md:mb-12"
+          className="mb-14 sm:mb-18"
         />
 
-        {/* ── Projets professionnels — carousel horizontal ── */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.45 }}
-          className="mb-12"
-        >
-          <div className="flex items-center gap-3 mb-5">
-            <span className="kicker">{t("projects.professional")}</span>
-            <span className="h-px flex-1 bg-border" aria-hidden="true" />
-            <span className="font-mono text-xs text-muted-foreground">{pad(professionalProjects.length)}</span>
-          </div>
-          <AccessibleCarousel projects={professionalProjects} />
-        </motion.div>
+        {/* ── 1. Flagship Case Studies Grid ──────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+          {featuredCaseStudies.map((project, idx) => (
+            <CaseStudyCard
+              key={project.title}
+              project={project}
+              index={idx}
+              onOpenDetails={(p) => setSelectedCaseStudy(p)}
+            />
+          ))}
+        </div>
 
-        {/* ── Accès aux projets académiques — caché par défaut ── */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 0.45, delay: 0.1 }}
-          className="relative card-swiss overflow-hidden p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5"
-        >
-          <div className="absolute inset-0 grid-bg opacity-30" aria-hidden="true" />
-          <div className="relative">
-            <span className="kicker">{t("projects.archiveKicker")}</span>
-            <h3 className="text-lg sm:text-xl font-display font-semibold mt-1.5">
+        {/* ── 2. Other Production & Client Work ──────────────────────────── */}
+        <div className="mb-16 pt-12 border-t border-border/60">
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <div>
+              <span className="font-mono text-xs uppercase tracking-widest text-primary block mb-1">
+                {lang === "fr" ? "Autres Réalisations" : "Additional Missions"}
+              </span>
+              <h3 className="font-display font-semibold text-xl sm:text-2xl text-foreground">
+                {lang === "fr" ? "Missions Freelance & Systèmes Métier" : "Freelance & Enterprise Systems"}
+              </h3>
+            </div>
+            <span className="font-mono text-xs text-muted-foreground">
+              {otherProfessionalProjects.length} {lang === "fr" ? "projets" : "projects"}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {otherProfessionalProjects.map((project) => (
+              <SecondaryCard key={project.title} project={project} />
+            ))}
+          </div>
+        </div>
+
+        {/* ── 3. Academic Archive Callout ───────────────────────────────── */}
+        <div className="relative rounded-2xl border border-border/80 bg-gradient-to-r from-card via-card/70 to-secondary/30 p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground block mb-2">
+              {t("projects.archiveKicker")}
+            </span>
+            <h3 className="font-display font-bold text-2xl text-foreground mb-2">
               {academicProjects.length} {t("projects.archiveTitleSuffix")}
             </h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-md">{t("projects.archiveDesc")}</p>
+            <p className="text-sm text-muted-foreground max-w-xl">
+              {t("projects.archiveDesc")}
+            </p>
           </div>
+
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            aria-haspopup="dialog"
-            className="group relative flex-shrink-0 inline-flex items-center justify-center gap-2 min-h-11 px-6 rounded-md bg-brand text-brand-foreground font-medium cursor-pointer transition-colors duration-200 hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all duration-200 cursor-pointer flex-shrink-0"
           >
-            {t("projects.archiveBtnBefore")}{academicProjects.length}{t("projects.archiveBtnAfter")}
-            <ArrowUpRight
-              className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
-              aria-hidden="true"
-            />
+            <span>{t("projects.archiveBtnBefore")}{academicProjects.length}{t("projects.archiveBtnAfter")}</span>
+            <ArrowUpRight className="w-4 h-4" />
           </button>
-        </motion.div>
+        </div>
       </div>
 
-      <AcademicDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+      {/* ── Case Study Detailed Modal ────────────────────────────────────── */}
+      <AnimatePresence>
+        {selectedCaseStudy && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-2xl"
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedCaseStudy(null)}
+                aria-label={t("projects.closeCaseStudy")}
+                className="absolute top-6 right-6 w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <span className="font-mono text-xs uppercase tracking-widest text-primary block mb-2">
+                {t("projects.caseStudy")}
+              </span>
+
+              <h2 className="font-display font-bold text-2xl sm:text-3xl text-foreground mb-4">
+                {selectedCaseStudy.title}
+              </h2>
+
+              <p className="text-base text-foreground/85 mb-6">
+                {tx(selectedCaseStudy.description, lang)}
+              </p>
+
+              <div className="flex flex-col gap-5 p-5 rounded-xl bg-secondary/40 border border-border/60 mb-6">
+                {selectedCaseStudy.problem && (
+                  <div>
+                    <h4 className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      {t("projects.problemLabel")}
+                    </h4>
+                    <p className="text-sm text-foreground/90 leading-relaxed">
+                      {tx(selectedCaseStudy.problem, lang)}
+                    </p>
+                  </div>
+                )}
+
+                {selectedCaseStudy.solution && (
+                  <div>
+                    <h4 className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      {t("projects.solutionLabel")}
+                    </h4>
+                    <p className="text-sm text-foreground/90 leading-relaxed">
+                      {tx(selectedCaseStudy.solution, lang)}
+                    </p>
+                  </div>
+                )}
+
+                {selectedCaseStudy.result && (
+                  <div>
+                    <h4 className="font-mono text-xs uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold mb-1">
+                      {t("projects.impactLabel")}
+                    </h4>
+                    <p className="text-sm text-foreground font-medium leading-relaxed">
+                      {tx(selectedCaseStudy.result, lang)}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                {selectedCaseStudy.technologies.map((t) => (
+                  <span
+                    key={t}
+                    className="font-mono text-xs px-2.5 py-1 rounded bg-secondary text-secondary-foreground"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              {selectedCaseStudy.liveUrl && (
+                <a
+                  href={selectedCaseStudy.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+                >
+                  <span>{t("projects.liveOf")} {selectedCaseStudy.title}</span>
+                  <ArrowUpRight className="w-4 h-4" />
+                </a>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Academic Archive Drawer ──────────────────────────────────────── */}
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="h-[90vh] bg-card border-t border-border focus-visible:outline-none">
+          <div className="mx-auto w-full max-w-6xl flex flex-col h-full px-4 sm:px-6 pb-6">
+            <div className="flex items-center justify-between gap-4 pt-4 pb-4 border-b border-border">
+              <div>
+                <span className="font-mono text-xs uppercase tracking-widest text-primary">
+                  {t("projects.drawerKicker")}
+                </span>
+                <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground">
+                  {t("projects.drawerTitle")} ({academicProjects.length})
+                </h2>
+              </div>
+              <DrawerClose asChild>
+                <button
+                  type="button"
+                  aria-label={t("projects.close")}
+                  className="w-10 h-10 rounded-lg border border-border flex items-center justify-center hover:bg-secondary cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </DrawerClose>
+            </div>
+
+            {/* Filter pills */}
+            <div className="flex gap-2 overflow-x-auto py-3 scrollbar-hide flex-shrink-0">
+              {filterCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveFilter(cat)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors ${
+                    activeFilter === cat
+                      ? "bg-primary text-primary-foreground"
+                      : "border border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Academic grid */}
+            <div className="flex-1 overflow-y-auto scrollbar-hide pt-2 pb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {filteredAcademic.map((p) => (
+                  <div
+                    key={p.title}
+                    className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="font-mono text-[10px] uppercase text-primary font-medium">
+                          {p.category}
+                        </span>
+                        {p.githubUrl && (
+                          <a
+                            href={p.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`GitHub ${p.title}`}
+                            className="text-muted-foreground hover:text-foreground"
+                          >
+                            <Github className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                      </div>
+                      <h4 className="font-display font-semibold text-base text-foreground mb-1.5">
+                        {p.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-3">
+                        {tx(p.description, lang)}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1">
+                      {p.technologies.slice(0, 3).map((t) => (
+                        <span
+                          key={t}
+                          className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </section>
   );
 };
