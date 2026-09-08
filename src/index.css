@@ -283,6 +283,48 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Glass and tactile panel utilities */
+  .glass-panel {
+    background: hsl(var(--card) / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.7);
+  }
+
+  .glass-panel-glow {
+    background: hsl(var(--card) / 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.8);
+    box-shadow: 0 8px 32px -4px hsl(var(--foreground) / 0.06);
+  }
+
+  /* Subtle radial gradient utility */
+  .radial-glow {
+    background: radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.12), transparent 70%);
+  }
+}
+
+/* Lenis smooth scroll recommended CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* ─── Entrée par défaut — CSS pur, transform + opacity uniquement ───────────
