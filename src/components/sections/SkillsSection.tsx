@@ -1,120 +1,91 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Code2, Server, Database, Cloud, Terminal, CheckCircle } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import Marquee from "@/components/motion/Marquee";
-import CodeRain from "@/components/motion/CodeRain";
 import { useT, tx, type Bi } from "@/i18n";
 import { techIcons } from "@/data/techIcons";
 
-// Flat tech list for the scrolling ticker at the bottom of the section.
 const MARQUEE_TECH = [
   "React", "TypeScript", "Node.js", "React Native", "Laravel", "Spring Boot",
-  "Python", "Vue.js", "Angular", "Symfony", "Django", "Flutter",
-  "MySQL", "PostgreSQL", "Docker", "GraphQL", "Tailwind CSS", "AWS",
+  "Python", "PostgreSQL", "Docker", "GraphQL", "Tailwind CSS", "AWS",
+  "MySQL", "Vue.js", "Django", "Symfony", "n8n", "Linux",
 ];
 
-interface Skill {
+interface SkillItem {
   name: string;
-  /** Key into techIcons (simple-icons path); null → rendu typographique. */
   slug: string | null;
+  level: "Core" | "Advanced" | "Production";
+  desc?: string;
 }
 
-interface Family {
+interface DomainGroup {
+  id: string;
+  icon: any;
   title: Bi;
-  skills: Skill[];
+  subtitle: Bi;
+  skills: SkillItem[];
 }
 
-/* ── Données — nombre variable de familles et d'items : la grille s'adapte
-   (span dérivé du volume, flow dense pour combler les creux). ───────────── */
-
-const CORE_STACK: Skill[] = [
-  { name: "React / Next.js", slug: "siReact" },
-  { name: "TypeScript",      slug: "siTypescript" },
-  { name: "Node.js",         slug: "siNodedotjs" },
-  { name: "React Native",    slug: "siReact" },
-  { name: "PHP / Laravel",   slug: "siLaravel" },
-  { name: "Java / Spring",   slug: "siSpring" },
-];
-
-const FAMILIES: Family[] = [
+const DOMAINS: DomainGroup[] = [
   {
-    title: "Frontend",
+    id: "frontend",
+    icon: Code2,
+    title: "Frontend & Mobile",
+    subtitle: {
+      fr: "Interfaces réactives, Web apps & Apps mobiles natives",
+      en: "Reactive web interfaces & cross-platform mobile apps",
+    },
     skills: [
-      { name: "JavaScript",   slug: "siJavascript" },
-      { name: "Angular",      slug: "siAngular" },
-      { name: "Vue.js",       slug: "siVuedotjs" },
-      { name: "Tailwind CSS", slug: "siTailwindcss" },
-      { name: "Bootstrap",    slug: "siBootstrap" },
-      { name: "Flutter",      slug: "siFlutter" },
+      { name: "React / Next.js", slug: "siReact", level: "Core", desc: "SSR, Hydration, Architecture composants" },
+      { name: "TypeScript", slug: "siTypescript", level: "Core", desc: "Typage strict, interfaces complexes" },
+      { name: "React Native", slug: "siReact", level: "Core", desc: "Apps iOS/Android, intégration mobile" },
+      { name: "Tailwind CSS", slug: "siTailwindcss", level: "Core", desc: "Design systems, tokens, responsive" },
+      { name: "Vue.js", slug: "siVuedotjs", level: "Advanced", desc: "Composables, Vuex/Pinia" },
+      { name: "Angular", slug: "siAngular", level: "Advanced", desc: "Architecture modulaire enterprise" },
+      { name: "Flutter", slug: "siFlutter", level: "Advanced", desc: "Dart, UI multi-plateforme" },
     ],
   },
   {
-    title: "Backend",
+    id: "backend",
+    icon: Server,
+    title: "Backend & Distributed Systems",
+    subtitle: {
+      fr: "APIs haute performance, microservices & logique métier",
+      en: "High-performance APIs, microservices & business logic",
+    },
     skills: [
-      { name: "Symfony",      slug: "siSymfony" },
-      { name: "CodeIgniter",  slug: "siCodeigniter" },
-      { name: "Django",       slug: "siDjango" },
-      { name: "Python",       slug: "siPython" },
-      { name: "C",            slug: "siC" },
-      { name: "C# / ASP.NET", slug: null },
-      { name: "C++",          slug: "siCplusplus" },
+      { name: "Node.js / Express", slug: "siNodedotjs", level: "Core", desc: "Async I/O, REST APIs, GraphQL" },
+      { name: "Java / Spring Boot", slug: "siSpring", level: "Core", desc: "Enterprise architecture, Spring Security, JPA" },
+      { name: "PHP / Laravel", slug: "siLaravel", level: "Core", desc: "Eloquent, jobs queues, APIs SaaS" },
+      { name: "Python / Django", slug: "siPython", level: "Advanced", desc: "Scripts d'automatisation, API REST" },
+      { name: "Symfony", slug: "siSymfony", level: "Advanced", desc: "Architecture MVC, Doctrine ORM" },
+      { name: "C / C++ / C#", slug: "siCplusplus", level: "Advanced", desc: "Programmation système, WinForms, ASP.NET" },
     ],
   },
   {
-    title: { fr: "Bases de données", en: "Databases" },
+    id: "data-cloud",
+    icon: Database,
+    title: { fr: "Bases de Données & Cloud", en: "Databases & Cloud" },
+    subtitle: {
+      fr: "Modélisation, persistance & infrastructure résiliente",
+      en: "Data modeling, persistence & scalable infrastructure",
+    },
     skills: [
-      { name: "MySQL",      slug: "siMysql" },
-      { name: "PostgreSQL", slug: "siPostgresql" },
-      { name: "Oracle",     slug: null },
-      { name: "Firebase",   slug: "siFirebase" },
-      { name: "PostGIS",    slug: null },
+      { name: "PostgreSQL", slug: "siPostgresql", level: "Core", desc: "Indexation, relations complexes, PostGIS" },
+      { name: "MySQL", slug: "siMysql", level: "Core", desc: "Optimisation de requêtes, réplication" },
+      { name: "Docker", slug: "siDocker", level: "Core", desc: "Conteneurisation, Docker Compose" },
+      { name: "AWS", slug: null, level: "Advanced", desc: "S3, EC2, services cloud, IAM" },
+      { name: "Firebase", slug: "siFirebase", level: "Advanced", desc: "Firestore, realtime DB, Auth" },
+      { name: "n8n Automation", slug: "siN8n", level: "Advanced", desc: "Workflows automatisés, webhooks" },
+      { name: "Linux / Git", slug: "siLinux", level: "Core", desc: "Serveurs Debian/Ubuntu, CI/CD" },
     ],
   },
-  {
-    title: { fr: "DevOps & Outils", en: "DevOps & Tools" },
-    skills: [
-      { name: "Git / GitHub", slug: "siGit" },
-      { name: "Docker",       slug: "siDocker" },
-      { name: "Linux",        slug: "siLinux" },
-      { name: "API REST",     slug: null },
-      { name: "n8n",          slug: "siN8n" },
-    ],
-  },
 ];
 
-const softSkills: Bi[] = [
-  { fr: "Analyse des besoins", en: "Requirements analysis" },
-  { fr: "Architecture logicielle", en: "Software architecture" },
-  { fr: "Travail en équipe", en: "Teamwork" },
-  { fr: "Résolution de problèmes", en: "Problem solving" },
-  { fr: "Autonomie", en: "Autonomy" },
-  { fr: "Adaptabilité", en: "Adaptability" },
-  "Communication",
-  { fr: "Rigueur", en: "Rigour" },
-];
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-/* Composition typographique des soft skills : les graisses, corps et styles
-   alternent selon un motif fixe — pas une suite uniforme de mots. */
-const SOFT_STYLE = [
-  "font-display text-xl sm:text-2xl font-medium text-foreground",
-  "text-sm sm:text-base text-muted-foreground",
-  "font-display italic text-lg sm:text-xl text-foreground/90",
-  "text-sm sm:text-base font-semibold text-foreground",
-  "text-base sm:text-lg text-muted-foreground",
-  "font-display text-lg sm:text-xl font-medium text-foreground",
-  "text-sm sm:text-base text-muted-foreground",
-  "font-display italic text-lg sm:text-xl text-foreground/90",
-];
-
-// NOTE : la certification (IA générative — Google Cloud Skill Boost) est
-// volontairement masquée de la grille pour le moment ; les chaînes i18n
-// skills.certTitle / skills.certName restent disponibles pour la réafficher.
-
-const TECH_COUNT = CORE_STACK.length + FAMILIES.reduce((n, f) => n + f.skills.length, 0);
-
-// Brand glyph (simple-icons path) — keeps the official brand colour. Near-black
-// marks fall back to currentColor so they stay visible in dark mode.
-const TechIcon = ({ slug, className = "w-5 h-5" }: { slug: string; className?: string }) => {
+const TechIcon = ({ slug, className = "w-6 h-6" }: { slug: string; className?: string }) => {
   const icon = techIcons[slug];
   if (!icon) return null;
   return (
@@ -129,205 +100,152 @@ const TechIcon = ({ slug, className = "w-5 h-5" }: { slug: string; className?: s
   );
 };
 
-/* Compteur : monte de 0 à la valeur à la première entrée dans le viewport. */
-const CountUp = ({ value }: { value: number }) => {
-  const ref = useRef<HTMLSpanElement>(null);
-  const reduce = useReducedMotion();
-  const inView = useInView(ref, { once: true, margin: "-40px" });
-  const [n, setN] = useState(reduce ? value : 0);
-
-  useEffect(() => {
-    if (!inView) return;
-    if (reduce) { setN(value); return; }
-    const start = performance.now();
-    const duration = 900;
-    let raf = 0;
-    const tick = (t: number) => {
-      const p = Math.min((t - start) / duration, 1);
-      setN(Math.round(value * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [inView, reduce, value]);
-
-  return <span ref={ref} className="tabular-nums">{n}</span>;
-};
-
-const TILE =
-  "rounded-lg border border-border bg-card p-5 sm:p-6 " +
-  "transition-[transform,box-shadow,border-color] duration-300 " +
-  "hover:-translate-y-1 hover:shadow-elevated hover:border-primary/40 " +
-  "motion-reduce:transition-none motion-reduce:hover:translate-y-0";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-const tileVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.06, ease: EASE },
-  }),
-};
-
-/* Mots des soft skills — apparition décalée après la tuile qui les porte. */
-const softVariants = {
-  hidden: { opacity: 0, y: 6 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, delay: 0.45 + i * 0.06, ease: EASE },
-  }),
-};
-
-/* Item technologie : glyphe de marque + nom, alignés en colonnes. Les entrées
-   sans logo fiable réservent la même gouttière pour rester alignées (pas
-   d'icône générique inventée). */
-const TechItem = ({ skill }: { skill: Skill }) => (
-  <span className="group/tech flex items-center gap-2.5 text-sm font-medium leading-tight">
-    <span className="w-6 flex-shrink-0 flex items-center justify-center transition-transform duration-300 group-hover/tech:-translate-y-0.5 motion-reduce:transform-none">
-      {skill.slug && <TechIcon slug={skill.slug} className="w-[22px] h-[22px]" />}
-    </span>
-    {skill.name}
-  </span>
-);
-
-/**
- * Compétences — bento : vitrine du stack signature, tuile compteur royale
- * (plan de couleur), fenêtre terminal animée, familles à largeur dérivée du
- * volume, soft skills en composition typographique. Chaque famille de tuile
- * réagit différemment au survol, la grille reste une composition d'ensemble.
- */
-const SkillsSection = () => {
+export const SkillsSection = () => {
   const reduce = useReducedMotion();
   const { t, lang } = useT();
-  let tileIndex = 0;
-  const nextIndex = () => (reduce ? 0 : tileIndex++);
+  const [activeTab, setActiveTab] = useState<string>("all");
+
+  const filteredDomains = activeTab === "all"
+    ? DOMAINS
+    : DOMAINS.filter((d) => d.id === activeTab);
 
   return (
-    <section className="section-container bg-muted/60">
-      <div className="section-content max-w-6xl">
+    <section className="section-container relative overflow-hidden py-24 sm:py-32 bg-secondary/20 dark:bg-card/20">
+      <div className="section-content max-w-6xl mx-auto">
+        
+        {/* Section Heading */}
         <SectionHeading
           label={t("skills.label")}
-          title={t("skills.title")}
-          description={t("skills.desc")}
-          className="mb-10 md:mb-14"
+          title={lang === "fr" ? "Stack technique & écosystème." : "Technical Stack & Ecosystem."}
+          description={lang === "fr" 
+            ? "Un socle technologique maîtrisé de bout en bout, de l'infrastructure de données aux interfaces réactives."
+            : "An end-to-end engineered technology stack, from data architecture to reactive interfaces."
+          }
+          className="mb-12"
         />
 
-        <motion.div
-          initial={reduce ? false : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 lg:grid-flow-dense"
-        >
-          {/* ── Tuile vitrine : stack signature (les glyphes s'élèvent un à un) ── */}
-          <motion.div
-            custom={nextIndex()}
-            variants={tileVariants}
-            className={`${TILE} col-span-2 md:col-span-4 lg:col-span-4 lg:row-span-2 flex flex-col`}
+        {/* Domain Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2 mb-10 pb-4 border-b border-border/60">
+          <button
+            type="button"
+            onClick={() => setActiveTab("all")}
+            className={`px-4 py-2 rounded-lg text-xs font-mono font-medium transition-all duration-200 cursor-pointer ${
+              activeTab === "all"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-card hover:bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/60"
+            }`}
           >
-            <p className="kicker mb-6">{t("skills.coreTitle")}</p>
-            {/* Les rangées se répartissent la hauteur de la tuile (elle couvre
-                deux lignes de grille) : aucune poche de vide résiduelle. */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-8 flex-1 content-evenly">
-              {CORE_STACK.map((skill) => (
-                <div key={skill.name} className="group/core flex flex-col gap-3">
-                  <span className="transition-transform duration-300 group-hover/core:-translate-y-1 motion-reduce:transform-none">
-                    {skill.slug && <TechIcon slug={skill.slug} className="w-10 h-10 sm:w-11 sm:h-11" />}
-                  </span>
-                  <span className="font-semibold text-[0.95rem] sm:text-base leading-tight">{skill.name}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+            {lang === "fr" ? "Vue complète" : "All Ecosystems"}
+          </button>
 
-          {/* ── Fenêtre terminal — pleine hauteur en regard de la vitrine ── */}
-          <motion.div
-            custom={nextIndex()}
-            variants={tileVariants}
-            className="col-span-2 md:col-span-2 lg:col-span-2 lg:row-span-2 rounded-lg border border-border overflow-hidden flex flex-col bg-[hsl(221,36%,8%)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-elevated hover:border-success/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-          >
-            <div className="flex items-center gap-1.5 px-3.5 pt-3 pb-2" aria-hidden="true">
-              <span className="w-2 h-2 rounded-full bg-white/15" />
-              <span className="w-2 h-2 rounded-full bg-white/15" />
-              <span className="w-2 h-2 rounded-full bg-white/15" />
-              <span className="ml-2 font-mono text-[10px] tracking-[0.08em] text-white/35 select-none">~/dev</span>
-            </div>
-            <CodeRain className="w-full flex-1 min-h-[8rem]" />
-          </motion.div>
-
-          {/* ── Familles — largeur dérivée du volume d'items, items en colonnes ── */}
-          {FAMILIES.map((family) => {
-            const wide = family.skills.length >= 6;
+          {DOMAINS.map((domain) => {
+            const Icon = domain.icon;
+            const isActive = activeTab === domain.id;
             return (
-              <motion.div
-                key={tx(family.title, lang)}
-                custom={nextIndex()}
-                variants={tileVariants}
-                className={`${TILE} group flex flex-col col-span-2 md:col-span-2 ${
-                  wide ? "lg:col-span-3" : "lg:col-span-2"
+              <button
+                key={domain.id}
+                type="button"
+                onClick={() => setActiveTab(domain.id)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-medium transition-all duration-200 cursor-pointer ${
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-card hover:bg-secondary/70 text-muted-foreground hover:text-foreground border border-border/60"
                 }`}
               >
-                <p className="kicker mb-5 transition-colors duration-300 group-hover:text-primary">
-                  {tx(family.title, lang)}
-                </p>
-                {/* Grille interne : colonnes alignées et hauteur remplie, au lieu
-                    d'un wrap qui laisse un item orphelin en dernière ligne. */}
-                {/* La 3e colonne interne attend xl : en dessous, la tuile large
-                    est trop étroite et les noms composés se cassent en deux
-                    lignes. `content-evenly` répartit le vide sans distendre. */}
-                <div
-                  className={`grid grid-cols-2 gap-x-5 gap-y-4 flex-1 content-evenly text-foreground/90 ${
-                    wide ? "xl:grid-cols-3" : ""
-                  }`}
-                >
-                  {family.skills.map((skill) => (
-                    <TechItem key={skill.name} skill={skill} />
-                  ))}
-                </div>
-              </motion.div>
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tx(domain.title, lang)}</span>
+              </button>
             );
           })}
+        </div>
 
-          {/* ── Tuile compteur — plan royal, la valeur monte à l'entrée ── */}
-          <motion.div
-            custom={nextIndex()}
-            variants={tileVariants}
-            className="group col-span-2 md:col-span-2 lg:col-span-2 rounded-lg bg-brand text-brand-foreground p-5 sm:p-6 flex flex-col justify-between gap-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-elevated motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-          >
-            <p className="font-display font-semibold leading-none text-[clamp(2.4rem,4vw,3.4rem)] transition-transform duration-300 group-hover:scale-[1.04] origin-left motion-reduce:transform-none">
-              <CountUp value={TECH_COUNT} />
-            </p>
-            <p className="text-sm text-brand-foreground/85 leading-snug">{t("skills.countLabel")}</p>
-          </motion.div>
-
-          {/* ── Soft skills — bande typographique de clôture, pleine largeur ── */}
-          <motion.div
-            custom={nextIndex()}
-            variants={tileVariants}
-            className={`${TILE} col-span-2 md:col-span-4 lg:col-span-6`}
-          >
-            <p className="kicker mb-4">{t("skills.soft")}</p>
-            {/* Les mots sont animés par la propagation de variants de la grille
-                (un `whileInView` local serait écrasé par cette propagation). */}
-            <p className="flex flex-wrap items-baseline gap-x-5 sm:gap-x-7 gap-y-2 leading-snug">
-              {softSkills.map((label, i) => (
-                <motion.span
-                  key={tx(label, lang)}
-                  custom={i}
-                  variants={softVariants}
-                  className={`${SOFT_STYLE[i % SOFT_STYLE.length]} transition-colors duration-300 hover:text-primary cursor-default`}
+        {/* ── Domains & Skills Grid ──────────────────────────────────────── */}
+        <div className="grid grid-cols-1 gap-8">
+          <AnimatePresence mode="wait">
+            {filteredDomains.map((domain, domainIdx) => {
+              const Icon = domain.icon;
+              return (
+                <motion.div
+                  key={domain.id}
+                  initial={reduce ? false : { opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4, delay: domainIdx * 0.08, ease: EASE }}
+                  className="rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md p-6 sm:p-8 shadow-sm"
                 >
-                  {tx(label, lang)}
-                </motion.span>
-              ))}
-            </p>
-          </motion.div>
-        </motion.div>
+                  {/* Domain Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/60 mb-6">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-semibold text-xl text-foreground">
+                          {tx(domain.title, lang)}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {tx(domain.subtitle, lang)}
+                        </p>
+                      </div>
+                    </div>
 
-        {/* Tech ticker — seamless scrolling strip */}
-        <Marquee items={MARQUEE_TECH} speed={34} className="mt-10 md:mt-12 py-4 border-y border-border/60" />
+                    <span className="self-start sm:self-auto font-mono text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-secondary text-secondary-foreground">
+                      {domain.skills.length} {lang === "fr" ? "technologies" : "technologies"}
+                    </span>
+                  </div>
+
+                  {/* Skills Grid within Domain */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {domain.skills.map((skill) => (
+                      <div
+                        key={skill.name}
+                        className="group flex items-start gap-3.5 p-3.5 rounded-xl border border-border/50 bg-background/50 hover:bg-card hover:border-primary/40 transition-all duration-200"
+                      >
+                        <div className="w-9 h-9 rounded-lg bg-card border border-border/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
+                          {skill.slug ? (
+                            <TechIcon slug={skill.slug} className="w-5 h-5" />
+                          ) : (
+                            <Terminal className="w-4 h-4 text-primary" />
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1.5 mb-1">
+                            <span className="font-medium text-sm text-foreground truncate">
+                              {skill.name}
+                            </span>
+                            <span
+                              className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                                skill.level === "Core"
+                                  ? "bg-primary/15 text-primary font-semibold"
+                                  : "bg-secondary text-muted-foreground"
+                              }`}
+                            >
+                              {skill.level}
+                            </span>
+                          </div>
+                          {skill.desc && (
+                            <p className="text-xs text-muted-foreground line-clamp-1">
+                              {skill.desc}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        {/* ── Seamless Marquee Ticker ───────────────────────────────────── */}
+        <div className="mt-14 pt-8 border-t border-border/60">
+          <p className="text-center font-mono text-xs uppercase tracking-widest text-muted-foreground mb-6">
+            {lang === "fr" ? "Écosystème & outils en production continue" : "Tools & Ecosystem in Continuous Production"}
+          </p>
+          <Marquee items={MARQUEE_TECH} speed={30} className="py-2" />
+        </div>
       </div>
     </section>
   );
