@@ -1,367 +1,203 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, CheckCircle2, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useMotionPreset } from "@/hooks/useMotionPreset";
-import { useState } from "react";
-import SectionHeading from "@/components/SectionHeading";
+import { useState, type FormEvent } from "react";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { useT } from "@/i18n";
+import Reveal from "@/components/motion/Reveal";
+const EMAIL =
+  import.meta.env.VITE_CONTACT_EMAIL ?? "andrianmanantena@gmail.com";
+const PHONE_RAW = import.meta.env.VITE_CONTACT_PHONE ?? "+261 38 46 090 25";
 
-// ── Config ─────────────────────────────────────────────────────────────────
-// Display values come from env (see .env.example). The form submits to a
-// same-origin Netlify function (netlify/functions/contact) which relays to
-// Apps Script server-side — the actual endpoint URL lives in the Netlify env
-// var GOOGLE_SCRIPT_URL, never in the client bundle.
-const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL ?? "andrianmanantena@gmail.com";
-const CONTACT_PHONE = import.meta.env.VITE_CONTACT_PHONE ?? "+261 38 46 090 25";
-const CONTACT_ENDPOINT = "/.netlify/functions/contact";
+/* La variable d'env arrive parfois sans espaces (+261384609025) : on regroupe
+   les chiffres pour l'affichage, le lien tel: garde la forme brute. */
+const PHONE_TEL = PHONE_RAW.replace(/[^\d+]/g, "");
+const groups = PHONE_TEL.match(/^\+261(\d{2})(\d{2})(\d{3})(\d{2})$/);
+const PHONE = groups ? `+261 ${groups.slice(1).join(" ")}` : PHONE_RAW;
 
-type FormState = "idle" | "loading" | "success" | "error";
-
-const ContactSection = () => {
-  const { reduce, pop } = useMotionPreset();
-  const { t } = useT();
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
-  const [consent, setConsent] = useState(false);
-  const [formState, setFormState] = useState<FormState>("idle");
-  // Honeypot — invisible to humans; if a bot fills it, we silently drop the submit.
-  const [honeypot, setHoneypot] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!consent) return;
-    setFormState("loading");
-
+export default function ContactSection() {
+  const { t, lang } = useT();
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error">(
+    "idle",
+  );
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    if (data.get("consent") !== "on") return;
+    setState("loading");
     try {
-      // Same-origin POST to our Netlify function proxy → no CORS, no `no-cors`.
-      // The function relays to Apps Script server-side and returns the REAL
-      // result, so a success here means the e-mail actually went out.
-      const res = await fetch(CONTACT_ENDPOINT, {
+      const response = await fetch("/.netlify/functions/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, company: honeypot }),
+        body: JSON.stringify(
+          Object.fromEntries(
+            ["name", "email", "subject", "message", "company"].map((key) => [
+              key,
+              data.get(key),
+            ]),
+          ),
+        ),
       });
-
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data || data.result !== "success") {
-        throw new Error(data?.reason || `HTTP ${res.status}`);
-      }
-
-      setFormState("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setConsent(false);
+      const result = await response.json();
+      if (!response.ok || result?.result !== "success")
+        throw new Error("Message failed");
+      setState("success");
+      form.reset();
     } catch {
-      // Surface the real failure — never report a false success.
-      setFormState("error");
-      setTimeout(() => setFormState("idle"), 6000);
+      setState("error");
     }
-  };
-
-  const contactItems = [
-    { label: t("contact.infoEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, breakClass: "break-all" },
-    { label: t("contact.infoPhone"), value: CONTACT_PHONE, href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, breakClass: "break-words" },
-    { label: t("contact.infoLocation"), value: t("contact.locationValue"), href: null, breakClass: "break-words" },
-  ];
-
-  const socialLinks = [
-    { href: "https://github.com/joharymanantena1-ux", label: "GitHub" },
-    { href: "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3", label: "LinkedIn" },
-  ];
-
-  const isDisabled = formState === "loading" || formState === "success";
-
-  // Champs éditoriaux : ligne de base seule, qui passe au royal (et s'épaissit
-  // via box-shadow, sans décalage de layout) au focus.
-  const FIELD =
-    "rounded-none border-x-0 border-t-0 border-b border-border bg-transparent px-1 text-sm placeholder:text-muted-foreground/90 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[0_1px_0_0_hsl(var(--primary))] transition-[border-color,box-shadow] duration-200";
-
+  }
   return (
-    // Bande encre : la classe `dark` bascule les tokens sur la palette midnight
-    // même en mode clair — la fin de page (contact + footer) vit sur fond nuit.
-    <section className="dark section-container bg-background text-foreground">
-      <div className="section-content max-w-6xl">
-        {/* ── Invitation — l'entrée de section est la plus grande voix de la
-            page : titre surdimensionné, puis description face à l'email
-            direct en gros sérif (le premier CTA, avant même le formulaire). */}
-        <SectionHeading
-          label={t("contact.label")}
-          title={t("contact.title")}
-          className="[&_h2]:text-[clamp(2.7rem,6.5vw,4.6rem)] [&_h2]:leading-[1.03]"
-        />
-        <div className="mt-5 mb-12 md:mb-16 grid gap-x-12 gap-y-5 lg:grid-cols-12 lg:items-end">
-          <motion.p
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.15 }}
-            className="lg:col-span-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl"
-          >
-            {t("contact.desc")}
-          </motion.p>
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.25 }}
-            className="lg:col-span-6 lg:text-right"
-          >
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="link-editorial font-display font-medium text-[clamp(1.25rem,2.4vw,1.9rem)] text-primary break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {CONTACT_EMAIL}
+    <section
+      id="contact"
+      className="contact-section shell section-space"
+      aria-labelledby="contact-title"
+    >
+      <Reveal>
+        <p className="eyebrow section-kicker">
+          05 /{" "}
+          {lang === "fr"
+            ? "La suite commence ici"
+            : "The next chapter starts here"}
+        </p>
+        <a className="contact-invitation" href={`mailto:${EMAIL}`}>
+          <h2 id="contact-title">
+            {lang === "fr" ? (
+              <>
+                Et si on
+                <br />
+                <span>construisait</span>
+                <br />
+                la suite ?
+              </>
+            ) : (
+              <>
+                Let’s build
+                <br />
+                <span>what comes</span>
+                <br />
+                next.
+              </>
+            )}
+          </h2>
+          <ArrowUpRight
+            className="contact-arrow"
+            strokeWidth={1}
+            aria-hidden="true"
+          />
+        </a>
+        <div className="contact-bottom">
+          <div>
+            <p className="contact-description">
+              {lang === "fr"
+                ? "Une équipe à rejoindre, un produit à faire évoluer ou une idée à concrétiser. Parlons-en."
+                : "A team to join, a product to evolve or an idea to bring to life. Let’s talk."}
+            </p>
+            <a href={`mailto:${EMAIL}`} className="contact-email">
+              {EMAIL}
+              <ArrowUpRight size={20} />
             </a>
-          </motion.div>
+          </div>
+          <div className="contact-socials">
+            <a
+              href="https://github.com/joharymanantena1-ux"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+              <ArrowUpRight size={16} />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+              <ArrowUpRight size={16} />
+            </a>
+            <a href={`tel:${PHONE_TEL}`}>
+              {PHONE}
+              <ArrowUpRight size={16} />
+            </a>
+            <span className="eyebrow">Antananarivo · Madagascar</span>
+          </div>
         </div>
-
-        <div className="grid gap-10 xl:grid-cols-12 xl:gap-x-14">
-          {/* Form — panneau surélevé, filet royal en tête (plan avant) */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
-            className="relative order-1 xl:order-2 xl:col-span-7 xl:col-start-6 xl:self-start overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-8 lg:p-10 shadow-elevated"
-          >
-            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-brand" />
-            <AnimatePresence mode="wait">
-              {formState === "success" ? (
-                <motion.div
-                  key="success"
-                  {...(pop as any)}
-                  className="flex flex-col items-center justify-center h-full py-12 text-center gap-4"
-                >
-                  <div className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center">
-                    <CheckCircle2 className="w-8 h-8 text-success" aria-hidden="true" />
-                  </div>
-                  <h3 className="text-xl font-display font-semibold">{t("contact.successTitle")}</h3>
-                  <p className="text-foreground/80 text-sm max-w-xs">
-                    {t("contact.successMsg")}
-                  </p>
-                </motion.div>
-              ) : (
-                <motion.form
-                  key="form"
-                  initial={reduce ? false : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onSubmit={handleSubmit}
-                  className="space-y-5 lg:space-y-6"
-                >
-                  {/* Honeypot — off-screen & hidden from AT; only bots fill it. */}
-                  <input
-                    type="text"
-                    name="company"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                    value={honeypot}
-                    onChange={(e) => setHoneypot(e.target.value)}
-                    className="absolute -left-[9999px] h-0 w-0 opacity-0"
-                  />
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="group/field">
-                      <label htmlFor="name" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
-                        {t("contact.name")}
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        autoComplete="name"
-                        placeholder={t("contact.namePh")}
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                        maxLength={100}
-                        disabled={isDisabled}
-                        className={`h-11 ${FIELD}`}
-                      />
-                    </div>
-                    <div className="group/field">
-                      <label htmlFor="email" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
-                        {t("contact.email")}
-                      </label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder={t("contact.emailPh")}
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                        maxLength={150}
-                        disabled={isDisabled}
-                        className={`h-11 ${FIELD}`}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="group/field">
-                    <label htmlFor="subject" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
-                      {t("contact.subject")}
-                    </label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      placeholder={t("contact.subjectPh")}
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      required
-                      maxLength={150}
-                      disabled={isDisabled}
-                      className={`h-11 ${FIELD}`}
-                    />
-                  </div>
-
-                  <div className="group/field">
-                    <label htmlFor="message" className="block text-sm font-medium mb-2 text-foreground transition-colors duration-200 group-focus-within/field:text-primary">
-                      {t("contact.message")}
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      placeholder={t("contact.messagePh")}
-                      rows={4}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      required
-                      maxLength={3000}
-                      disabled={isDisabled}
-                      className={`resize-none ${FIELD}`}
-                    />
-                  </div>
-
-                  {/* RGPD consent gate — blocks submit until checked */}
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      id="consent"
-                      name="consent"
-                      checked={consent}
-                      onChange={(e) => setConsent(e.target.checked)}
-                      required
-                      disabled={isDisabled}
-                      aria-describedby="consent-desc"
-                      className="mt-1 h-4 w-4 cursor-pointer rounded border-border accent-[hsl(var(--primary))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    />
-                    <label id="consent-desc" htmlFor="consent" className="text-xs leading-relaxed text-foreground cursor-pointer">
-                      {t("contact.consent")}
-                    </label>
-                  </div>
-
-                  {/* Status — aria-live so screen readers announce the result */}
-                  <div aria-live="polite">
-                    {formState === "error" && (
-                      <motion.div
-                        {...(reduce ? {} : { initial: { opacity: 0, y: -8 }, animate: { opacity: 1, y: 0 } })}
-                        role="alert"
-                        className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md px-4 py-3"
-                      >
-                        <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                        {t("contact.errorMsg")}
-                      </motion.div>
-                    )}
-                  </div>
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={isDisabled || !consent}
-                    className="group w-full rounded-md bg-brand text-brand-foreground hover:bg-brand/90 disabled:bg-secondary/60 disabled:text-muted-foreground text-sm font-semibold h-12 gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    {formState === "loading" ? (
-                      <>
-                        {reduce ? (
-                          <span aria-hidden="true" className="font-bold tracking-widest">…</span>
-                        ) : (
-                          <span aria-hidden="true" className="w-4 h-4 border-2 border-brand-foreground/30 border-t-brand-foreground rounded-full animate-spin" />
-                        )}
-                        {t("contact.sending")}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none" aria-hidden="true" />
-                        {t("contact.send")}
-                      </>
-                    )}
-                  </Button>
-                </motion.form>
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          {/* Contact info — colonne gauche (l'email vit déjà en grand dans
-              l'invitation : la liste commence au téléphone) */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.55, delay: 0.2 }}
-            className="order-2 xl:order-1 xl:col-span-4 xl:col-start-1 xl:self-stretch xl:flex xl:flex-col"
-          >
-            <dl className="grid sm:grid-cols-3 sm:gap-x-8 xl:grid-cols-1">
-              {contactItems.slice(1).map(({ label, value, href, breakClass }, index) => (
-                /* En rangée (sm→lg) chaque colonne démarre en haut ; en pile
-                   latérale (xl) seul le premier item colle au bord. */
-                <div
-                  key={label}
-                  className={`py-4 border-b border-border/70 sm:pt-0 ${index === 0 ? "pt-0 xl:pt-0" : "xl:pt-4"}`}
-                >
-                  <dt className="kicker !text-[11px] mb-1.5">{label}</dt>
-                  <dd className="min-w-0">
-                    {href ? (
-                      <a
-                        href={href}
-                        className={`link-editorial text-sm font-medium hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${breakClass}`}
-                      >
-                        {value}
-                      </a>
-                    ) : (
-                      <p className={`text-sm font-medium ${breakClass}`}>{value}</p>
-                    )}
-                  </dd>
-                </div>
-              ))}
-
-              {/* Réseaux — même liste, liens texte éditoriaux */}
-              <div className="py-4 sm:pt-0 xl:pt-4 border-b border-border/70">
-                <dt className="kicker !text-[11px] mb-1.5">{t("contact.linksTitle")}</dt>
-                <dd className="flex gap-5">
-                  {socialLinks.map(({ href, label }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${t("common.openIn")} ${label} (${t("common.newTab")})`}
-                      className="link-editorial inline-flex items-center min-h-11 text-sm font-medium hover:text-primary transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      {label}
-                    </a>
-                  ))}
-                </dd>
-              </div>
-            </dl>
-
-            {/* Disponibilité — statut sobre, dot pulse couvert par le guard
-                reduced-motion. En vis-à-vis (xl) le bloc descend au pied de la
-                colonne pour s'aligner sur le bas du panneau formulaire. */}
-            <div className="pt-5 xl:mt-auto xl:pb-1">
-              <p className="flex items-center gap-2 mb-1.5">
-                <span className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
-                <span className="text-sm font-display font-semibold">{t("contact.availableTitle")}</span>
-              </p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t("contact.availableDesc")}
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      </Reveal>
+      <details className="contact-form-details">
+        <summary>
+          {lang === "fr"
+            ? "Vous préférez un formulaire ?"
+            : "Prefer a contact form?"}
+        </summary>
+        <form onSubmit={submit} className="contact-form">
+          <div className="form-grid">
+            <label>
+              {t("contact.name")}
+              <input
+                name="name"
+                autoComplete="name"
+                required
+                maxLength={120}
+                placeholder={t("contact.namePh")}
+              />
+            </label>
+            <label>
+              {t("contact.email")}
+              <input
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                maxLength={254}
+                placeholder={t("contact.emailPh")}
+              />
+            </label>
+          </div>
+          <label>
+            {t("contact.subject")}
+            <input
+              name="subject"
+              required
+              maxLength={200}
+              placeholder={t("contact.subjectPh")}
+            />
+          </label>
+          <label>
+            {t("contact.message")}
+            <textarea
+              name="message"
+              required
+              rows={4}
+              maxLength={10000}
+              placeholder={t("contact.messagePh")}
+            />
+          </label>
+          <div className="honeypot" aria-hidden="true">
+            <label>
+              Company
+              <input name="company" tabIndex={-1} autoComplete="off" />
+            </label>
+          </div>
+          <label className="consent-checkbox">
+            <input name="consent" type="checkbox" required />
+            {t("contact.consent")}
+          </label>
+          <div className="form-submit">
+            <button
+              className="button-primary"
+              disabled={state === "loading" || state === "success"}
+            >
+              {state === "loading" ? t("contact.sending") : t("contact.send")}
+              <ArrowRight size={18} />
+            </button>
+            <p role={state === "error" ? "alert" : "status"}>
+              {state === "success"
+                ? t("contact.successMsg")
+                : state === "error"
+                  ? t("contact.errorMsg")
+                  : ""}
+            </p>
+          </div>
+        </form>
+      </details>
     </section>
   );
-};
-
-export default ContactSection;
+}

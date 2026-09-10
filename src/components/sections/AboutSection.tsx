@@ -1,121 +1,94 @@
-import { motion, useReducedMotion } from "framer-motion";
-import SectionHeading from "@/components/SectionHeading";
-import { useT, tx, type Bi } from "@/i18n";
-
-/* Principes de travail — liste typographique fluide, sans cartes ni filets. */
-const values: { title: Bi; description: Bi }[] = [
-  {
-    title: "Clean Code",
-    description: { fr: "Du code maintenable, lisible et documenté, pensé pour durer.", en: "Maintainable, readable, documented code built to last." },
-  },
-  {
-    title: { fr: "Produit", en: "Product" },
-    description: { fr: "Des interfaces claires et utiles, au service de l'usage réel.", en: "Clear, useful interfaces serving real-world use." },
-  },
-  {
-    title: "Performance",
-    description: { fr: "J'optimise chaque couche pour une expérience fluide.", en: "I optimise every layer for a smooth experience." },
-  },
-  {
-    title: "Collaboration",
-    description: { fr: "Communication directe et travail efficace en équipe.", en: "Direct communication and effective teamwork." },
-  },
-];
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-/**
- * À propos — un seul geste éditorial : titre, grand chapeau sérif, puis le
- * récit face à la philosophie (panneau teinté calme), et les principes en
- * liste typographique fluide. Un unique filet, fonctionnel, avant les
- * principes.
- */
-const AboutSection = () => {
-  const reduce = useReducedMotion();
-  const { t, lang } = useT();
-
+import Reveal from "@/components/motion/Reveal";
+import { useT } from "@/i18n";
+export default function AboutSection() {
+  const { lang } = useT();
   return (
-    <section className="section-container">
-      <div className="section-content max-w-6xl">
-        <SectionHeading
-          label={t("about.label")}
-          title={t("about.title")}
-          className="mb-6"
-        />
-
-        {/* Chapeau — la description devient une vraie phrase d'ouverture */}
-        <motion.p
-          initial={reduce ? false : { opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
-          className="font-display text-[clamp(1.25rem,2vw,1.65rem)] leading-[1.4] text-foreground/90 max-w-3xl mb-12 md:mb-16 [text-wrap:pretty]"
-        >
-          {t("about.desc")}
-        </motion.p>
-
-        {/* Récit / philosophie — 7/5, le panneau teinté donne le contrepoint */}
-        <div className="grid gap-y-8 lg:grid-cols-12 lg:gap-x-12 mb-14 md:mb-20">
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
-            className="lg:col-span-7"
-          >
-            <h3 className="font-display font-semibold text-xl sm:text-2xl leading-snug mb-4">
-              {t("about.journeyTitle")}
-            </h3>
-            <p className="text-base sm:text-lg text-foreground/85 leading-relaxed mb-4 max-w-[60ch]">
-              {t("about.journeyP1")}
+    <section
+      id="apropos"
+      className="about-section shell section-space"
+      aria-labelledby="about-title"
+    >
+      <Reveal>
+        <p className="eyebrow section-kicker">
+          02 / {lang === "fr" ? "L’approche" : "The approach"}
+        </p>
+        <div className="about-layout">
+          <h2 id="about-title">
+            {lang === "fr" ? (
+              <>
+                Comprendre.
+                <br />
+                Construire.
+                <br />
+                <span>Faire avancer.</span>
+              </>
+            ) : (
+              <>
+                Understand.
+                <br />
+                Build.
+                <br />
+                <span>Move forward.</span>
+              </>
+            )}
+          </h2>
+          <div className="about-copy">
+            <p className="about-lead">
+              {lang === "fr"
+                ? "Ce qui m’intéresse, c’est ce que le code permet de faire."
+                : "What interests me is what code makes possible."}
             </p>
-            <p className="text-base text-muted-foreground leading-relaxed max-w-[60ch]">
-              {t("about.journeyP2")}
+            <p>
+              {lang === "fr"
+                ? "Simplifier le quotidien d’une école. Coordonner le transport d’une équipe. Relier une boutique à son application mobile. Des contextes différents qui demandent d’abord de comprendre les personnes et leurs usages."
+                : "Make a school’s day easier. Coordinate a team’s transport. Connect a store to its mobile app. Different contexts that first require an understanding of people and how they work."}
             </p>
-          </motion.div>
-
-          <motion.aside
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={reduce ? { duration: 0 } : { duration: 0.5, delay: 0.1, ease: EASE }}
-            // Panneau nuit : contrepoint de plan dans la page ivoire (tokens
-            // dark → surface card relevée, AA garanti dans les deux modes).
-            className="dark bg-card text-foreground lg:col-span-5 rounded-lg border border-border/60 p-7 sm:p-8 lg:self-start"
-          >
-            <h3 className="font-display font-semibold text-xl leading-snug mb-4">
-              {t("about.philoTitle")}
-            </h3>
-            <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed mb-3">
-              {t("about.philoP1")}
+            <p>
+              {lang === "fr"
+                ? "Formé à IT-University, à Madagascar, je développe de bout en bout. J’aime passer du modèle de données au dernier détail d’interface, en gardant une architecture lisible et maintenable."
+                : "Trained at IT-University in Madagascar, I build end to end. I enjoy moving from the data model to the final interface detail, keeping the architecture clear and maintainable."}
             </p>
-            <p className="text-sm sm:text-[0.95rem] text-muted-foreground leading-relaxed">
-              {t("about.philoP2")}
-            </p>
-          </motion.aside>
-        </div>
-
-        {/* Principes — texte courant sur deux colonnes, titre en gras enchâssé */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-30px" }}
-          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }}
-          className="border-t border-border pt-8 md:pt-10"
-        >
-          <p className="kicker mb-6">{t("about.valuesTitle")}</p>
-          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-5 max-w-4xl">
-            {values.map(({ title, description }) => (
-              <p key={tx(title, lang)} className="text-[0.95rem] leading-relaxed text-muted-foreground">
-                <strong className="font-semibold text-foreground">{tx(title, lang)}.</strong>{" "}
-                {tx(description, lang)}
-              </p>
-            ))}
+            <a href="#competences" className="text-link">
+              {lang === "fr"
+                ? "Les outils derrière les idées"
+                : "The tools behind the ideas"}
+              <span aria-hidden="true">↓</span>
+            </a>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </Reveal>
+      <Reveal className="approach-principles">
+        <div>
+          <span className="eyebrow">
+            01 — {lang === "fr" ? "Le besoin d’abord" : "Needs first"}
+          </span>
+          <p>
+            {lang === "fr"
+              ? "La technique au service de l’usage."
+              : "Technology in service of people."}
+          </p>
+        </div>
+        <div>
+          <span className="eyebrow">
+            02 — {lang === "fr" ? "De bout en bout" : "End to end"}
+          </span>
+          <p>
+            {lang === "fr"
+              ? "De la première idée à la production."
+              : "From the first idea to production."}
+          </p>
+        </div>
+        <div>
+          <span className="eyebrow">
+            03 — {lang === "fr" ? "Pensé pour durer" : "Built to last"}
+          </span>
+          <p>
+            {lang === "fr"
+              ? "Du code clair, qui peut évoluer."
+              : "Clear code with room to evolve."}
+          </p>
+        </div>
+      </Reveal>
     </section>
   );
-};
-
-export default AboutSection;
+}
