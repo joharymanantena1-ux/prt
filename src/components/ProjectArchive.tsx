@@ -4,18 +4,38 @@ import { useT, tx, type Lang } from "@/i18n";
 import type { Project } from "@/data/projects";
 import { otherProfessionalProjects } from "@/data/caseStudies";
 import { academicProjects, academicThemes } from "@/data/academicProjects";
+import { brandMarks } from "@/data/brandMarks";
+import BrandMark from "@/components/BrandMark";
 
 const matches = (project: Project, query: string) =>
   `${project.title} ${project.category} ${project.technologies.join(" ")}`
     .toLocaleLowerCase()
     .includes(query);
 
-function ProjectRow({ project, lang }: { project: Project; lang: Lang }) {
+function ProjectRow({
+  project,
+  lang,
+  withMark = false,
+}: {
+  project: Project;
+  lang: Lang;
+  withMark?: boolean;
+}) {
   const link = project.liveUrl || project.githubUrl;
+  const mark = brandMarks[project.title];
   return (
     <details className="archive-row">
       <summary>
-        <span>{project.title}</span>
+        <span className="archive-row-title">
+          {/* Gouttière toujours présente : les titres restent alignés même
+              quand la mission n'a pas de marque. */}
+          {withMark && (
+            <span className="archive-row-mark">
+              {mark && <BrandMark src={mark} name={project.title} decorative />}
+            </span>
+          )}
+          {project.title}
+        </span>
         <span className="eyebrow">{project.category}</span>
       </summary>
       <p>{tx(project.description, lang)}</p>
@@ -99,7 +119,12 @@ export default function ProjectArchive() {
           </p>
         ) : (
           pro.map((project) => (
-            <ProjectRow key={project.title} project={project} lang={lang} />
+            <ProjectRow
+              key={project.title}
+              project={project}
+              lang={lang}
+              withMark
+            />
           ))
         )}
       </section>

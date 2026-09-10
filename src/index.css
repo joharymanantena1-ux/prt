@@ -566,6 +566,36 @@
   gap: 56px;
   align-items: center;
 }
+/* Marques monochromes : le masque porte la forme, `currentColor` la couleur —
+   les logos suivent donc le plan (encre/papier) et le thème. Repli en texte si
+   le navigateur ne sait pas masquer (voir @supports plus bas). */
+.brand-mark {
+  display: block;
+  position: relative;
+  height: 30px;
+  aspect-ratio: 3 / 1;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+@supports (mask-image: url("")) or (-webkit-mask-image: url("")) {
+  .brand-mark {
+    background: currentColor;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+  .brand-mark-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
 .project-visual {
   height: 310px;
   position: relative;
@@ -606,6 +636,15 @@
 .beauty-word > span:first-child {
   display: block;
   padding-left: 40px;
+}
+/* Marque de la marque cliente, au pied du visuel (emplacement de l'ancienne
+   légende) : discrète, nette, et elle prend l'encre du visuel. */
+.visual-mark {
+  position: absolute;
+  left: 25px;
+  bottom: 18px;
+  height: 32px;
+  opacity: 0.8;
 }
 .beauty-asterisk {
   position: absolute;
@@ -704,6 +743,16 @@
   background: #cddbe3;
   padding: 12px 18px 15px;
 }
+/* Le logotype réel remplace le mot retapé : la trame de trajets reste lisible
+   derrière, le cartouche l'isole du quadrillage. */
+.visual-word-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.visual-word-mark .brand-mark {
+  width: clamp(200px, 28vw, 330px);
+}
 .case-content {
   padding-top: 24px;
 }
@@ -769,11 +818,19 @@
 .client-names {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  align-items: center;
+  gap: 20px 40px;
   flex-wrap: wrap;
   padding: 30px 0 40px;
-  font-size: clamp(16px, 2vw, 24px);
-  letter-spacing: -0.045em;
+}
+/* Un cran plus discret que les titres : c'est un rappel, pas une annonce. */
+.client-names .brand-mark {
+  height: clamp(26px, 2.6vw, 34px);
+  color: var(--paper-muted);
+  transition: color 0.25s;
+}
+.client-names .brand-mark:hover {
+  color: var(--ink);
 }
 .archive-toggle {
   width: 100%;
@@ -894,6 +951,26 @@
   min-height: 44px;
   font-size: 18px;
   letter-spacing: -0.02em;
+}
+.archive-row-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+/* Le « + » est un ::after, donc un troisième enfant : sans cette marge, le
+   space-between renvoyait la catégorie au milieu de la ligne. */
+.archive-row summary > .eyebrow {
+  margin-left: auto;
+}
+.archive-row-mark {
+  flex-shrink: 0;
+  width: 62px;
+}
+.archive-row-mark .brand-mark {
+  height: 26px;
+  width: 62px;
+  color: var(--paper-muted);
 }
 .archive-row summary .eyebrow {
   flex-shrink: 0;

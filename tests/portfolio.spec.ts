@@ -172,6 +172,54 @@ test("language and theme persist; English and light mode fit the narrowest scree
   }
 });
 
+test("brand marks load and keep the client names readable", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+
+  // Le mur de logos clients : les noms restent dans le DOM pour les lecteurs
+  // d'écran (et en repli si le navigateur ne masque pas).
+  const wall = page.locator(".client-names");
+  for (const name of [
+    "Paul Beuscher",
+    "Musier Paris",
+    "The Cool Republic",
+    "Finger in the Nose",
+  ]) {
+    await expect(wall).toContainText(name);
+  }
+  await expect(wall.locator(".brand-mark")).toHaveCount(4);
+
+  // Les missions professionnelles portent leur marque, alignées sur la même
+  // gouttière ; les projets académiques n'en ont pas.
+  await page.locator(".archive-toggle").click();
+  const pro = page.locator(".archive-group").first();
+  await expect(pro.locator(".archive-row-mark")).toHaveCount(10);
+  await expect(pro.locator(".archive-row-mark .brand-mark")).toHaveCount(8);
+  await expect(page.locator(".archive-academic .archive-row-mark")).toHaveCount(
+    0,
+  );
+
+  // Chaque masque doit vraiment se charger : un asset renommé ne casse rien
+  // visiblement, la marque disparaît juste en silence.
+  const urls = await page
+    .locator(".brand-mark")
+    .evaluateAll((els) => [
+      ...new Set(
+        els.map((el) =>
+          getComputedStyle(el).maskImage.replace(/^url\("?|"?\)$/g, ""),
+        ),
+      ),
+    ]);
+  expect(urls.length).toBeGreaterThan(4);
+  for (const url of urls) {
+    expect(url, "mask-image must be set").toMatch(/^https?:/);
+    const response = await page.request.get(url);
+    expect(response.status(), `${url} should be served`).toBe(200);
+  }
+});
+
 test("scroll reveals end up visible and never keep content hidden", async ({
   page,
 }) => {

@@ -2,6 +2,8 @@ import { lazy, Suspense, useState } from "react";
 import { ArrowDown, ArrowUpRight, Plus } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import { caseStudies, caseStudyProject } from "@/data/caseStudies";
+import { brandMarks, clientMarks } from "@/data/brandMarks";
+import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 const ProjectArchive = lazy(() => import("@/components/ProjectArchive"));
 
@@ -23,6 +25,14 @@ function ProjectVisual({ kind }: { kind: string }) {
             <span>BAY</span>
             <span className="beauty-asterisk">✳</span>
           </div>
+          {/* La marque réelle en petit : le fichier source (240 px) ne tient pas
+              un affichage plein cadre, mais reste net à cette échelle. */}
+          <BrandMark
+            src={brandMarks["BeautyBay – Web & Mobile"]}
+            name="BeautyBay"
+            className="visual-mark"
+            decorative
+          />
           <div className="visual-platforms">
             <span>Web</span>
             <span className="platform-line" />
@@ -57,8 +67,13 @@ function ProjectVisual({ kind }: { kind: string }) {
             <circle cx="510" cy="150" r="9" />
             <circle cx="230" cy="150" r="6" />
           </svg>
-          <span className="visual-word">
-            konecta<span>→</span>
+          <span className="visual-word visual-word-mark">
+            <BrandMark
+              src={brandMarks["Transport Interne Konecta"]}
+              name="Konecta"
+              decorative
+            />
+            <span>→</span>
           </span>
         </>
       )}
@@ -175,10 +190,13 @@ export default function ProjectsSection() {
               : "Also along the way"}
           </p>
           <div className="client-names">
-            <span>Paul Beuscher</span>
-            <span>Musier Paris</span>
-            <span>The Cool Republic</span>
-            <span>Finger in the Nose</span>
+            {clientMarks.map((client) => (
+              <BrandMark
+                key={client.name}
+                src={client.src}
+                name={client.name}
+              />
+            ))}
           </div>
           <button
             className="archive-toggle"

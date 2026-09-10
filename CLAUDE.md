@@ -60,6 +60,30 @@ every transition and animation. Keep entrances transform/opacity only, one per b
 - [src/data/academicProjects.ts](src/data/academicProjects.ts) — coursework, each tagged
   with a `theme`; `academicThemes` carries the label, the teaching goal and the takeaway.
 
+### Brand marks (client & product logos)
+
+The source logos in `src/assets/*` have no transparency and each carries its own
+background (black, white, blue, red), which is why raw logos looked like a
+patchwork on the ink/paper planes. [scripts/generate-logo-masks.mjs](scripts/generate-logo-masks.mjs)
+extracts each shape into the **alpha channel** of a shared 3:1 box
+(`src/assets/logos/*.png`, ~2 kB each, committed); [BrandMark](src/components/BrandMark.tsx)
+renders them with `mask-image` over `background: currentColor`, so a mark takes
+the colour of its plane and follows the theme. Sizing is CSS-only (one height per
+context) — the uniform box keeps the logo wall optically aligned.
+
+`brandMarks` in [src/data/brandMarks.ts](src/data/brandMarks.ts) maps an exact
+project title to its mask; `clientMarks` is the client wall under the case
+studies. Three placements: the client wall, a gutter in the professional archive
+rows (always rendered, so titles stay aligned when a mission has no mark), and a
+discreet mark inside a case-study visual. Academic rows carry no marks.
+
+Adding a logo: drop the file in `src/assets/`, add a line to the `LOGOS` table in
+the script (`light` = the mark is the light part; `threshold` and `scale` tune
+mid-tone backgrounds and square marks), re-run it, then map the title. Always
+check the result — a wrong polarity yields a solid block. `assetsInlineLimit: 0`
+in [vite.config.ts](vite.config.ts) keeps these masks out of the main JS chunk
+(inlined as base64 they added ~19 kB gzip to it).
+
 **Professional and academic work must stay visibly separate.** [ProjectArchive](src/components/ProjectArchive.tsx)
 renders two titled groups ("Autres missions professionnelles" / "Projets académiques");
 academic projects are grouped by theme and always shown with their goal and takeaway,

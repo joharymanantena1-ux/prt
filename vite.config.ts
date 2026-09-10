@@ -41,6 +41,10 @@ export default defineConfig(() => ({
   },
   build: {
     cssCodeSplit: true,
+    // Les masques de marque (src/assets/logos) pèsent 1–3 kB chacun : inlinés
+    // en base64 ils ajoutaient ~19 kB gzip au chunk principal. En fichiers
+    // séparés ils sont récupérés à la demande et mis en cache à part.
+    assetsInlineLimit: 0,
     rollupOptions: {
       output: {
         // Split stable vendor code so it caches across deploys (long-term immutable headers).
