@@ -2,6 +2,8 @@ import { lazy, Suspense, useState } from "react";
 import { ArrowDown, ArrowUpRight, Plus } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import { caseStudies, caseStudyProject } from "@/data/caseStudies";
+import { brandMarks, clientMarks } from "@/data/brandMarks";
+import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 const ProjectArchive = lazy(() => import("@/components/ProjectArchive"));
 
@@ -57,8 +59,13 @@ function ProjectVisual({ kind }: { kind: string }) {
             <circle cx="510" cy="150" r="9" />
             <circle cx="230" cy="150" r="6" />
           </svg>
-          <span className="visual-word">
-            konecta<span>→</span>
+          <span className="visual-word visual-word-mark">
+            <BrandMark
+              src={brandMarks["Transport Interne Konecta"]}
+              name="Konecta"
+              decorative
+            />
+            <span>→</span>
           </span>
         </>
       )}
@@ -106,10 +113,12 @@ export default function ProjectsSection() {
         <div className="case-grid">
           {caseStudies.map((item, index) => {
             const project = caseStudyProject(item);
+            const mark = brandMarks[item.projectTitle];
             return (
               <Reveal
                 key={item.key}
                 className={`case-item ${index === 0 ? "case-featured" : ""}`}
+                delay={index === 0 ? 0 : 0.07}
               >
                 <article>
                   <ProjectVisual kind={item.key} />
@@ -118,7 +127,17 @@ export default function ProjectsSection() {
                       <span>
                         0{index + 1} — {tx(item.category, lang)}
                       </span>
-                      <span>{item.name}</span>
+                      {/* Un seul emplacement de marque par carte : le logo
+                          quand il existe, le nom en mono sinon. */}
+                      {mark ? (
+                        <BrandMark
+                          src={mark}
+                          name={item.name}
+                          className="case-mark"
+                        />
+                      ) : (
+                        <span>{item.name}</span>
+                      )}
                     </div>
                     <h3>{tx(item.headline, lang)}</h3>
                     <dl className="case-story">
@@ -175,10 +194,13 @@ export default function ProjectsSection() {
               : "Also along the way"}
           </p>
           <div className="client-names">
-            <span>Paul Beuscher</span>
-            <span>Musier Paris</span>
-            <span>The Cool Republic</span>
-            <span>Finger in the Nose</span>
+            {clientMarks.map((client) => (
+              <BrandMark
+                key={client.name}
+                src={client.src}
+                name={client.name}
+              />
+            ))}
           </div>
           <button
             className="archive-toggle"

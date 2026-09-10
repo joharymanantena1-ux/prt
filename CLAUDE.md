@@ -48,7 +48,29 @@ One primitive: [Reveal](src/components/motion/Reveal.tsx) — a single
 `IntersectionObserver` flips `data-revealed`, and CSS transitions opacity/translateY
 (0.65s, `cubic-bezier(.22,1,.36,1)`). Reduced motion (or no `IntersectionObserver`)
 reveals immediately; the global `prefers-reduced-motion` block in `index.css` kills
-every transition and animation. Keep entrances transform/opacity only, one per block.
+every transition and animation. Keep entrances transform/opacity only, one per block;
+`delay` staggers siblings (used lightly on the case grid).
+
+Hover conventions, all ≤ 0.3s and colour/transform only: arrows translate
+`2px,-2px`, the primary button lifts 2px, nav links grow an underline, icon buttons
+take a `color-mix(currentColor 12%)` ground, archive rows nudge 3px and their brand
+mark goes to full ink, the archive toggle gains inner padding. Modals fade the
+backdrop and lift the panel 16px (`modal-in` / `backdrop-in`).
+
+### Welcome screen
+
+The intro lives **in [index.html](index.html)** — markup, inline CSS and a small
+inline script — not in React: rendered from the bundle it would appear *after* the
+hero and read as a bug. It mirrors the hero (ink ground, mono kicker, the three
+title lines with the last in lime, a lime progress rule) and runs ~5.6s.
+
+It plays **once per browser** (`localStorage["portfolio-intro-seen"]`), never under
+`prefers-reduced-motion`, and is skipped by the "Passer" button, Escape, Enter or a
+click anywhere. Append `?intro=1` (or `#intro`) to replay it for review. Because it
+is painted pre-paint with the hero rendering underneath, it costs nothing in
+Lighthouse (FCP 1.4s / LCP 2.2s, performance 98) — keep that property if you touch
+it: never gate the app's render behind it. Tests set the storage flag in a
+`beforeEach`; the welcome-screen describe block clears it again.
 
 ### Projects data model
 
@@ -60,10 +82,47 @@ every transition and animation. Keep entrances transform/opacity only, one per b
 - [src/data/academicProjects.ts](src/data/academicProjects.ts) — coursework, each tagged
   with a `theme`; `academicThemes` carries the label, the teaching goal and the takeaway.
 
+### Brand marks (client & product logos)
+
+The source logos in `src/assets/*` have no transparency and each carries its own
+background (black, white, blue, red), which is why raw logos looked like a
+patchwork on the ink/paper planes. [scripts/generate-logo-masks.mjs](scripts/generate-logo-masks.mjs)
+extracts each shape into the **alpha channel** of a shared 3:1 box
+(`src/assets/logos/*.png`, ~2 kB each, committed); [BrandMark](src/components/BrandMark.tsx)
+renders them with `mask-image` over `background: currentColor`, so a mark takes
+the colour of its plane and follows the theme. Sizing is CSS-only (one height per
+context) — the uniform box keeps the logo wall optically aligned.
+
+`brandMarks` in [src/data/brandMarks.ts](src/data/brandMarks.ts) maps an exact
+project title to its mask; `clientMarks` is the client wall under the case
+studies. Three placements: the client wall, a gutter in the professional archive
+rows (always rendered, so titles stay aligned when a mission has no mark), and a
+discreet mark inside a case-study visual. Academic rows carry no marks.
+
+Adding a logo: drop the file in `src/assets/`, add a line to the `LOGOS` table in
+the script (`light` = the mark is the light part; `threshold` and `scale` tune
+mid-tone backgrounds and square marks), re-run it, then map the title. Always
+check the result — a wrong polarity yields a solid block. `assetsInlineLimit: 0`
+in [vite.config.ts](vite.config.ts) keeps these masks out of the main JS chunk
+(inlined as base64 they added ~19 kB gzip to it).
+
 **Professional and academic work must stay visibly separate.** [ProjectArchive](src/components/ProjectArchive.tsx)
-renders two titled groups ("Autres missions professionnelles" / "Projets académiques");
-academic projects are grouped by theme and always shown with their goal and takeaway,
+renders two titled groups: the professional missions as rows on the page, and
+"Projets académiques" as a **five-line preview** (one per theme, with counts) plus a
+button that opens the detail in a [Modal](src/components/Modal.tsx) — 31 coursework
+rows must not weigh on the page (moving them out cut ~20 % of the page height).
+Each list owns its own search field; the preview counts stay unfiltered because it is
+a summary. Academic projects keep their theme grouping with goal and takeaway, and are
 never mixed into the professional list.
+
+### Modal
+
+[Modal](src/components/Modal.tsx) wraps a native `<dialog>` — same base as the mobile
+menu: Escape and a backdrop click close it, Tab cycles inside, focus returns to the
+element that opened it, and the body stops scrolling. Only `.modal-body` scrolls so
+the header and the close button stay reachable; below 768 px it fills the screen.
+Reuse it for any new modal rather than building an overlay by hand, and keep the axe
+audit of the open modal in the test suite.
 
 ### i18n
 
@@ -121,7 +180,9 @@ Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm ru
 
 [tests/portfolio.spec.ts](tests/portfolio.spec.ts) (Playwright, Chrome, against
 `npm run preview`): layout and no-horizontal-overflow at nine widths from 320 to
-1920 px, mobile dialog focus trap, the professional/academic archive split, language
+1920 px, mobile dialog focus trap, the professional/academic archive split, the
+academic modal (open, filter, focus trap, three ways to close, full-screen on
+mobile), the welcome screen (plays once, skippable, absent under reduced motion), language
 and theme persistence, scroll reveals never leaving content hidden, the 404 page,
 analytics consent, the contact form (both outcomes, network intercepted) and four
 axe WCAG 2.1 AA audits (dark/light × 390/1440). Keep them green — they encode

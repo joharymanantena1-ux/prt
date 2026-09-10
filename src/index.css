@@ -309,8 +309,15 @@
   width: 44px;
   height: 44px;
   border: none;
+  border-radius: 2px;
   background: transparent;
   color: inherit;
+  transition: background 0.2s;
+}
+/* Fond teinté par la couleur du texte : fonctionne sur le plan encre comme sur
+   le papier, dans les deux thèmes (sans support, pas de fond — au pire rien). */
+.icon-button:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 .nav-contact {
   border: 1px solid hsl(var(--border));
@@ -320,6 +327,13 @@
   min-height: 44px;
   padding: 0 16px;
   font-size: 12px;
+  transition:
+    border-color 0.25s,
+    color 0.25s;
+}
+.nav-contact:hover {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
 }
 .menu-toggle {
   display: none;
@@ -566,6 +580,36 @@
   gap: 56px;
   align-items: center;
 }
+/* Marques monochromes : le masque porte la forme, `currentColor` la couleur —
+   les logos suivent donc le plan (encre/papier) et le thème. Repli en texte si
+   le navigateur ne sait pas masquer (voir @supports plus bas). */
+.brand-mark {
+  display: block;
+  position: relative;
+  height: 30px;
+  aspect-ratio: 3 / 1;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+@supports (mask-image: url("")) or (-webkit-mask-image: url("")) {
+  .brand-mark {
+    background: currentColor;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+  .brand-mark-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
 .project-visual {
   height: 310px;
   position: relative;
@@ -606,6 +650,16 @@
 .beauty-word > span:first-child {
   display: block;
   padding-left: 40px;
+}
+/* Marque cliente dans le rail de méta de la carte : même hauteur sur les trois
+   cartes, alignée à droite avec le nom qu'elle remplace. */
+.case-mark {
+  height: 22px;
+  color: var(--paper-muted);
+  transition: color 0.25s;
+}
+.case-item:hover .case-mark {
+  color: var(--ink);
 }
 .beauty-asterisk {
   position: absolute;
@@ -704,6 +758,16 @@
   background: #cddbe3;
   padding: 12px 18px 15px;
 }
+/* Le logotype réel remplace le mot retapé : la trame de trajets reste lisible
+   derrière, le cartouche l'isole du quadrillage. */
+.visual-word-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.visual-word-mark .brand-mark {
+  width: clamp(200px, 28vw, 330px);
+}
 .case-content {
   padding-top: 24px;
 }
@@ -713,6 +777,7 @@
 .case-meta {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   color: var(--paper-muted);
@@ -766,26 +831,48 @@
   padding-top: 30px;
   border-top: 1px solid var(--paper-line);
 }
+/* Mur de logos : une grille de cellules égales encadrée de filets. Chaque
+   marque garde ses proportions (mask-size: contain) et une hauteur commune —
+   aucune n'est déformée ni recadrée. */
 .client-names {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 30px 0 40px;
-  font-size: clamp(16px, 2vw, 24px);
-  letter-spacing: -0.045em;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 92px;
+  align-items: center;
+  margin-top: 26px;
+  border-top: 1px solid var(--paper-line);
+  border-bottom: 1px solid var(--paper-line);
+}
+/* Un cran plus discret que les titres : c'est un rappel, pas une annonce. */
+.client-names .brand-mark {
+  width: 100%;
+  height: 34px;
+  color: var(--paper-muted);
+  transition: color 0.25s;
+}
+.client-names .brand-mark:hover {
+  color: var(--ink);
 }
 .archive-toggle {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
   min-height: 64px;
+  padding-inline: 0;
   border: 0;
   border-top: 1px solid var(--paper-line);
   border-bottom: 1px solid var(--paper-line);
   background: none;
   font-size: 14px;
+  transition:
+    padding-inline 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s;
+}
+.archive-toggle:hover {
+  padding-inline: 12px;
+  background: #0e100f0a;
 }
 .archive-content {
   padding-top: 35px;
@@ -895,6 +982,36 @@
   font-size: 18px;
   letter-spacing: -0.02em;
 }
+.archive-row-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.archive-row summary:hover .archive-row-title {
+  transform: translateX(3px);
+}
+.archive-row summary:hover .archive-row-mark .brand-mark {
+  color: var(--ink);
+}
+.archive-row-mark .brand-mark {
+  transition: color 0.25s;
+}
+/* Le « + » est un ::after, donc un troisième enfant : sans cette marge, le
+   space-between renvoyait la catégorie au milieu de la ligne. */
+.archive-row summary > .eyebrow {
+  margin-left: auto;
+}
+.archive-row-mark {
+  flex-shrink: 0;
+  width: 62px;
+}
+.archive-row-mark .brand-mark {
+  height: 26px;
+  width: 62px;
+  color: var(--paper-muted);
+}
 .archive-row summary .eyebrow {
   flex-shrink: 0;
 }
@@ -904,6 +1021,137 @@
   max-width: 700px;
   line-height: 1.7;
   margin-block: 15px;
+}
+/* Aperçu des familles de projets de formation : cinq lignes au lieu de 31. */
+.academic-preview {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--paper-line);
+}
+.academic-preview li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--paper-line);
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+.academic-preview .eyebrow {
+  flex-shrink: 0;
+  color: var(--paper-muted);
+}
+.academic-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  margin-top: 26px;
+  padding: 0 24px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.academic-open:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ── Fenêtre modale ─────────────────────────────────────────────────────────
+   <dialog> natif : le fond et la touche Échap sont gérés par le navigateur,
+   le corps seul défile pour que l'en-tête et la fermeture restent atteignables. */
+.modal {
+  width: min(100% - 40px, 860px);
+  max-width: none;
+  max-height: min(88dvh, 940px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: hidden;
+}
+.modal[open] {
+  display: flex;
+  flex-direction: column;
+  animation: modal-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.modal::backdrop {
+  background: #0b0d0be6;
+}
+.modal[open]::backdrop {
+  animation: backdrop-in 0.4s both;
+}
+.modal-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-shrink: 0;
+  padding: 26px 30px 20px;
+  border-bottom: 1px solid var(--ink);
+}
+.modal-head h2 {
+  font-size: clamp(24px, 3.2vw, 34px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+.modal-head .eyebrow {
+  margin-top: 10px;
+  color: var(--paper-muted);
+}
+.modal-close {
+  flex-shrink: 0;
+  margin: -8px -8px 0 0;
+  color: var(--ink);
+}
+.modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 30px 34px;
+}
+.modal-body .archive-search {
+  max-width: 380px;
+}
+.modal-body .theme-block:first-of-type {
+  padding-top: 20px;
+  border-top: 1px solid var(--paper-line);
+  margin-top: 22px;
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .about-layout {
   display: grid;
@@ -1592,17 +1840,45 @@ summary::-webkit-details-marker {
     margin-top: 50px;
   }
   .client-names {
-    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    font-size: 17px;
-    padding-block: 25px;
+    grid-auto-rows: 76px;
+    margin-top: 22px;
+  }
+  .client-names .brand-mark {
+    height: 28px;
   }
   .archive-toggle {
     font-size: 13px;
   }
   .archive-group > h3 {
     font-size: 18px;
+  }
+  .academic-preview li {
+    font-size: 14px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 0;
+  }
+  .academic-open {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+    padding-inline: 18px;
+    font-size: 12px;
+  }
+  .modal {
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+  .modal-head {
+    padding: 18px 20px 16px;
+  }
+  .modal-body {
+    padding: 20px 20px 30px;
   }
   .archive-academic {
     margin-top: 48px;
