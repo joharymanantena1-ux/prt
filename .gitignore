@@ -30,3 +30,7 @@ dist-ssr
 *.sw?
 
 design-system/
+
+# Browser test output
+playwright-report/
+test-results/

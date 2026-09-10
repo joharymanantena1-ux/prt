@@ -1,6 +1,98 @@
+import type { Bi } from "@/i18n";
 import type { Project } from "./projects";
 
-export const academicProjects: Project[] = [
+/**
+ * Les projets de formation sont regroupés par thème : un recruteur lit l’intention
+ * pédagogique et l’acquis, pas 31 lignes de titres. Chaque projet porte la clé de
+ * son thème (`theme`), les libellés vivent dans `academicThemes`.
+ */
+export type AcademicTheme = "java" | "web" | "systemes" | "apps" | "jeux";
+
+export interface AcademicProject extends Project {
+  theme: AcademicTheme;
+}
+
+export const academicThemes: {
+  key: AcademicTheme;
+  label: Bi;
+  goal: Bi;
+  learned: Bi;
+}[] = [
+  {
+    key: "java",
+    label: {
+      fr: "Applications d’entreprise — Java & Oracle",
+      en: "Enterprise applications — Java & Oracle",
+    },
+    goal: {
+      fr: "Objectif : construire des applications multi-couches (Servlet, JavaEE, EJB, Spring Boot) adossées à une base relationnelle.",
+      en: "Goal: build multi-tier applications (Servlet, JavaEE, EJB, Spring Boot) backed by a relational database.",
+    },
+    learned: {
+      fr: "Ce que j’en retiens : séparer clairement modèle, service et présentation — et, en écrivant mon propre framework MVC, comprendre ce que font réellement les outils que j’utilise.",
+      en: "What I took away: keeping model, service and presentation clearly apart — and, by writing my own MVC framework, understanding what the tools I use actually do.",
+    },
+  },
+  {
+    key: "web",
+    label: {
+      fr: "Web full-stack — un cycle complet, plusieurs stacks",
+      en: "Full-stack web — one full cycle, several stacks",
+    },
+    goal: {
+      fr: "Objectif : livrer des applications complètes (CRUD, authentification, tableaux de bord) en PHP/CodeIgniter, Django, Angular, React et Next.js.",
+      en: "Goal: ship complete applications (CRUD, authentication, dashboards) in PHP/CodeIgniter, Django, Angular, React and Next.js.",
+    },
+    learned: {
+      fr: "Ce que j’en retiens : les fondamentaux se transposent d’un framework à l’autre. Changer de stack demande surtout de retrouver les mêmes repères — routage, données, état, rendu.",
+      en: "What I took away: the fundamentals carry over from one framework to the next. Switching stacks is mostly about finding the same landmarks again — routing, data, state, rendering.",
+    },
+  },
+  {
+    key: "systemes",
+    label: {
+      fr: "Algorithmique, systèmes & données",
+      en: "Algorithms, systems & data",
+    },
+    goal: {
+      fr: "Objectif : descendre sous l’interface — compression, traitement du signal, clustering, haute disponibilité et données géographiques.",
+      en: "Goal: go below the interface — compression, signal processing, clustering, high availability and geospatial data.",
+    },
+    learned: {
+      fr: "Ce que j’en retiens : le goût de comprendre la couche basse — un arbre de Huffman, un en-tête WAV ou un load balancer HAProxy — avant de faire confiance à une abstraction.",
+      en: "What I took away: a taste for understanding the low level — a Huffman tree, a WAV header, an HAProxy load balancer — before trusting an abstraction.",
+    },
+  },
+  {
+    key: "apps",
+    label: {
+      fr: "Applications desktop & mobile",
+      en: "Desktop & mobile applications",
+    },
+    goal: {
+      fr: "Objectif : concevoir des interfaces natives (C#/WinForms, Flutter) avec base de données locale et traitement d’image.",
+      en: "Goal: design native interfaces (C#/WinForms, Flutter) with a local database and image processing.",
+    },
+    learned: {
+      fr: "Ce que j’en retiens : une application métier se juge à son flux de saisie. C’est là que j’ai commencé à dessiner avant de coder.",
+      en: "What I took away: a business app is judged by its data-entry flow. That is where I started sketching before coding.",
+    },
+  },
+  {
+    key: "jeux",
+    label: { fr: "Jeux & simulation", en: "Games & simulation" },
+    goal: {
+      fr: "Objectif : boucle de jeu, gestion d’état temps réel et IA simple (poursuite sur grille, stratégie, résolution).",
+      en: "Goal: game loop, real-time state management and simple AI (grid pursuit, strategy, solving).",
+    },
+    learned: {
+      fr: "Ce que j’en retiens : la contrainte du temps réel oblige à structurer son état proprement — une leçon réutilisée depuis dans chaque interface.",
+      en: "What I took away: real-time constraints force clean state design — a lesson reused in every interface since.",
+    },
+  },
+];
+
+export const academicProjects: AcademicProject[] = [
   {
     title: "ProjetKidoro",
     description: {
@@ -9,6 +101,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Spring Boot", "Java", "PostgreSQL"],
     category: "Java",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -19,6 +112,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Java", "Servlet", "Swing", "Oracle"],
     category: "Java",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux/Trandraka-Volamena",
   },
   {
@@ -29,6 +123,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Java", "JavaEE", "EJB", "Oracle"],
     category: "Java",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux/Valan-Omby",
   },
   {
@@ -39,6 +134,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Java", "JavaEE", "EJB", "Oracle"],
     category: "Java",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -49,6 +145,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Java", "Java Swing", "Oracle"],
     category: "Java",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux/Scoot-Tiger-Oracle",
   },
   {
@@ -59,26 +156,29 @@ export const academicProjects: Project[] = [
     },
     technologies: ["C#", "WinForms", "PostgreSQL"],
     category: "C#",
+    theme: "apps",
     githubUrl: "https://github.com/joharymanantena1-ux/Solonify-ve",
   },
   {
     title: "eFootball – Détection Hors-Jeu",
     description: {
-      fr: "Système de détection de hors-jeu en temps réel via analyse vidéo et traitement d'image.",
+      fr: "Système de détection de hors-jeu en temps réel via analyse vidéo et traitement d’image.",
       en: "Real-time offside-detection system through video analysis and image processing.",
     },
     technologies: ["C#", "ASP.NET", "Postgres"],
     category: "C#",
+    theme: "apps",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
     title: "Tickety – App Flutter",
     description: {
-      fr: "Application mobile Flutter pour la gestion et l'organisation d'événements et de tickets.",
+      fr: "Application mobile Flutter pour la gestion et l’organisation d’événements et de tickets.",
       en: "Flutter mobile app for managing and organising events and tickets.",
     },
     technologies: ["Flutter", "Dart"],
     category: "Flutter",
+    theme: "apps",
     githubUrl: "https://github.com/joharymanantena1-ux/tickety",
   },
   {
@@ -89,6 +189,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Angular", "TypeScript", "Karma"],
     category: "Web",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux/task-manager",
   },
   {
@@ -99,6 +200,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Next.js", "Tailwind CSS", "CSS"],
     category: "Web",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux/hero-webdifference",
   },
   {
@@ -109,6 +211,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["React", "TypeScript", "Tailwind CSS"],
     category: "Web",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -119,6 +222,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["React.js", "TypeScript", "Vite"],
     category: "Web",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux/portfolio",
   },
   {
@@ -129,6 +233,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["WordPress", "Elementor", "PHP", "MySQL"],
     category: "PHP",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -139,36 +244,40 @@ export const academicProjects: Project[] = [
     },
     technologies: ["CodeIgniter", "PHP", "MySQL"],
     category: "PHP",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
     title: "Gestion de Restauration",
     description: {
-      fr: "Application web de gestion d'un restaurant : commandes, menus, tables et suivi des ventes.",
+      fr: "Application web de gestion d’un restaurant : commandes, menus, tables et suivi des ventes.",
       en: "Restaurant-management web app: orders, menus, tables and sales tracking.",
     },
     technologies: ["CodeIgniter", "PHP", "MySQL"],
     category: "PHP",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux/TP-Gestion-Restauration",
   },
   {
     title: "Jeu de Poker – S1",
     description: {
-      fr: "Application web PHP d'un jeu de poker : distribution des cartes, évaluation des mains, gestion des tours.",
+      fr: "Application web PHP d’un jeu de poker : distribution des cartes, évaluation des mains, gestion des tours.",
       en: "PHP web poker game: card dealing, hand evaluation, turn management.",
     },
     technologies: ["PHP"],
     category: "PHP",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux/Poket-S1",
   },
   {
     title: "Gestion Garage Automobile",
     description: {
-      fr: "Application web de gestion d'atelier mécanique : réception véhicules, suivi réparations, historique client.",
+      fr: "Application web de gestion d’atelier mécanique : réception véhicules, suivi réparations, historique client.",
       en: "Garage-management web app: vehicle intake, repair tracking, client history.",
     },
     technologies: ["CodeIgniter", "PHP", "MySQL"],
     category: "PHP",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -179,26 +288,29 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Algorithmique", "Python", "Bash"],
     category: "Algo",
+    theme: "systemes",
     githubUrl: "https://github.com/joharymanantena1-ux/Projet-SGBD-S3",
   },
   {
     title: "Codage Son WAV",
     description: {
-      fr: "Traitement et analyse de fichiers audio WAV : lecture binaire, visualisation de forme d'onde.",
+      fr: "Traitement et analyse de fichiers audio WAV : lecture binaire, visualisation de forme d’onde.",
       en: "WAV audio processing and analysis: binary reading, waveform visualisation.",
     },
     technologies: ["Python", "WAV"],
     category: "Algo",
+    theme: "systemes",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
     title: "Codage Huffman",
     description: {
-      fr: "Algorithme de compression Huffman avec visualisation de l'arbre binaire et calcul du taux de compression.",
+      fr: "Algorithme de compression Huffman avec visualisation de l’arbre binaire et calcul du taux de compression.",
       en: "Huffman compression algorithm with binary-tree visualisation and compression-ratio computation.",
     },
     technologies: ["Python", "Numpy", "Matplotlib"],
     category: "Algo",
+    theme: "systemes",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -209,16 +321,18 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Python", "FTP", "HAProxy", "Linux"],
     category: "Algo",
+    theme: "systemes",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
-    title: "SIG McArthur's Madagascar",
+    title: "SIG McArthur’s Madagascar",
     description: {
-      fr: "Système d'Information Géographique pour la gestion territoriale et la cartographie interactive.",
+      fr: "Système d’Information Géographique pour la gestion territoriale et la cartographie interactive.",
       en: "Geographic Information System for territorial management and interactive mapping.",
     },
     technologies: ["JavaScript", "SIG", "PostGIS"],
     category: "Géomatique",
+    theme: "systemes",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -229,6 +343,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Python", "React", "JavaScript"],
     category: "Jeu",
+    theme: "jeux",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -239,6 +354,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Perl", "Tkinter", "PostgreSQL"],
     category: "Jeu",
+    theme: "jeux",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -249,6 +365,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Java", "Swing", "Postgres"],
     category: "Jeu",
+    theme: "jeux",
     githubUrl: "https://github.com/joharymanantena1-ux/Civilisation",
   },
   {
@@ -259,16 +376,18 @@ export const academicProjects: Project[] = [
     },
     technologies: ["C++", "JavaScript", "ASP", "HTML/CSS"],
     category: "C++",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
     title: "Chiffres et Lettres",
     description: {
-      fr: "Jeu en ligne inspiré de l'émission TV : résolution de mots et calcul avec des chiffres tirés.",
+      fr: "Jeu en ligne inspiré de l’émission TV : résolution de mots et calcul avec des chiffres tirés.",
       en: "Online game inspired by the TV show: word solving and arithmetic with drawn numbers.",
     },
     technologies: ["C++", "JavaScript", "HTML/CSS"],
     category: "C++",
+    theme: "jeux",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -279,6 +398,7 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Réseaux", "Linux", "Clustering"],
     category: "Réseaux",
+    theme: "systemes",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
@@ -289,26 +409,29 @@ export const academicProjects: Project[] = [
     },
     technologies: ["Django", "Python", "MySQL", "API REST"],
     category: "Web",
+    theme: "web",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
     title: "AsaSprint Framework",
     description: {
-      fr: "Framework Java maison MVC pour le développement rapide d'applications web, avec routeur et templates.",
+      fr: "Framework Java maison MVC pour le développement rapide d’applications web, avec routeur et templates.",
       en: "In-house Java MVC framework for rapid web development, with a router and templates.",
     },
     technologies: ["Java"],
     category: "Framework",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
   {
     title: "Atelier Réparation PC",
     description: {
-      fr: "Application web de gestion d'atelier : suivi des interventions, devis et facturation clients.",
+      fr: "Application web de gestion d’atelier : suivi des interventions, devis et facturation clients.",
       en: "Workshop-management web app: job tracking, quotes and client billing.",
     },
     technologies: ["Spring Boot", "Postgres", "Bootstrap"],
     category: "Framework",
+    theme: "java",
     githubUrl: "https://github.com/joharymanantena1-ux",
   },
 ];

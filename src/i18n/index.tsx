@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { fr } from "./fr";
 import { en } from "./en";
 
@@ -10,7 +17,12 @@ const STORAGE_KEY = "portfolio-lang";
 
 /* Read a dot-path ("hero.ctaProjects") out of a nested dict. */
 const getNested = (obj: unknown, path: string): unknown =>
-  path.split(".").reduce<unknown>((acc, k) => (acc == null ? acc : (acc as Record<string, unknown>)[k]), obj);
+  path
+    .split(".")
+    .reduce<unknown>(
+      (acc, k) => (acc == null ? acc : (acc as Record<string, unknown>)[k]),
+      obj,
+    );
 
 interface Ctx {
   lang: Lang;
@@ -49,7 +61,11 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     [lang],
   );
 
-  return <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>;
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -62,4 +78,5 @@ export const useT = () => {
 /* Inline bilingual data fields: `tx({fr,en}, lang)`, or pass-through a plain string. */
 export type Bi = string | { fr: string; en: string };
 // eslint-disable-next-line react-refresh/only-export-components
-export const tx = (v: Bi, lang: Lang): string => (typeof v === "string" ? v : v[lang]);
+export const tx = (v: Bi, lang: Lang): string =>
+  typeof v === "string" ? v : v[lang];

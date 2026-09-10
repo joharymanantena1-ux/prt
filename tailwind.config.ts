@@ -2,16 +2,9 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       fontFamily: {
         sans: ["var(--font-body)", "sans-serif"],
@@ -29,10 +22,7 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-        // Bleu roi de branding (#2447A8) — fills, CTA. Pour du petit texte ou
-        // des lignes accentuées, utiliser `primary` (variante AA par mode :
-        // royal en light, royal éclairci en dark). `brand-secondary` = oxblood,
-        // accent rare réservé à quelques détails éditoriaux.
+        // Accent de marque — aplats et CTA (voir --brand dans index.css).
         brand: {
           DEFAULT: "hsl(var(--brand))",
           foreground: "hsl(var(--brand-foreground))",
@@ -67,49 +57,12 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-      // Map the shadow design tokens (index.css) to utilities — without this,
-      // `shadow-soft` / `shadow-elevated` / `shadow-glow` silently emit nothing.
-      boxShadow: {
-        soft: "var(--shadow-soft)",
-        elevated: "var(--shadow-elevated)",
-        glow: "var(--shadow-glow)",
-      },
-      // Documented z-index scale (replaces ad-hoc z-[9999])
-      zIndex: {
-        dropdown: "20",
-        sticky: "30",
-        header: "40",
-        overlay: "50",
-        loader: "60",
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      keyframes: {
-        "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
-        },
-        "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [],
 } satisfies Config;

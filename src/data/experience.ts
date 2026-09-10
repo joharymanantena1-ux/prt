@@ -20,7 +20,7 @@ export const experiences: ExpItem[] = [
     period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
     current: true,
     description: {
-      fr: "Développement full-stack de l'écosystème e-commerce BeautyBay, web et mobile : évolution des interfaces clientes et de l'API, intégration de données entre les systèmes métier (flux produits, stocks et commandes synchronisés), intégration mobile React Native et services cloud AWS (stockage S3, automatisations).",
+      fr: "Développement full-stack de l’écosystème e-commerce BeautyBay, web et mobile : évolution des interfaces clientes et de l’API, intégration de données entre les systèmes métier (flux produits, stocks et commandes synchronisés), intégration mobile React Native et services cloud AWS (stockage S3, automatisations).",
       en: "Full-stack development of the BeautyBay e-commerce ecosystem, web and mobile: customer-facing interfaces and API work, data integration across business systems (synchronised product, stock and order flows), React Native mobile integration and AWS cloud services (S3 storage, automations).",
     },
     technologies: ["ReactJS", "React Native", "Node.js", "GraphQL", "AWS"],
@@ -34,7 +34,7 @@ export const experiences: ExpItem[] = [
     period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
     current: true,
     description: {
-      fr: "Mission freelance à temps plein en présentiel : développement et maintenance d'applications internes, collaboration directe avec les équipes métier.",
+      fr: "Mission freelance à temps plein en présentiel : développement et maintenance d’applications internes, collaboration directe avec les équipes métier.",
       en: "Full-time on-site freelance mission: building and maintaining internal applications, working directly with the business teams.",
     },
   },
@@ -47,7 +47,7 @@ export const experiences: ExpItem[] = [
     period: { fr: "Jan 2026 – Mai 2026", en: "Jan 2026 – May 2026" },
     current: false,
     description: {
-      fr: "Conception et développement d'une plateforme SaaS scolaire complète : gestion des notes et bulletins, facturation, automatisation des workflows (emails/SMS via n8n), gestion multi-établissements.",
+      fr: "Conception et développement d’une plateforme SaaS scolaire complète : gestion des notes et bulletins, facturation, automatisation des workflows (emails/SMS via n8n), gestion multi-établissements.",
       en: "Design and development of a complete school SaaS platform: grades and report cards, billing, workflow automation (emails/SMS via n8n), multi-school management.",
     },
     technologies: ["Laravel", "ReactJS", "MySQL", "n8n", "API REST"],
@@ -70,7 +70,7 @@ export const experiences: ExpItem[] = [
     },
     technologies: ["React Native", "ReactJS", "Node.js", "Firebase", "MySQL"],
     result: {
-      fr: "Réduction de 30% des temps d'attente",
+      fr: "Réduction de 30% des temps d’attente",
       en: "30% reduction in waiting times",
     },
   },
@@ -80,7 +80,7 @@ export const education: ExpItem[] = [
   {
     title: {
       fr: "Licence en Informatique",
-      en: "Bachelor's in Computer Science",
+      en: "Bachelor’s in Computer Science",
     },
     school: "IT-University",
     period: "2022 – 2025",
@@ -96,7 +96,7 @@ export const education: ExpItem[] = [
     period: { fr: "En cours", en: "Ongoing" },
     current: true,
     description: {
-      fr: "Formation en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d'IA dans des applications métier.",
+      fr: "Formation en Intelligence Artificielle Générative — prompting, modèles de langage, intégration d’IA dans des applications métier.",
       en: "Generative AI training — prompting, language models, integrating AI into business applications.",
     },
     highlight: { fr: "Google Cloud", en: "Google Cloud" },

@@ -6,7 +6,10 @@ import path from "path";
 // quand l'origine de prod est connue : VITE_SITE_URL (prioritaire) ou URL,
 // fournie automatiquement par Netlify au build. En local, aucun tag n'est émis.
 const injectSiteMeta = (): Plugin => {
-  const siteUrl = (process.env.VITE_SITE_URL || process.env.URL || "").replace(/\/+$/, "");
+  const siteUrl = (process.env.VITE_SITE_URL || process.env.URL || "").replace(
+    /\/+$/,
+    "",
+  );
   return {
     name: "inject-site-meta",
     transformIndexHtml(html) {
@@ -25,12 +28,12 @@ const injectSiteMeta = (): Plugin => {
   };
 };
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react(), injectSiteMeta(), ...(mode === "development" ? [] : [])],
+  plugins: [react(), injectSiteMeta()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -41,10 +44,7 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         // Split stable vendor code so it caches across deploys (long-term immutable headers).
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "motion-vendor": ["framer-motion"],
-        },
+        manualChunks: { "react-vendor": ["react", "react-dom"] },
       },
     },
   },

@@ -30,8 +30,8 @@ export const professionalProjects: Project[] = [
   {
     title: "Paul Beuscher",
     description: {
-      fr: "Boutique Shopify : refonte des emails transactionnels (Liquid) aux couleurs de la marque, et script Python de détection/nettoyage des produits en doublon via l'API Admin Shopify.",
-      en: "Shopify store: redesign of transactional emails (Liquid) in the brand's colours, and a Python script to detect and clean up duplicate products via the Admin API.",
+      fr: "Boutique Shopify : refonte des emails transactionnels (Liquid) aux couleurs de la marque, et script Python de détection/nettoyage des produits en doublon via l’API Admin Shopify.",
+      en: "Shopify store: redesign of transactional emails (Liquid) in the brand’s colours, and a Python script to detect and clean up duplicate products via the Admin API.",
     },
     technologies: ["Shopify", "Liquid", "Python", "Shopify API"],
     category: "E-commerce",
@@ -40,7 +40,7 @@ export const professionalProjects: Project[] = [
   {
     title: "fingerinthenose.com",
     description: {
-      fr: "Reprise et correction de l'intégration frontend d'une boutique Shopify : ajustements du thème (Liquid), responsive et fidélité au design existant.",
+      fr: "Reprise et correction de l’intégration frontend d’une boutique Shopify : ajustements du thème (Liquid), responsive et fidélité au design existant.",
       en: "Took over and fixed the frontend integration of a Shopify store: theme tweaks (Liquid), responsive and fidelity to the existing design.",
     },
     technologies: ["Shopify", "Liquid", "JavaScript", "CSS"],
@@ -50,7 +50,7 @@ export const professionalProjects: Project[] = [
   {
     title: "The Cool Republic",
     description: {
-      fr: "Automatisation Python de l'import des données produits designers vers la boutique Shopify (mobilier & décoration) : mapping des catalogues, base de données et export CSV.",
+      fr: "Automatisation Python de l’import des données produits designers vers la boutique Shopify (mobilier & décoration) : mapping des catalogues, base de données et export CSV.",
       en: "Python automation for importing designer product data into the Shopify store (furniture & decor): catalogue mapping, database and CSV export.",
     },
     technologies: ["Python", "Shopify API", "PostgreSQL", "CSV"],
@@ -60,7 +60,7 @@ export const professionalProjects: Project[] = [
   {
     title: "Musier Paris",
     description: {
-      fr: "Intégration et finitions frontend d'une boutique e-commerce Shopify : composants de thème, responsive et ajustements visuels.",
+      fr: "Intégration et finitions frontend d’une boutique e-commerce Shopify : composants de thème, responsive et ajustements visuels.",
       en: "Frontend integration and finishing of a Shopify e-commerce store: theme components, responsive and visual adjustments.",
     },
     technologies: ["Shopify", "Liquid", "JavaScript"],
@@ -79,7 +79,7 @@ export const professionalProjects: Project[] = [
   {
     title: "bank-file-converter",
     description: {
-      fr: "Outil de conversion de fichiers bancaires : transformation des fichiers XML Odoo en XLSX et conversion inverse (revert), pour l'intégration comptable d'une banque (BRED, FR).",
+      fr: "Outil de conversion de fichiers bancaires : transformation des fichiers XML Odoo en XLSX et conversion inverse (revert), pour l’intégration comptable d’une banque (BRED, FR).",
       en: "Banking file-conversion tool: transforming Odoo XML files into XLSX and back (revert), for the accounting integration of a bank (BRED, FR).",
     },
     technologies: ["Python", "Odoo", "XML", "XLSX"],
@@ -118,7 +118,7 @@ export const professionalProjects: Project[] = [
   {
     title: "ERPNext Migration",
     description: {
-      fr: "Migration d'un ERP existant vers Spring Boot avec refonte de l'architecture API et modernisation de la stack.",
+      fr: "Migration d’un ERP existant vers Spring Boot avec refonte de l’architecture API et modernisation de la stack.",
       en: "Migration of an existing ERP to Spring Boot with a redesigned API architecture and a modernised stack.",
     },
     technologies: ["Python", "Frappe", "Vue.js", "Spring Boot", "MySQL"],
@@ -127,7 +127,7 @@ export const professionalProjects: Project[] = [
   {
     title: "DayByDay CRM",
     description: {
-      fr: "Migration et amélioration d'un CRM vers Spring Boot avec Docker et nouvelle architecture REST.",
+      fr: "Migration et amélioration d’un CRM vers Spring Boot avec Docker et nouvelle architecture REST.",
       en: "Migration and improvement of a CRM to Spring Boot with Docker and a new REST architecture.",
     },
     technologies: ["Symfony", "Spring Boot", "MySQL", "Docker"],

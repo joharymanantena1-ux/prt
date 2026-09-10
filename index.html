@@ -4,56 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Perf: preconnect to font origins before they are requested -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Thème appliqué avant le premier paint : source de vérité unique
+         (localStorage), sombre par défaut comme :root dans index.css. Les deux
+         attributs sont posés ici pour éviter tout flash au montage de React. -->
+    <script>
+      try {
+        var light = localStorage.getItem("portfolio-theme") === "light";
+        document.documentElement.dataset.theme = light ? "light" : "dark";
+        if (!light) document.documentElement.classList.add("dark");
+      } catch (e) {}
+    </script>
 
-    <!-- Perf: the portrait is the LCP element — start fetching it with the HTML,
-         long before the lazy Hero chunk mounts. `imagesrcset` mirrors the <picture>
-         in HeroSection so mobile preloads the 440px file, desktop the 880px one.
-         Browsers without AVIF skip this hint entirely. -->
+    <link
+      rel="preload"
+      href="/fonts/dm-sans-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/dm-sans-medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link
       rel="preload"
       as="image"
       type="image/avif"
-      href="/portrait/johary-880.avif"
+      href="/portrait/johary-440.avif"
       imagesrcset="/portrait/johary-440.avif 440w, /portrait/johary-880.avif 880w"
-      imagesizes="(min-width: 1280px) 460px, (min-width: 1024px) 42vw, (min-width: 640px) 400px, 78vw"
+      imagesizes="(max-width: 767px) 200px, (max-width: 1199px) 38vw, 460px"
       fetchpriority="high"
     />
-
-    <!-- Fonts loaded non-render-blocking (print→all swap), with display=swap fallback.
-         Newsreader (display sérif, optical sizing) + DM Sans (texte/UI) + JetBrains Mono (données). -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap"
-      />
-    </noscript>
 
     <!-- Icons — SVG first (crisp + theme-aware), .ico fallback, iOS touch icon -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f1ece2" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111722" />
-
-    <!-- Applique le thème avant le premier paint (sinon flash ivoire pour les
-         utilisateurs dark pendant le loader : la classe n'était posée qu'au
-         montage de <Navigation/>, après l'écran de chargement). -->
-    <script>
-      try {
-        var t = localStorage.getItem("portfolio-theme");
-        if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches))
-          document.documentElement.classList.add("dark");
-      } catch (e) {}
-    </script>
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#f2f2eb"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0e100f"
+    />
 
     <title>Johary Manantena | Développeur Full-Stack</title>
     <meta
@@ -66,7 +65,10 @@
       content="développeur full-stack, React, Node.js, TypeScript, Laravel, Spring Boot, portfolio, freelance"
     />
 
-    <meta property="og:title" content="Johary Manantena | Développeur Full-Stack" />
+    <meta
+      property="og:title"
+      content="Johary Manantena | Développeur Full-Stack"
+    />
     <meta
       property="og:description"
       content="Applications web modernes et performantes — front, back et mobile."
@@ -80,7 +82,10 @@
          ou automatiquement de la variable URL fournie par Netlify. -->
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Johary Manantena | Développeur Full-Stack" />
+    <meta
+      name="twitter:title"
+      content="Johary Manantena | Développeur Full-Stack"
+    />
     <meta
       name="twitter:description"
       content="Applications web modernes et performantes — front, back et mobile."
@@ -94,34 +99,26 @@
         "name": "Johary Manantena",
         "jobTitle": "Développeur Full-Stack",
         "description": "Développeur web full-stack freelance — React, Node.js, TypeScript, Laravel, Spring Boot.",
-        "address": { "@type": "PostalAddress", "addressLocality": "Antananarivo", "addressCountry": "MG" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Antananarivo",
+          "addressCountry": "MG"
+        },
         "sameAs": [
           "https://github.com/joharymanantena1-ux",
           "https://www.linkedin.com/in/johary-andrianjafinoro-73b29b3a3"
         ],
         "knowsAbout": [
-          "React", "React Native", "Node.js", "TypeScript",
-          "Laravel", "Spring Boot", "GraphQL", "Shopify"
+          "React",
+          "React Native",
+          "Node.js",
+          "TypeScript",
+          "Laravel",
+          "Spring Boot",
+          "GraphQL",
+          "Shopify"
         ]
       }
-    </script>
-
-    <!-- RGPD / CNIL — Google Consent Mode v2: analytics DENIED by default.
-         The in-app cookie banner calls gtag('consent','update', …) on user opt-in. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('consent', 'default', {
-        ad_storage: 'denied',
-        analytics_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied'
-      });
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-09ET3KDENS"></script>
-    <script>
-      gtag('js', new Date());
-      gtag('config', 'G-09ET3KDENS', { anonymize_ip: true });
     </script>
   </head>
 

@@ -5,48 +5,129 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev        # Start dev server on port 8080
-npm run build      # Production build → dist/
-npm run build:dev  # Development build
-npm run lint       # ESLint (TypeScript-aware)
-npm run preview    # Preview production build locally
+npm run dev           # Dev server on port 8080
+npm run build         # Production build → dist/
+npm run build:dev     # Development build
+npm run lint          # ESLint (TypeScript-aware)
+npm run typecheck     # tsc --noEmit (app + node configs)
+npm run test:e2e      # Playwright suite (builds nothing — run `npm run build` first)
+npm run format        # Prettier write · `format:check` in CI
+npm run preview       # Preview the production build locally
 ```
 
-Node version: 18.18.0 (enforced via `.nvmrc`). Deployment target: Netlify.
+Node version: 18.18.0 (`.nvmrc`). Deployment target: Netlify.
 
 ## Architecture
 
-This is a single-page portfolio site (French-language) for a full-stack developer. The stack is React 18 + TypeScript + Vite, styled with Tailwind CSS (CSS variable design tokens) and animated heavily with Framer Motion and GSAP.
+Single-page portfolio (bilingual FR/EN, French first) for a full-stack developer.
+Stack: React 18 + TypeScript + Vite. **No UI framework and no animation library** —
+the interface is hand-written CSS in [src/index.css](src/index.css) plus `lucide-react` icons.
 
-### Scroll navigation
+Runtime dependencies are deliberately limited to `react`, `react-dom` and `lucide-react`.
+Before adding one, check whether ~30 lines of CSS would do; the first-load budget
+(≈70 kB gzip of JS + CSS) is a feature of this project.
 
-Natural page scroll (no scroll hijacking). [src/pages/Index.tsx](src/pages/Index.tsx) tracks the active section with an rAF-throttled scroll listener (scrollspy) and exposes `navigateToSection` (smooth `scrollIntoView`) to the nav, side dots and mobile dots. The hero is imported statically (LCP); the other sections are lazy-loaded via `React.lazy` + `Suspense`.
+### Page shell
 
-Animation is Framer Motion only (GSAP is not used). Shared reduced-motion-aware presets live in [src/hooks/useMotionPreset.ts](src/hooks/useMotionPreset.ts); entrance/`whileInView` reveals are transform/opacity only.
+[src/App.tsx](src/App.tsx) has no router: Netlify rewrites every path to `index.html`,
+so `App` renders [Index](src/pages/Index.tsx) for `/` and [NotFound](src/pages/NotFound.tsx)
+for anything else. Sections are plain anchors; scrolling is native
+(`scroll-behavior: smooth` + `scroll-padding-top` in `index.css`), never hijacked.
 
-### Sections (in order)
+### Sections (in render order)
 
-Six portfolio sections live in [src/components/sections/](src/components/sections/):
-`HeroSection` → `AboutSection` → `ExperienceSection` → `SkillsSection` → `ProjectsSection` → `ContactSection`
+`HeroSection` → `ProjectsSection` → `AboutSection` → `SkillsSection` →
+`ExperienceSection` → `ContactSection` (lazy), in [src/components/sections/](src/components/sections/).
+Anchors: `#accueil`, `#projets`, `#apropos`, `#competences`, `#parcours`, `#contact`.
+[Navigation.tsx](src/components/Navigation.tsx) holds the desktop links, the language
+and theme toggles, and a native `<dialog>` mobile menu with a focus trap.
 
-Each section receives an `onNavigate(id)` callback from `Index.tsx`.
+### Motion
 
-### UI components
+One primitive: [Reveal](src/components/motion/Reveal.tsx) — a single
+`IntersectionObserver` flips `data-revealed`, and CSS transitions opacity/translateY
+(0.65s, `cubic-bezier(.22,1,.36,1)`). Reduced motion (or no `IntersectionObserver`)
+reveals immediately; the global `prefers-reduced-motion` block in `index.css` kills
+every transition and animation. Keep entrances transform/opacity only, one per block.
 
-shadcn/ui primitives live in [src/components/ui/](src/components/ui/) (Radix UI wrappers). Import with the `@/` alias (maps to `src/`). The `cn()` utility (classname merging) is in [src/lib/utils.ts](src/lib/utils.ts).
+### Projects data model
 
-### Design tokens
+- [src/data/projects.ts](src/data/projects.ts) — `professionalProjects` (paid work).
+- [src/data/caseStudies.ts](src/data/caseStudies.ts) — the three missions told in full
+  (enjeu → contribution → résultat). Each points at a `professionalProjects` entry by
+  title for its stack and link; `otherProfessionalProjects` is the rest, so the archive
+  never repeats a case study.
+- [src/data/academicProjects.ts](src/data/academicProjects.ts) — coursework, each tagged
+  with a `theme`; `academicThemes` carries the label, the teaching goal and the takeaway.
 
-Colors are defined as HSL CSS variables in [src/index.css](src/index.css) and consumed by [tailwind.config.ts](tailwind.config.ts). Palette « Heritage Royal »: midnight ink `#111722`, warm ivory `#F1ECE2`, royal blue `#2447A8`, oxblood `#6F283A` (rare accent), stone `#B8AD9D`. Two accent tiers: `brand` (raw royal, fills/CTA only) and `primary` (AA-safe per mode — royal in light, lightened royal in dark — for accent text and thin lines); `brand-secondary` is the oxblood. Dark mode uses the `class` strategy, applied pre-paint by an inline script in [index.html](index.html). Page depth comes from three background planes: ivory, a tinted band (`bg-muted/60` on Skills), and an "ink ending" — ContactSection and Footer wrap themselves in the `dark` class so the page always closes on midnight, in both modes.
+**Professional and academic work must stay visibly separate.** [ProjectArchive](src/components/ProjectArchive.tsx)
+renders two titled groups ("Autres missions professionnelles" / "Projets académiques");
+academic projects are grouped by theme and always shown with their goal and takeaway,
+never mixed into the professional list.
 
-Custom utility classes defined in `index.css`: `.text-gradient`, `.card-floating`, `.card-swiss`, `.section-container` (content-driven padding, no min-h — only the hero adds its own `min-h-[100svh]`), `.kicker` (small sans label), `.label-mono` (mono label reserved for data: dates, counters, coordinates), `.grid-bg`, `.nav-dot`, `.link-editorial`, `.caret-terminal`, `.scrollbar-hide`, `.rise`.
+### i18n
 
-Fonts: `Newsreader` (display serif — headings, hero name, footer wordmark), `DM Sans` (body/UI) and `JetBrains Mono` (data labels only), loaded via Google Fonts in [index.html](index.html). Decorative section numbering and systematic uppercase mono kickers were deliberately removed — don't reintroduce them.
+[src/i18n/](src/i18n/) — `LanguageProvider` + `useT()`. `t("nav.menu")` for chrome
+strings (`fr.ts` / `en.ts`, kept trimmed to what is actually used), and
+`tx({fr, en}, lang)` for bilingual data fields. The choice persists in
+`localStorage["portfolio-lang"]` and syncs `<html lang>`.
+
+### Design tokens & theming
+
+HSL CSS variables in [src/index.css](src/index.css), mirrored in
+[tailwind.config.ts](tailwind.config.ts). **Dark-first**: `:root, .dark` holds the dark
+tokens, `:root[data-theme="light"]` overrides for light. An inline script in
+[index.html](index.html) sets `data-theme` *and* the `dark` class before the first
+paint from `localStorage["portfolio-theme"]` (dark unless `"light"`) — it is the single
+source of truth, don't add a second one.
+
+Palette: ink `#0e100f` page, lime accent `#d0f764` (`--primary` / `--brand`, `#d2f663`
+where the accent is hard-coded in decorative art), text `#efefec`. In light mode
+`--primary` becomes a deep green (`#3c6916`) so accent text stays AA-legible.
+Page depth comes from two planes: the ink page and a **paper** plane
+(`--paper`, ivory) used by the Projects and Experience sections, which carry ink text
+via `--ink` / `--paper-muted` / `--paper-line`. Light mode replays the same rhythm
+(near-white page, ivory band) — keep the two tones distinct enough to read.
+
+Typography: **DM Sans only**, self-hosted in `public/fonts/*.woff2` (400 and a 500–700
+face), preloaded in `index.html`. `--font-mono` is a system stack, used only for
+`.eyebrow` labels (small uppercase mono: kickers, dates, categories, counts).
+No serif display face.
+
+Class naming: semantic, hand-written, BEM-ish (`.case-story`, `.timeline-entry`,
+`.theme-block`). Tailwind is kept **only** for preflight, `sr-only` and the token
+mirror — do not write utility classes in components, and do not reintroduce shadcn/ui
+(all 46 unused primitives were removed; `npx shadcn add` would pull back ~30 Radix deps).
+
+### Contact form
+
+[ContactSection](src/components/sections/ContactSection.tsx) POSTs to
+`/.netlify/functions/contact` ([netlify/functions/contact.mjs](netlify/functions/contact.mjs)),
+which relays server-side to Google Apps Script (`GOOGLE_SCRIPT_URL`, set in Netlify —
+see [google-apps-script/Code.gs](google-apps-script/Code.gs)). Includes a honeypot
+field and a required consent checkbox. Public contact details come from
+`VITE_CONTACT_EMAIL` / `VITE_CONTACT_PHONE`.
+
+Analytics (GA4) loads **only** after explicit opt-in via
+[CookieConsent](src/components/CookieConsent.tsx) — no third-party request before that.
+
+### SEO / meta
+
+`canonical`, `og:url` and `og:image` are absolute and injected at build time by the
+`inject-site-meta` plugin in [vite.config.ts](vite.config.ts), from `VITE_SITE_URL` or
+Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm run dev`.
+
+### Tests
+
+[tests/portfolio.spec.ts](tests/portfolio.spec.ts) (Playwright, Chrome, against
+`npm run preview`): layout and no-horizontal-overflow at nine widths from 320 to
+1920 px, mobile dialog focus trap, the professional/academic archive split, language
+and theme persistence, scroll reveals never leaving content hidden, the 404 page,
+analytics consent, the contact form (both outcomes, network intercepted) and four
+axe WCAG 2.1 AA audits (dark/light × 390/1440). Keep them green — they encode
+decisions, not just behaviour.
 
 ### TypeScript config
 
-Loose settings — `noImplicitAny: false`, `strictNullChecks: false`, unused variable warnings off. Don't tighten these without user instruction.
-
-### No tests
-
-There is no test infrastructure configured in this project.
+Loose settings — `noImplicitAny: false`, `strictNullChecks: false`, unused-variable
+warnings off. Don't tighten these without user instruction.
