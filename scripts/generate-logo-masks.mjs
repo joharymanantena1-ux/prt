@@ -43,10 +43,11 @@ const LOGOS = [
 
 // Toutes les marques sont posées dans la même boîte 3:1 : le CSS n'a plus qu'à
 // fixer une hauteur commune, et la grille du mur de logos s'aligne d'elle-même.
-// 240×80 couvre un affichage jusqu'à ~120 px de large en 2× ; les marques ne
-// dépassent jamais 30 px de haut sur le site.
-const BOX_W = 240;
-const BOX_H = 80;
+// 360×120 : les marques sont affichées au plus large dans le mur de logos
+// (~102 px), donc la boîte tient jusqu'à 3,5× — net sur écran haute densité,
+// pour 2 à 4 kB par fichier.
+const BOX_W = 360;
+const BOX_H = 120;
 
 for (const { file, out, light, threshold = 62, scale = 1 } of LOGOS) {
   await mkdir(OUT, { recursive: true });

@@ -91,6 +91,204 @@
       content="Applications web modernes et performantes — front, back et mobile."
     />
 
+    <!-- Écran d'accueil : peint avant React (sinon le hero apparaîtrait d'abord
+         et l'animation ressemblerait à un bug). Styles et script en ligne, une
+         seule fois par navigateur, jamais sous « mouvement réduit ». -->
+    <style>
+      #intro {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        padding: clamp(20px, 5vw, 56px);
+        background: #0e100f;
+        color: #efefec;
+        font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+        cursor: pointer;
+      }
+      #intro[hidden] {
+        display: none;
+      }
+      /* Le visiteur en mode clair ne doit pas recevoir un rideau sombre. */
+      #intro.intro-light {
+        background: #fbfbf9;
+        color: #181b18;
+      }
+      #intro.intro-light .intro-kicker,
+      #intro.intro-light .intro-foot {
+        color: #565a51;
+      }
+      #intro.intro-light .intro-lines span:nth-child(3) b {
+        color: #3c6916;
+      }
+      #intro.intro-light .intro-foot,
+      #intro.intro-light .intro-bar {
+        border-color: #d2d0c3;
+        background-color: transparent;
+      }
+      #intro.intro-light .intro-bar {
+        background: #d2d0c3;
+      }
+      #intro.intro-light .intro-bar i {
+        background: #3c6916;
+      }
+      #intro.intro-light #intro-skip {
+        border-color: #d2d0c3;
+        color: #181b18;
+      }
+      #intro.intro-light #intro-skip:hover {
+        border-color: #3c6916;
+        color: #3c6916;
+      }
+      html.intro-active,
+      html.intro-active body {
+        overflow: hidden;
+      }
+      .intro-inner {
+        align-self: center;
+        max-width: 1328px;
+        width: 100%;
+        margin-inline: auto;
+      }
+      .intro-kicker,
+      .intro-foot {
+        font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #8f938c;
+      }
+      .intro-name {
+        margin: 22px 0 0;
+        font-size: 14px;
+      }
+      .intro-lines {
+        margin: 18px 0 0;
+        font-size: clamp(52px, 11vw, 116px);
+        font-weight: 500;
+        line-height: 0.97;
+        letter-spacing: -0.078em;
+      }
+      .intro-lines span {
+        display: block;
+        overflow: clip;
+        padding: 0.02em 0.06em 0.095em;
+        margin-bottom: -0.095em;
+      }
+      .intro-lines b {
+        display: block;
+        font-weight: inherit;
+        transform: translateY(108%);
+        animation: intro-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      .intro-lines span:nth-child(1) b {
+        animation-delay: 0.35s;
+      }
+      .intro-lines span:nth-child(2) b {
+        animation-delay: 0.5s;
+      }
+      .intro-lines span:nth-child(3) b {
+        animation-delay: 0.65s;
+        color: #d2f663;
+      }
+      .intro-kicker,
+      .intro-name,
+      .intro-foot,
+      #intro-skip {
+        opacity: 0;
+        animation: intro-fade 0.6s ease forwards;
+      }
+      .intro-kicker {
+        animation-delay: 0.15s;
+      }
+      .intro-name {
+        animation-delay: 0.25s;
+      }
+      #intro-skip {
+        animation-delay: 0.6s;
+      }
+      .intro-foot {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: space-between;
+        border-top: 1px solid #1f241f;
+        padding-top: 18px;
+        animation-delay: 1s;
+      }
+      .intro-bar {
+        flex: 1;
+        max-width: 320px;
+        height: 1px;
+        background: #1f241f;
+      }
+      .intro-bar i {
+        display: block;
+        height: 100%;
+        background: #d2f663;
+        transform: scaleX(0);
+        transform-origin: left;
+        animation: intro-bar 4.4s linear 1s forwards;
+      }
+      #intro-skip {
+        position: absolute;
+        top: clamp(20px, 5vw, 56px);
+        right: clamp(20px, 5vw, 56px);
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 14px;
+        border: 1px solid #2b312b;
+        border-radius: 2px;
+        background: none;
+        color: #efefec;
+        font: inherit;
+        font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      #intro-skip:hover {
+        border-color: #d2f663;
+        color: #d2f663;
+      }
+      #intro.intro-leaving {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+      }
+      @keyframes intro-rise {
+        to {
+          transform: none;
+        }
+      }
+      @keyframes intro-fade {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes intro-bar {
+        to {
+          transform: scaleX(1);
+        }
+      }
+      @media (max-width: 600px) {
+        #intro-year {
+          display: none;
+        }
+        .intro-bar {
+          max-width: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #intro {
+          display: none;
+        }
+      }
+    </style>
+
     <!-- Structured data — Person (référencement enrichi) -->
     <script type="application/ld+json">
       {
@@ -123,7 +321,82 @@
   </head>
 
   <body>
+    <div id="intro" hidden role="dialog" aria-label="Écran d’accueil">
+      <div class="intro-inner">
+        <p class="intro-kicker" id="intro-kicker">
+          Développeur Full-Stack / Web &amp; Mobile
+        </p>
+        <p class="intro-name">Johary Manantena</p>
+        <h2 class="intro-lines" id="intro-lines" aria-hidden="true"></h2>
+      </div>
+      <p class="intro-foot">
+        <span id="intro-place">Antananarivo, Madagascar</span>
+        <span class="intro-bar"><i></i></span>
+        <span id="intro-year">Portfolio — 2026</span>
+      </p>
+      <button id="intro-skip" type="button">Passer</button>
+    </div>
     <div id="root"></div>
+    <script>
+      (function () {
+        var intro = document.getElementById("intro");
+        var KEY = "portfolio-intro-seen";
+        var force = /[?&#]intro=1|#intro$/.test(location.href);
+        var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var seen = false;
+        try {
+          seen = localStorage.getItem(KEY) === "1";
+        } catch (e) {}
+        // Une seule fois par navigateur, et jamais sous « mouvement réduit ».
+        if ((seen || reduce) && !force) {
+          intro.remove();
+          return;
+        }
+        var en = false;
+        try {
+          en = localStorage.getItem("portfolio-lang") === "en";
+          if (localStorage.getItem("portfolio-theme") === "light")
+            intro.classList.add("intro-light");
+        } catch (e) {}
+        if (en) {
+          document.getElementById("intro-kicker").textContent =
+            "Full-Stack Developer / Web & Mobile";
+          intro.setAttribute("aria-label", "Welcome screen");
+          document.getElementById("intro-skip").textContent = "Skip";
+        }
+        var lines = en
+          ? ["Code.", "Purpose.", "Real impact."]
+          : ["Du code.", "Du sens.", "De l\u2019impact."];
+        document.getElementById("intro-lines").innerHTML = lines
+          .map(function (line) {
+            return "<span><b>" + line + "</b></span>";
+          })
+          .join("");
+        try {
+          localStorage.setItem(KEY, "1");
+        } catch (e) {}
+        document.documentElement.classList.add("intro-active");
+        intro.hidden = false;
+
+        var left = false;
+        function leave() {
+          if (left) return;
+          left = true;
+          intro.classList.add("intro-leaving");
+          document.documentElement.classList.remove("intro-active");
+          document.removeEventListener("keydown", onKey);
+          setTimeout(function () {
+            intro.remove();
+          }, 520);
+        }
+        function onKey(event) {
+          if (event.key === "Escape" || event.key === "Enter") leave();
+        }
+        intro.addEventListener("click", leave);
+        document.addEventListener("keydown", onKey);
+        setTimeout(leave, 5600);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -25,14 +25,6 @@ function ProjectVisual({ kind }: { kind: string }) {
             <span>BAY</span>
             <span className="beauty-asterisk">✳</span>
           </div>
-          {/* La marque réelle en petit : le fichier source (240 px) ne tient pas
-              un affichage plein cadre, mais reste net à cette échelle. */}
-          <BrandMark
-            src={brandMarks["BeautyBay – Web & Mobile"]}
-            name="BeautyBay"
-            className="visual-mark"
-            decorative
-          />
           <div className="visual-platforms">
             <span>Web</span>
             <span className="platform-line" />
@@ -121,10 +113,12 @@ export default function ProjectsSection() {
         <div className="case-grid">
           {caseStudies.map((item, index) => {
             const project = caseStudyProject(item);
+            const mark = brandMarks[item.projectTitle];
             return (
               <Reveal
                 key={item.key}
                 className={`case-item ${index === 0 ? "case-featured" : ""}`}
+                delay={index === 0 ? 0 : 0.07}
               >
                 <article>
                   <ProjectVisual kind={item.key} />
@@ -133,7 +127,17 @@ export default function ProjectsSection() {
                       <span>
                         0{index + 1} — {tx(item.category, lang)}
                       </span>
-                      <span>{item.name}</span>
+                      {/* Un seul emplacement de marque par carte : le logo
+                          quand il existe, le nom en mono sinon. */}
+                      {mark ? (
+                        <BrandMark
+                          src={mark}
+                          name={item.name}
+                          className="case-mark"
+                        />
+                      ) : (
+                        <span>{item.name}</span>
+                      )}
                     </div>
                     <h3>{tx(item.headline, lang)}</h3>
                     <dl className="case-story">
