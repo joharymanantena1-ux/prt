@@ -14,29 +14,23 @@ export interface ExpItem {
 }
 
 export const experiences: ExpItem[] = [
-  {
-    title: { fr: "Développeur Full-Stack", en: "Full-Stack Developer" },
-    company: "BeautyBay",
-    period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
-    current: true,
-    description: {
-      fr: "Développement full-stack de l’écosystème e-commerce BeautyBay, web et mobile : évolution des interfaces clientes et de l’API, intégration de données entre les systèmes métier (flux produits, stocks et commandes synchronisés), intégration mobile React Native et services cloud AWS (stockage S3, automatisations).",
-      en: "Full-stack development of the BeautyBay e-commerce ecosystem, web and mobile: customer-facing interfaces and API work, data integration across business systems (synchronised product, stock and order flows), React Native mobile integration and AWS cloud services (S3 storage, automations).",
-    },
-    technologies: ["ReactJS", "React Native", "Node.js", "GraphQL", "AWS"],
-  },
+  /* Une seule entrée en cours : la mission freelance chez Regard Beauty, dont
+     l’écosystème BeautyBay est le chantier principal. Les deux étaient listées
+     séparément avec les mêmes dates, ce qui se lisait comme un doublon. Le
+     travail BeautyBay reste détaillé en étude de cas 01 sur la page. */
   {
     title: {
-      fr: "Développeur – Freelance On-site",
-      en: "Developer – On-site Freelance",
+      fr: "Développeur Full-Stack – Freelance on-site",
+      en: "Full-Stack Developer – On-site Freelance",
     },
     company: "Regard Beauty",
     period: { fr: "Avr 2026 – Présent", en: "Apr 2026 – Present" },
     current: true,
     description: {
-      fr: "Mission freelance à temps plein en présentiel : développement et maintenance d’applications internes, collaboration directe avec les équipes métier.",
-      en: "Full-time on-site freelance mission: building and maintaining internal applications, working directly with the business teams.",
+      fr: "Mission freelance à temps plein en présentiel. Développement full-stack de l’écosystème e-commerce BeautyBay, web et mobile : évolution des interfaces clientes et de l’API, intégration de données entre les systèmes métier (flux produits, stocks et commandes synchronisés), intégration mobile React Native et services cloud AWS (stockage S3, automatisations). Maintenance des applications internes, en lien direct avec les équipes métier.",
+      en: "Full-time on-site freelance mission. Full-stack development of the BeautyBay e-commerce ecosystem, web and mobile: customer-facing interfaces and API work, data integration across business systems (synchronised product, stock and order flows), React Native mobile integration and AWS cloud services (S3 storage, automations). Maintenance of internal applications, working directly with the business teams.",
     },
+    technologies: ["ReactJS", "React Native", "Node.js", "GraphQL", "AWS"],
   },
   {
     title: {
