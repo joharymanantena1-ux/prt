@@ -49,7 +49,8 @@ One primitive: [Reveal](src/components/motion/Reveal.tsx) — a single
 (0.65s, `cubic-bezier(.22,1,.36,1)`). Reduced motion (or no `IntersectionObserver`)
 reveals immediately; the global `prefers-reduced-motion` block in `index.css` kills
 every transition and animation. Keep entrances transform/opacity only, one per block;
-`delay` staggers siblings (used lightly on the case grid).
+`delay` staggers siblings. Opening a `<details>` animates its panel (`detail-in`),
+never the element itself — `details` has no native transition.
 
 Hover conventions, all ≤ 0.3s and colour/transform only: arrows translate
 `2px,-2px`, the primary button lifts 2px, nav links grow an underline, icon buttons
@@ -95,9 +96,9 @@ context) — the uniform box keeps the logo wall optically aligned.
 
 `brandMarks` in [src/data/brandMarks.ts](src/data/brandMarks.ts) maps an exact
 project title to its mask; `clientMarks` is the client wall under the case
-studies. Three placements: the client wall, a gutter in the professional archive
-rows (always rendered, so titles stay aligned when a mission has no mark), and a
-discreet mark inside a case-study visual. Academic rows carry no marks.
+studies. Three placements: the client wall, the head rail of each case study
+(`.case-mark`), and a gutter in the mission rows (`.mission-mark`, always rendered so
+titles stay aligned when a mission has no mark). Academic rows carry no marks.
 
 Adding a logo: drop the file in `src/assets/`, add a line to the `LOGOS` table in
 the script (`light` = the mark is the light part; `threshold` and `scale` tune
@@ -106,14 +107,28 @@ check the result — a wrong polarity yields a solid block. `assetsInlineLimit: 
 in [vite.config.ts](vite.config.ts) keeps these masks out of the main JS chunk
 (inlined as base64 they added ~19 kB gzip to it).
 
-**Professional and academic work must stay visibly separate.** [ProjectArchive](src/components/ProjectArchive.tsx)
-renders two titled groups: the professional missions as rows on the page, and
-"Projets académiques" as a **five-line preview** (one per theme, with counts) plus a
-button that opens the detail in a [Modal](src/components/Modal.tsx) — 31 coursework
-rows must not weigh on the page (moving them out cut ~20 % of the page height).
-Each list owns its own search field; the preview counts stay unfiltered because it is
-a summary. Academic projects keep their theme grouping with goal and takeaway, and are
-never mixed into the professional list.
+**Professional and academic work must stay visibly separate.**
+[MissionList](src/components/MissionList.tsx) keeps the ten paid missions **on the
+page** — one row each (mark · title · category · sign), detail behind a native
+`<details>`, with its own search field. The 31 coursework projects live only in
+[AcademicModal](src/components/AcademicModal.tsx), opened by the "Voir mes projets
+académiques" button and **lazy-loaded on that click** (~6 kB gzip kept out of the
+first load). The modal carries the free-text search plus one chip per family
+(`short` in `academicThemes`), and every family keeps its teaching goal and takeaway.
+Never move coursework back into the page flow.
+
+### Case studies — editorial spreads
+
+The three case studies are full-width spreads, not cards: a hairline separates each,
+the visual alternates side (`:nth-child(even)` swaps both the grid areas **and** the
+column proportions, so the visual always keeps the wide column), and a large index
+anchors the head rail next to the category and the client mark. Visuals use a constant
+`aspect-ratio` (16/10, 4/3 under 768px) rather than fixed heights. On one column the
+alternation is cancelled — the visual always leads, like an article.
+
+No boxes, no shared borders around cells: the structure comes from alignment, rhythm
+and hairlines. A bento version with shared ink borders was built and rejected as too
+hard against the rest of the page — don't reintroduce it.
 
 ### Modal
 
@@ -180,9 +195,9 @@ Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm ru
 
 [tests/portfolio.spec.ts](tests/portfolio.spec.ts) (Playwright, Chrome, against
 `npm run preview`): layout and no-horizontal-overflow at nine widths from 320 to
-1920 px, mobile dialog focus trap, the professional/academic archive split, the
-academic modal (open, filter, focus trap, three ways to close, full-screen on
-mobile), the welcome screen (plays once, skippable, absent under reduced motion), language
+1920 px, mobile dialog focus trap, missions staying on the page while coursework
+stays out of it, the academic modal (open, family filters, search, focus trap, three
+ways to close, full-screen on mobile), the welcome screen (plays once, skippable, absent under reduced motion), language
 and theme persistence, scroll reveals never leaving content hidden, the 404 page,
 analytics consent, the contact form (both outcomes, network intercepted) and four
 axe WCAG 2.1 AA audits (dark/light × 390/1440). Keep them green — they encode
