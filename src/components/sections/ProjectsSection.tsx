@@ -1,11 +1,13 @@
 import { lazy, Suspense, useState } from "react";
-import { ArrowDown, ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight, GraduationCap } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import { caseStudies, caseStudyProject } from "@/data/caseStudies";
 import { brandMarks, clientMarks } from "@/data/brandMarks";
 import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
-const ProjectArchive = lazy(() => import("@/components/ProjectArchive"));
+import MissionList from "@/components/MissionList";
+/* Les 31 projets de formation ne sont chargés qu'à l'ouverture de la modale. */
+const AcademicModal = lazy(() => import("@/components/AcademicModal"));
 
 function ProjectVisual({ kind }: { kind: string }) {
   return (
@@ -75,7 +77,9 @@ function ProjectVisual({ kind }: { kind: string }) {
 
 export default function ProjectsSection() {
   const { lang } = useT();
-  const [archiveOpen, setArchiveOpen] = useState(false);
+  /* `null` tant que la modale n'a jamais été ouverte : le module reste hors du
+     premier chargement. */
+  const [archiveOpen, setArchiveOpen] = useState<boolean | null>(null);
   return (
     <section
       id="projets"
@@ -115,72 +119,77 @@ export default function ProjectsSection() {
             const project = caseStudyProject(item);
             const mark = brandMarks[item.projectTitle];
             return (
-              <Reveal
-                key={item.key}
-                className={`case-item ${index === 0 ? "case-featured" : ""}`}
-                delay={index === 0 ? 0 : 0.07}
-              >
+              <Reveal key={item.key} className="case-item">
                 <article>
-                  <ProjectVisual kind={item.key} />
-                  <div className="case-content">
-                    <div className="case-meta eyebrow">
-                      <span>
-                        0{index + 1} — {tx(item.category, lang)}
-                      </span>
-                      {/* Un seul emplacement de marque par carte : le logo
-                          quand il existe, le nom en mono sinon. */}
-                      {mark ? (
-                        <BrandMark
-                          src={mark}
-                          name={item.name}
-                          className="case-mark"
-                        />
+                  {/* Rail de tête : l'index donne l'ancrage géométrique, la
+                      catégorie le contexte, la marque l'identité du client. */}
+                  <header className="case-head">
+                    <span className="case-index" aria-hidden="true">
+                      0{index + 1}
+                    </span>
+                    <span className="eyebrow case-category">
+                      {tx(item.category, lang)}
+                    </span>
+                    {mark ? (
+                      <BrandMark
+                        src={mark}
+                        name={item.name}
+                        className="case-mark"
+                      />
+                    ) : (
+                      <span className="eyebrow">{item.name}</span>
+                    )}
+                  </header>
+                  <div className="case-body">
+                    <figure className="case-figure">
+                      <ProjectVisual kind={item.key} />
+                    </figure>
+                    <div className="case-content">
+                      <h3>{tx(item.headline, lang)}</h3>
+                      <dl className="case-story">
+                        <div>
+                          <dt>{lang === "fr" ? "L’enjeu" : "The challenge"}</dt>
+                          <dd>{tx(item.problem, lang)}</dd>
+                        </div>
+                        <div>
+                          <dt>
+                            {lang === "fr"
+                              ? "Ma contribution"
+                              : "My contribution"}
+                          </dt>
+                          <dd>{tx(item.solution, lang)}</dd>
+                        </div>
+                        <div>
+                          <dt>
+                            {lang === "fr" ? "Le résultat" : "The result"}
+                          </dt>
+                          <dd>{tx(item.result, lang)}</dd>
+                        </div>
+                      </dl>
+                      {project && (
+                        <p className="case-stack eyebrow">
+                          {project.technologies.join(" / ")}
+                        </p>
+                      )}
+                      {project?.liveUrl ? (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-link"
+                        >
+                          {lang === "fr" ? "Voir le site" : "Visit website"}
+                          <ArrowUpRight size={17} />
+                          <span className="sr-only"> — {item.name}</span>
+                        </a>
                       ) : (
-                        <span>{item.name}</span>
+                        <p className="private-project eyebrow">
+                          {lang === "fr"
+                            ? "Outil interne · Présentation sur demande"
+                            : "Internal tool · Walkthrough on request"}
+                        </p>
                       )}
                     </div>
-                    <h3>{tx(item.headline, lang)}</h3>
-                    <dl className="case-story">
-                      <div>
-                        <dt>{lang === "fr" ? "L’enjeu" : "The challenge"}</dt>
-                        <dd>{tx(item.problem, lang)}</dd>
-                      </div>
-                      <div>
-                        <dt>
-                          {lang === "fr"
-                            ? "Ma contribution"
-                            : "My contribution"}
-                        </dt>
-                        <dd>{tx(item.solution, lang)}</dd>
-                      </div>
-                      <div>
-                        <dt>{lang === "fr" ? "Le résultat" : "The result"}</dt>
-                        <dd>{tx(item.result, lang)}</dd>
-                      </div>
-                    </dl>
-                    {project && (
-                      <p className="case-stack eyebrow">
-                        {project.technologies.join(" / ")}
-                      </p>
-                    )}
-                    {project?.liveUrl ? (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-link"
-                      >
-                        {lang === "fr" ? "Voir le site" : "Visit website"}
-                        <ArrowUpRight size={17} />
-                        <span className="sr-only"> — {item.name}</span>
-                      </a>
-                    ) : (
-                      <p className="private-project eyebrow">
-                        {lang === "fr"
-                          ? "Outil interne · Présentation sur demande"
-                          : "Internal tool · Walkthrough on request"}
-                      </p>
-                    )}
                   </div>
                 </article>
               </Reveal>
@@ -202,35 +211,35 @@ export default function ProjectsSection() {
               />
             ))}
           </div>
-          <button
-            className="archive-toggle"
-            aria-expanded={archiveOpen}
-            aria-controls="project-archive"
-            onClick={() => setArchiveOpen(!archiveOpen)}
-          >
-            <span>
-              {lang === "fr"
-                ? "Missions professionnelles et projets académiques"
-                : "Professional work and academic projects"}
-            </span>
-            {archiveOpen ? <ArrowDown size={20} /> : <Plus size={20} />}
-          </button>
-          <div id="project-archive">
-            {archiveOpen && (
-              <Suspense
-                fallback={
-                  <p role="status">
-                    {lang === "fr"
-                      ? "Chargement des projets…"
-                      : "Loading projects…"}
-                  </p>
-                }
-              >
-                <ProjectArchive />
-              </Suspense>
-            )}
-          </div>
         </div>
+        <MissionList />
+        {/* La formation quitte le flux de la page : un bouton, puis une modale. */}
+        <div className="academic-cta">
+          <p>
+            {lang === "fr"
+              ? "31 projets de formation — Licence Informatique, IT-University."
+              : "31 coursework projects — Computer Science degree, IT-University."}
+          </p>
+          <button
+            type="button"
+            className="academic-open"
+            onClick={() => setArchiveOpen(true)}
+          >
+            <GraduationCap size={18} aria-hidden="true" />
+            {lang === "fr"
+              ? "Voir mes projets académiques"
+              : "View my academic projects"}
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </button>
+        </div>
+        {archiveOpen !== null && (
+          <Suspense fallback={null}>
+            <AcademicModal
+              open={archiveOpen}
+              onClose={() => setArchiveOpen(false)}
+            />
+          </Suspense>
+        )}
       </div>
     </section>
   );

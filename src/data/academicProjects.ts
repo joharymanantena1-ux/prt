@@ -14,12 +14,16 @@ export interface AcademicProject extends Project {
 
 export const academicThemes: {
   key: AcademicTheme;
+  /** Libellé long, en tête de famille. */
   label: Bi;
+  /** Libellé court, pour les filtres de la modale. */
+  short: Bi;
   goal: Bi;
   learned: Bi;
 }[] = [
   {
     key: "java",
+    short: { fr: "Java & Oracle", en: "Java & Oracle" },
     label: {
       fr: "Applications d’entreprise — Java & Oracle",
       en: "Enterprise applications — Java & Oracle",
@@ -35,6 +39,7 @@ export const academicThemes: {
   },
   {
     key: "web",
+    short: { fr: "Web full-stack", en: "Full-stack web" },
     label: {
       fr: "Web full-stack — un cycle complet, plusieurs stacks",
       en: "Full-stack web — one full cycle, several stacks",
@@ -50,6 +55,7 @@ export const academicThemes: {
   },
   {
     key: "systemes",
+    short: { fr: "Systèmes & données", en: "Systems & data" },
     label: {
       fr: "Algorithmique, systèmes & données",
       en: "Algorithms, systems & data",
@@ -65,6 +71,7 @@ export const academicThemes: {
   },
   {
     key: "apps",
+    short: { fr: "Desktop & mobile", en: "Desktop & mobile" },
     label: {
       fr: "Applications desktop & mobile",
       en: "Desktop & mobile applications",
@@ -80,6 +87,7 @@ export const academicThemes: {
   },
   {
     key: "jeux",
+    short: { fr: "Jeux", en: "Games" },
     label: { fr: "Jeux & simulation", en: "Games & simulation" },
     goal: {
       fr: "Objectif : boucle de jeu, gestion d’état temps réel et IA simple (poursuite sur grille, stratégie, résolution).",

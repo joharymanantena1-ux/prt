@@ -43,14 +43,15 @@ for (const width of sizes) {
         ),
       ).toBe(true);
     }
-    await page.locator(".archive-toggle").click();
-    await expect(page.locator(".archive-content")).toBeVisible();
+    // La liste des missions vit sur la page : on déplie un détail au passage.
+    await expect(page.locator(".mission-row")).toHaveCount(10);
+    await page.locator(".mission-row summary").first().click();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page.locator(".archive-toggle").click();
+    await page.locator(".mission-row summary").first().click();
     if (width < 768) {
       await page
         .getByRole("button", { name: "Ouvrir le menu", exact: true })
@@ -100,37 +101,42 @@ test("mobile dialog traps focus, closes with Escape and restores scrolling", asy
   expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
 });
 
-test("archive separates professional work from an academic modal", async ({
+test("professional missions stay on the page, coursework lives in the modal", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Refuser", exact: true }).click();
-  await page.locator(".archive-toggle").click();
 
-  const pro = page.locator(".archive-group").first();
-  const academic = page.locator(".archive-academic");
-  await expect(pro.locator("h3")).toContainText(
+  // Les missions sont lisibles sans ouvrir quoi que ce soit.
+  const missions = page.locator(".mission-list");
+  await expect(missions.getByRole("heading", { level: 3 })).toHaveText(
     "Autres missions professionnelles",
   );
-  await expect(pro.locator(".archive-row")).toHaveCount(10);
+  await expect(missions.locator(".mission-row")).toHaveCount(10);
   // Les études de cas racontées au-dessus ne sont pas répétées ici.
-  await expect(pro).not.toContainText("BeautyBay – Web & Mobile");
+  await expect(missions).not.toContainText("BeautyBay – Web & Mobile");
+  // Aucun projet de formation sur la page.
+  await expect(page.locator("#projets")).not.toContainText("ProjetKidoro");
+  await expect(page.locator("#projets")).not.toContainText("Objectif :");
 
-  // La formation tient en cinq lignes d'aperçu : aucun détail sur la page.
-  await expect(academic.locator("h3")).toContainText("31 projets");
-  await expect(academic.locator(".academic-preview li")).toHaveCount(5);
-  await expect(academic.locator(".archive-row")).toHaveCount(0);
-  await expect(academic).not.toContainText("Objectif :");
+  // Le détail d'une mission est accessible au clic, et refermable.
+  const first = missions.locator(".mission-row").first();
+  await expect(first.locator(".mission-detail")).toBeHidden();
+  await first.locator("summary").click();
+  await expect(first.locator(".mission-detail")).toBeVisible();
+  await expect(first).toContainText("Shopify");
+  await first.locator("summary").click();
+  await expect(first.locator(".mission-detail")).toBeHidden();
 
-  // La recherche des missions ne touche pas l'aperçu.
+  // La recherche filtre la liste.
   await page.getByRole("searchbox").fill("Shopify");
-  await expect(pro.locator(".archive-row")).toHaveCount(4);
-  await expect(academic.locator(".academic-preview li")).toHaveCount(5);
-  await page.getByRole("searchbox").fill("no-such-project");
-  await expect(pro.locator(".archive-row")).toHaveCount(0);
-  await expect(pro.locator(".archive-empty")).toBeVisible();
+  await expect(missions.locator(".mission-row")).toHaveCount(4);
+  await expect(missions.locator('[role="status"]')).toContainText("4 missions");
+  await page.getByRole("searchbox").fill("aucune-mission");
+  await expect(missions.locator(".mission-row")).toHaveCount(0);
+  await expect(missions.locator(".archive-empty")).toBeVisible();
   await page.getByRole("searchbox").fill("");
-  await expect(pro.locator(".archive-row")).toHaveCount(10);
+  await expect(missions.locator(".mission-row")).toHaveCount(10);
 });
 
 test("the academic modal opens, filters, traps focus and closes three ways", async ({
@@ -138,11 +144,9 @@ test("the academic modal opens, filters, traps focus and closes three ways", asy
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Refuser", exact: true }).click();
-  await page.locator(".archive-toggle").click();
-
   const modal = page.locator(".modal");
   const open = page.getByRole("button", {
-    name: "Voir les projets académiques",
+    name: "Voir mes projets académiques",
   });
   const close = page.getByRole("button", {
     name: "Fermer les projets académiques",
@@ -167,6 +171,17 @@ test("the academic modal opens, filters, traps focus and closes three ways", asy
   expect(await page.evaluate(() => document.body.style.overflow)).toBe(
     "hidden",
   );
+
+  // Filtre par famille : six pastilles, dont « Toutes ».
+  const chips = modal.locator(".filter-chips button");
+  await expect(chips).toHaveCount(6);
+  await expect(chips.first()).toHaveAttribute("aria-pressed", "true");
+  await chips.nth(1).click();
+  await expect(chips.nth(1)).toHaveAttribute("aria-pressed", "true");
+  await expect(modal.locator(".archive-row")).toHaveCount(7);
+  await expect(modal.locator(".theme-block")).toHaveCount(1);
+  await chips.first().click();
+  await expect(modal.locator(".archive-row")).toHaveCount(31);
 
   // Recherche propre à la modale.
   const search = modal.getByRole("searchbox");
@@ -212,9 +227,8 @@ test("the academic modal fills the screen on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.getByRole("button", { name: "Refuser", exact: true }).click();
-  await page.locator(".archive-toggle").click();
   await page
-    .getByRole("button", { name: "Voir les projets académiques" })
+    .getByRole("button", { name: "Voir mes projets académiques" })
     .click();
   const modal = page.locator(".modal");
   await expect(modal).toBeVisible();
@@ -285,13 +299,9 @@ test("brand marks load and keep the client names readable", async ({
 
   // Les missions professionnelles portent leur marque, alignées sur la même
   // gouttière ; les projets académiques n'en ont pas.
-  await page.locator(".archive-toggle").click();
-  const pro = page.locator(".archive-group").first();
-  await expect(pro.locator(".archive-row-mark")).toHaveCount(10);
-  await expect(pro.locator(".archive-row-mark .brand-mark")).toHaveCount(8);
-  await expect(page.locator(".archive-academic .archive-row-mark")).toHaveCount(
-    0,
-  );
+  const missions = page.locator(".mission-list");
+  await expect(missions.locator(".mission-mark")).toHaveCount(10);
+  await expect(missions.locator(".mission-mark .brand-mark")).toHaveCount(8);
 
   // Chaque masque doit vraiment se charger : un asset renommé ne casse rien
   // visiblement, la marque disparaît juste en silence.
@@ -525,7 +535,7 @@ for (const width of [390, 1440]) {
       await page.goto("/");
       await page.getByRole("button", { name: "Refuser", exact: true }).click();
       await page.locator(".contact-form-details summary").click();
-      await page.locator(".archive-toggle").click();
+
       const audit = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
         .analyze();
@@ -534,7 +544,7 @@ for (const width of [390, 1440]) {
       // La modale, une fois ouverte, est auditée à part (le reste de la page
       // est inerte, axe n'y verrait plus rien).
       await page
-        .getByRole("button", { name: "Voir les projets académiques" })
+        .getByRole("button", { name: "Voir mes projets académiques" })
         .click();
       await expect(page.locator(".modal")).toBeVisible();
       const modalAudit = await new AxeBuilder({ page })
