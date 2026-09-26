@@ -12,6 +12,7 @@ export default function Modal({
   title,
   subtitle,
   closeLabel,
+  className = "",
   children,
 }: {
   open: boolean;
@@ -19,6 +20,8 @@ export default function Modal({
   title: string;
   subtitle?: string;
   closeLabel: string;
+  /** Variante de mise en page (ex. `modal-case` pour les études de cas). */
+  className?: string;
   children: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -43,7 +46,7 @@ export default function Modal({
   return (
     <dialog
       ref={dialog}
-      className="modal"
+      className={`modal ${className}`.trim()}
       aria-labelledby={titleId}
       // Le clic n'atteint <dialog> que sur le fond : le contenu est dans .modal-panel.
       onClick={(event) => {

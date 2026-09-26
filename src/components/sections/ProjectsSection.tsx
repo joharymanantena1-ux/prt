@@ -1,85 +1,32 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, type CSSProperties } from "react";
 import { ArrowUpRight, GraduationCap } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import { caseStudies, caseStudyProject } from "@/data/caseStudies";
-import { brandMarks, clientMarks } from "@/data/brandMarks";
+import { clientMarks } from "@/data/brandMarks";
 import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 import MissionList from "@/components/MissionList";
+import Lines from "@/components/motion/Lines";
+/* Hors du chemin critique : le portrait du hero (l'élément LCP) attend que le
+   bundle principal soit exécuté — illustrations et modales n'ont rien à y faire.
+   Les illustrations sont sous la ligne de flottaison ; les modales se chargent
+   à la demande (préchargées au survol du bouton). */
+const ShowcaseArt = lazy(() => import("@/components/ShowcaseArt"));
+const loadCaseModal = () => import("@/components/CaseStudyModal");
+const CaseStudyModal = lazy(loadCaseModal);
 /* Les 31 projets de formation ne sont chargés qu'à l'ouverture de la modale. */
 const AcademicModal = lazy(() => import("@/components/AcademicModal"));
-
-function ProjectVisual({ kind }: { kind: string }) {
-  return (
-    <div className={`project-visual visual-${kind}`} aria-hidden="true">
-      <span className="visual-label eyebrow">
-        {kind === "beauty"
-          ? "Digital commerce"
-          : kind === "edu"
-            ? "Connected education"
-            : "People in motion"}
-      </span>
-      {kind === "beauty" ? (
-        <>
-          <div className="beauty-word">
-            BEAUTY
-            <br />
-            <span>BAY</span>
-            <span className="beauty-asterisk">✳</span>
-          </div>
-          <div className="visual-platforms">
-            <span>Web</span>
-            <span className="platform-line" />
-            <span>API</span>
-            <span className="platform-line" />
-            <span>Mobile</span>
-          </div>
-        </>
-      ) : kind === "edu" ? (
-        <>
-          <div className="edu-symbol">
-            <span />
-            <span />
-            <span />
-          </div>
-          <span className="visual-word">
-            levitation<span>edu.</span>
-          </span>
-        </>
-      ) : (
-        <>
-          <svg className="route-art" viewBox="0 0 600 310" fill="none">
-            <path
-              className="route-grid"
-              d="M0 60H600M0 150H600M0 240H600M90 0V310M230 0V310M370 0V310M510 0V310"
-            />
-            <path
-              className="route-path"
-              d="M80 230H205Q230 230 230 205V90Q230 65 255 65H470Q510 65 510 105V150"
-            />
-            <circle cx="80" cy="230" r="9" />
-            <circle cx="510" cy="150" r="9" />
-            <circle cx="230" cy="150" r="6" />
-          </svg>
-          <span className="visual-word visual-word-mark">
-            <BrandMark
-              src={brandMarks["Transport Interne Konecta"]}
-              name="Konecta"
-              decorative
-            />
-            <span>→</span>
-          </span>
-        </>
-      )}
-    </div>
-  );
-}
 
 export default function ProjectsSection() {
   const { lang } = useT();
   /* `null` tant que la modale n'a jamais été ouverte : le module reste hors du
      premier chargement. */
   const [archiveOpen, setArchiveOpen] = useState<boolean | null>(null);
+  const [caseOpen, setCaseOpen] = useState<number | null>(null);
+  /* Monté une fois ouvert, puis gardé : la modale se referme sans se démonter. */
+  const [caseEverOpened, setCaseEverOpened] = useState(false);
+  if (caseOpen !== null && !caseEverOpened) setCaseEverOpened(true);
+
   return (
     <section
       id="projets"
@@ -87,25 +34,19 @@ export default function ProjectsSection() {
       aria-labelledby="work-title"
     >
       <div className="shell">
-        <Reveal className="section-heading">
+        <Reveal className="section-heading" at={15}>
           <div>
             <p className="eyebrow section-kicker">
               01 / {lang === "fr" ? "Réalisations choisies" : "Selected work"}
             </p>
             <h2 id="work-title">
-              {lang === "fr" ? (
-                <>
-                  Des idées.
-                  <br />
-                  Du concret.
-                </>
-              ) : (
-                <>
-                  Ideas.
-                  <br />
-                  Made real.
-                </>
-              )}
+              <Lines
+                lines={
+                  lang === "fr"
+                    ? ["Des idées.", "Du concret."]
+                    : ["Ideas.", "Made real."]
+                }
+              />
             </h2>
           </div>
           <p>
@@ -114,88 +55,78 @@ export default function ProjectsSection() {
               : "Three contexts, one standard: understand the need and build the right solution."}
           </p>
         </Reveal>
-        <div className="case-grid">
+
+        {/* Vitrine : un panneau par étude de cas, peu de texte, l'image d'abord.
+            Le récit détaillé vit dans la modale. Sur grand écran les panneaux
+            s'empilent au défilement (sticky), voir index.css. */}
+        <ol
+          className="showcase"
+          style={{ "--n": caseStudies.length } as CSSProperties}
+        >
           {caseStudies.map((item, index) => {
             const project = caseStudyProject(item);
-            const mark = brandMarks[item.projectTitle];
             return (
-              <Reveal key={item.key} className="case-item">
-                <article>
-                  {/* Rail de tête : l'index donne l'ancrage géométrique, la
-                      catégorie le contexte, la marque l'identité du client. */}
-                  <header className="case-head">
-                    <span className="case-index" aria-hidden="true">
-                      0{index + 1}
-                    </span>
-                    <span className="eyebrow case-category">
-                      {tx(item.category, lang)}
-                    </span>
-                    {mark ? (
-                      <BrandMark
-                        src={mark}
-                        name={item.name}
-                        className="case-mark"
-                      />
-                    ) : (
-                      <span className="eyebrow">{item.name}</span>
-                    )}
-                  </header>
-                  <div className="case-body">
-                    <figure className="case-figure">
-                      <ProjectVisual kind={item.key} />
-                    </figure>
-                    <div className="case-content">
-                      <h3>{tx(item.headline, lang)}</h3>
-                      <dl className="case-story">
-                        <div>
-                          <dt>{lang === "fr" ? "L’enjeu" : "The challenge"}</dt>
-                          <dd>{tx(item.problem, lang)}</dd>
-                        </div>
-                        <div>
-                          <dt>
-                            {lang === "fr"
-                              ? "Ma contribution"
-                              : "My contribution"}
-                          </dt>
-                          <dd>{tx(item.solution, lang)}</dd>
-                        </div>
-                        <div>
-                          <dt>
-                            {lang === "fr" ? "Le résultat" : "The result"}
-                          </dt>
-                          <dd>{tx(item.result, lang)}</dd>
-                        </div>
-                      </dl>
+              <li
+                key={item.key}
+                className="showcase-item"
+                style={{ "--i": index } as CSSProperties}
+              >
+                <article
+                  className={`showcase-panel theme-${item.key}`}
+                  aria-labelledby={`case-${item.key}`}
+                >
+                  <div className="showcase-info">
+                    <p className="showcase-meta eyebrow">
+                      <span>0{index + 1}</span>
+                      <span>{tx(item.category, lang)}</span>
+                    </p>
+                    <div className="showcase-title">
+                      <h3 id={`case-${item.key}`}>{item.name}</h3>
+                      <p className="showcase-headline">
+                        {tx(item.headline, lang)}
+                      </p>
+                    </div>
+                    <div className="showcase-foot">
                       {project && (
-                        <p className="case-stack eyebrow">
-                          {project.technologies.join(" / ")}
-                        </p>
+                        <ul className="showcase-tags">
+                          {project.technologies.slice(0, 3).map((tech) => (
+                            <li key={tech}>{tech}</li>
+                          ))}
+                        </ul>
                       )}
-                      {project?.liveUrl ? (
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-link"
-                        >
-                          {lang === "fr" ? "Voir le site" : "Visit website"}
-                          <ArrowUpRight size={17} />
-                          <span className="sr-only"> — {item.name}</span>
-                        </a>
-                      ) : (
-                        <p className="private-project eyebrow">
-                          {lang === "fr"
-                            ? "Outil interne · Présentation sur demande"
-                            : "Internal tool · Walkthrough on request"}
-                        </p>
-                      )}
+                      {/* Un seul élément interactif par panneau : son ::after
+                          couvre tout le panneau, le clic n'importe où ouvre. */}
+                      <button
+                        type="button"
+                        className="showcase-open"
+                        onClick={() => setCaseOpen(index)}
+                        onPointerEnter={loadCaseModal}
+                        onFocus={loadCaseModal}
+                      >
+                        {lang === "fr"
+                          ? "Voir l’étude de cas"
+                          : "View case study"}
+                        <span className="sr-only"> — {item.name}</span>
+                        <ArrowUpRight size={18} aria-hidden="true" />
+                      </button>
                     </div>
                   </div>
+                  <div className="showcase-media">
+                    {/* Même proportion que le SVG : aucun décalage à l'arrivée. */}
+                    <Suspense
+                      fallback={
+                        <div className="showcase-svg" aria-hidden="true" />
+                      }
+                    >
+                      <ShowcaseArt kind={item.key} />
+                    </Suspense>
+                  </div>
                 </article>
-              </Reveal>
+              </li>
             );
           })}
-        </div>
+        </ol>
+
         <div className="project-index">
           <p className="eyebrow">
             {lang === "fr"
@@ -241,6 +172,15 @@ export default function ProjectsSection() {
           </Suspense>
         )}
       </div>
+      {caseEverOpened && (
+        <Suspense fallback={null}>
+          <CaseStudyModal
+            index={caseOpen}
+            onClose={() => setCaseOpen(null)}
+            onNavigate={setCaseOpen}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }

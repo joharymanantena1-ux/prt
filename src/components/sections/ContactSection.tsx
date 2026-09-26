@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { useT } from "@/i18n";
 import Reveal from "@/components/motion/Reveal";
+import Lines from "@/components/motion/Lines";
 const EMAIL =
   import.meta.env.VITE_CONTACT_EMAIL ?? "andrianmanantena@gmail.com";
 const PHONE_RAW = import.meta.env.VITE_CONTACT_PHONE ?? "+261 38 46 090 25";
@@ -51,7 +52,7 @@ export default function ContactSection() {
       className="contact-section shell section-space"
       aria-labelledby="contact-title"
     >
-      <Reveal>
+      <Reveal at={15}>
         <p className="eyebrow section-kicker">
           05 /{" "}
           {lang === "fr"
@@ -60,23 +61,25 @@ export default function ContactSection() {
         </p>
         <a className="contact-invitation" href={`mailto:${EMAIL}`}>
           <h2 id="contact-title">
-            {lang === "fr" ? (
-              <>
-                Et si on
-                <br />
-                <span>construisait</span>
-                <br />
-                la suite ?
-              </>
-            ) : (
-              <>
-                Let’s build
-                <br />
-                <span>what comes</span>
-                <br />
-                next.
-              </>
-            )}
+            <Lines
+              lines={
+                lang === "fr"
+                  ? [
+                      "Et si on",
+                      <span key="accent" className="title-accent">
+                        construisait
+                      </span>,
+                      "la suite ?",
+                    ]
+                  : [
+                      "Let’s build",
+                      <span key="accent" className="title-accent">
+                        what comes
+                      </span>,
+                      "next.",
+                    ]
+              }
+            />
           </h2>
           <ArrowUpRight
             className="contact-arrow"

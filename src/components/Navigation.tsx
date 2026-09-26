@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, Moon, Sun, X } from "lucide-react";
 import { useT } from "@/i18n";
 
@@ -8,8 +8,89 @@ const links = [
   { id: "parcours", fr: "Parcours", en: "Experience" },
 ];
 
+/* Sections suivies, dans l'ordre de la page. */
+const SPIED = [
+  "accueil",
+  "projets",
+  "apropos",
+  "competences",
+  "parcours",
+  "contact",
+];
+
+/**
+ * Section en cours de lecture : la dernière dont le haut a passé la ligne des
+ * 35 % de l'écran. Recalculée à chaque image de défilement plutôt qu'avec un
+ * IntersectionObserver : la section Contact est chargée en différé (son
+ * élément est remplacé au montage) et les observateurs restaient sur l'ancien.
+ */
+function useActiveSection() {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.35;
+      let current: string | null = null;
+      for (const id of SPIED) {
+        const section = document.getElementById(id);
+        if (section && section.getBoundingClientRect().top <= line)
+          current = id;
+      }
+      setActive(current);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+  return active;
+}
+
+/**
+ * Indicateur de la section lue : une barre d'accent posée sous le lien actif,
+ * qui glisse d'un lien à l'autre. Hors des liens (hero, Expertise, Contact),
+ * elle s'efface sur place et repart de là.
+ */
+function useNavIndicator(active: string | null, lang: string) {
+  const nav = useRef<HTMLElement>(null);
+  const bar = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const list = nav.current;
+    const el = bar.current;
+    if (!list || !el) return;
+    const place = () => {
+      const link = list.querySelector<HTMLElement>('a[aria-current="true"]');
+      el.style.setProperty("--ind-o", link ? "1" : "0");
+      if (!link) return;
+      el.style.setProperty("--ind-x", `${link.offsetLeft}px`);
+      el.style.setProperty("--ind-w", `${link.offsetWidth}px`);
+      if (el.dataset.placed === undefined) {
+        // Premier placement sans glissement ; les suivants s'animent.
+        void el.offsetWidth;
+        el.dataset.placed = "";
+      }
+    };
+    place();
+    // Les largeurs changent quand la police arrive et à chaque redimensionnement.
+    document.fonts?.ready.then(place);
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [active, lang]);
+  return { nav, bar };
+}
+
 export default function Navigation() {
   const { lang, setLang, t } = useT();
+  const active = useActiveSection();
+  const indicator = useNavIndicator(active, lang);
   const [light, setLight] = useState(
     () => localStorage.getItem("portfolio-theme") === "light",
   );
@@ -63,12 +144,25 @@ export default function Navigation() {
           jm<span>.</span>
           <span className="wordmark-name">Johary Manantena</span>
         </a>
-        <nav className="desktop-nav" aria-label={t("nav.mainNav")}>
+        <nav
+          ref={indicator.nav}
+          className="desktop-nav"
+          aria-label={t("nav.mainNav")}
+        >
           {links.map((link) => (
-            <a key={link.id} href={`#${link.id}`}>
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              aria-current={active === link.id ? "true" : undefined}
+            >
               {link[lang]}
             </a>
           ))}
+          <span
+            ref={indicator.bar}
+            className="nav-indicator"
+            aria-hidden="true"
+          />
         </nav>
         <div className="nav-tools">
           <button
@@ -86,7 +180,11 @@ export default function Navigation() {
           >
             {light ? <Moon size={17} /> : <Sun size={17} />}
           </button>
-          <a href="#contact" className="nav-contact">
+          <a
+            href="#contact"
+            className="nav-contact"
+            aria-current={active === "contact" ? "true" : undefined}
+          >
             {lang === "fr" ? "Échangeons" : "Let's talk"}
             <ArrowUpRight size={16} />
           </a>
@@ -149,7 +247,12 @@ export default function Navigation() {
             { id: "competences", fr: "Expertise", en: "Expertise" },
             { id: "contact", fr: "Échangeons", en: "Let's talk" },
           ].map((link, index) => (
-            <a key={link.id} href={`#${link.id}`} onClick={navigateFromMenu}>
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={navigateFromMenu}
+              aria-current={active === link.id ? "true" : undefined}
+            >
               <span className="eyebrow">0{index + 1}</span>
               {link[lang]}
               <ArrowUpRight size={24} />

@@ -50,6 +50,7 @@ export default function AcademicModal({
     <Modal
       open={open}
       onClose={onClose}
+      className="modal-academic"
       title={lang === "fr" ? "Projets académiques" : "Academic projects"}
       subtitle={
         lang === "fr"

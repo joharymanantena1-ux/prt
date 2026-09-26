@@ -101,6 +101,89 @@ test("mobile dialog traps focus, closes with Escape and restores scrolling", asy
   expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
 });
 
+test("case studies show little text and open a detailed, browsable modal", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+
+  // La vitrine reste légère : nom, accroche, trois technos, un bouton.
+  const panels = page.locator(".showcase-panel");
+  await expect(panels).toHaveCount(3);
+  for (const name of ["BeautyBay", "Levitation", "Konecta"]) {
+    await expect(
+      page
+        .locator(".showcase")
+        .getByRole("heading", { level: 3, name, exact: true }),
+    ).toBeVisible();
+  }
+  await expect(page.locator(".showcase")).not.toContainText("L’enjeu");
+  await expect(panels.first().locator(".showcase-tags li")).toHaveCount(3);
+
+  // Tout le panneau est cliquable, pas seulement le bouton : on clique sur le
+  // nom, en haut de la pile (avant que le panneau suivant ne le recouvre).
+  const modal = page.locator(".modal-case");
+  await page.evaluate(() => {
+    const top = document
+      .querySelector(".showcase")!
+      .getBoundingClientRect().top;
+    window.scrollTo({ top: scrollY + top - 140, behavior: "instant" });
+  });
+  const title = await panels.first().locator("h3").boundingBox();
+  await page.mouse.click(title!.x + 20, title!.y + title!.height / 2);
+  await expect(modal).toBeVisible();
+  await expect(modal.getByRole("heading", { level: 2 })).toHaveText(
+    "BeautyBay",
+  );
+  await expect(modal.locator(".case-story")).toContainText("L’enjeu");
+  await expect(
+    modal.getByRole("link", { name: /Voir le site/ }),
+  ).toHaveAttribute("href", "https://www.beautybay.com");
+
+  // D'une étude de cas à l'autre sans refermer ; le focus reste en place.
+  const next = modal.locator(".case-detail-nav button").last();
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(modal.getByRole("heading", { level: 2 })).toHaveText(
+    "Levitation",
+  );
+  await expect(next).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(modal.getByRole("heading", { level: 2 })).toHaveText("Konecta");
+  await expect(modal).toContainText("Présentation sur demande");
+  await page.keyboard.press("Enter");
+  await expect(modal.getByRole("heading", { level: 2 })).toHaveText(
+    "BeautyBay",
+  );
+
+  // Échap ferme et rend le focus au bouton du panneau d'origine.
+  await page.keyboard.press("Escape");
+  await expect(modal).toBeHidden();
+  await expect(panels.first().locator(".showcase-open")).toBeFocused();
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+
+  // Pile formée (les trois panneaux collés) : en remontant au clavier, le
+  // bouton du premier panneau ne doit pas rester caché sous les autres.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // Défilement instantané : sinon on mesurerait un bouton encore hors écran.
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  await panels.last().locator(".showcase-open").focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  const first = panels.first().locator(".showcase-open");
+  await expect(first).toBeFocused();
+  const box = (await first.boundingBox())!;
+  const covered = await page.evaluate(
+    ({ x, y }) =>
+      !document
+        .elementFromPoint(x, y)
+        ?.closest(".showcase-item")
+        ?.contains(document.activeElement),
+    { x: box.x + box.width / 2, y: box.y + box.height / 2 },
+  );
+  expect(covered, "focused button hidden under another panel").toBe(false);
+});
+
 test("professional missions stay on the page, coursework lives in the modal", async ({
   page,
 }) => {
@@ -144,7 +227,7 @@ test("the academic modal opens, filters, traps focus and closes three ways", asy
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Refuser", exact: true }).click();
-  const modal = page.locator(".modal");
+  const modal = page.locator(".modal-academic");
   const open = page.getByRole("button", {
     name: "Voir mes projets académiques",
   });
@@ -230,7 +313,7 @@ test("the academic modal fills the screen on mobile", async ({ page }) => {
   await page
     .getByRole("button", { name: "Voir mes projets académiques" })
     .click();
-  const modal = page.locator(".modal");
+  const modal = page.locator(".modal-academic");
   await expect(modal).toBeVisible();
   const box = (await modal.boundingBox())!;
   expect(box.width).toBe(390);
@@ -314,12 +397,200 @@ test("brand marks load and keep the client names readable", async ({
         ),
       ),
     ]);
+  // …ainsi que les logos incrustés dans les maquettes des études de cas.
+  const artLogos = await page
+    .locator(".showcase-svg image")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+  expect(artLogos.length).toBe(2);
+  urls.push(...artLogos.map((href) => new URL(href!, page.url()).href));
   expect(urls.length).toBeGreaterThan(4);
   for (const url of urls) {
     expect(url, "mask-image must be set").toMatch(/^https?:/);
     const response = await page.request.get(url);
     expect(response.status(), `${url} should be served`).toBe(200);
   }
+});
+
+test("the navigation marks the section being read", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const nav = page.locator(".desktop-nav");
+  const current = () =>
+    page.evaluate(
+      () =>
+        document.querySelector('.site-header [aria-current="true"]')
+          ?.textContent ?? null,
+    );
+  const goTo = (id: string) =>
+    page.evaluate((target) => {
+      const el = document.getElementById(target)!;
+      window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100);
+    }, id);
+
+  // Dans le hero, aucune section de la navigation n'est active.
+  expect(await current()).toBeNull();
+  await goTo("projets");
+  await expect(nav.getByRole("link", { name: "Projets" })).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await goTo("parcours");
+  await expect(nav.getByRole("link", { name: "Parcours" })).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await expect(nav.getByRole("link", { name: "Projets" })).not.toHaveAttribute(
+    "aria-current",
+  );
+  await goTo("contact");
+  await expect(page.locator(".nav-contact")).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+});
+
+test("the navigation indicator slides under the section being read", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const nav = page.locator(".desktop-nav");
+  const bar = page.locator(".nav-indicator");
+  const goTo = (id: string) =>
+    page.evaluate((target) => {
+      const el = document.getElementById(target)!;
+      window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100);
+    }, id);
+  const opacity = () =>
+    bar.evaluate((el) => Number(getComputedStyle(el).opacity));
+  // L'écart entre la barre et le lien, une fois le glissement terminé.
+  const offset = (name: string) =>
+    page.evaluate((label) => {
+      const link = [...document.querySelectorAll(".desktop-nav a")].find(
+        (a) => a.textContent === label,
+      )!;
+      const a = link.getBoundingClientRect();
+      const b = document
+        .querySelector(".nav-indicator")!
+        .getBoundingClientRect();
+      return Math.abs(a.left - b.left) + Math.abs(a.width - b.width);
+    }, name);
+
+  // Dans le hero, aucun lien n'est actif : pas de barre.
+  expect(await opacity()).toBe(0);
+  await goTo("projets");
+  await expect.poll(opacity).toBe(1);
+  await expect.poll(() => offset("Projets")).toBeLessThan(1);
+  // Expertise n'a pas de lien : la barre s'efface sur place…
+  await goTo("competences");
+  await expect.poll(opacity).toBe(0);
+  // … et reparaît sous Parcours.
+  await goTo("parcours");
+  await expect.poll(opacity).toBe(1);
+  await expect.poll(() => offset("Parcours")).toBeLessThan(1);
+  await expect(nav.getByRole("link", { name: "Parcours" })).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+});
+
+test("section titles compose line by line and still read as one sentence", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const title = page.locator("#about-title");
+  await expect(title).toHaveText("Comprendre. Construire. Faire avancer.");
+  const lift = () =>
+    title
+      .locator(".title-line > span")
+      .evaluateAll((els) =>
+        els.map((el) => new DOMMatrix(getComputedStyle(el).transform).m42),
+      );
+  // Sous la ligne de flottaison, chaque ligne attend sous son masque.
+  const hidden = await lift();
+  expect(hidden).toHaveLength(3);
+  expect(hidden.every((y) => y > 0)).toBe(true);
+  // À l'arrivée, elles montent toutes à leur place.
+  await page.evaluate(() => {
+    const el = document.getElementById("about-title")!;
+    window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 300);
+  });
+  await expect
+    .poll(async () => (await lift()).every((y) => y === 0))
+    .toBe(true);
+});
+
+test("the hero recedes in three planes as it scrolls away", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const shift = (selector: string) =>
+    page
+      .locator(selector)
+      .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42);
+  await page.evaluate(() => window.scrollTo(0, 400));
+  // Le fond (plaque) recule plus que la photo ; le texte, lui, avance.
+  await expect.poll(() => shift(".portrait-art")).toBeGreaterThan(30);
+  const plate = await shift(".portrait-art");
+  const photo = await shift(".hero-portrait picture");
+  const copy = await shift(".hero-copy");
+  expect(photo).toBeGreaterThan(0);
+  expect(plate).toBeGreaterThan(photo);
+  expect(copy).toBeLessThan(0);
+});
+
+test("the timeline draws itself as it is read", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const progress = () =>
+    page.locator(".timeline").evaluate((el) => {
+      const m = getComputedStyle(el, "::after").transform;
+      return m === "none"
+        ? 1
+        : Number(m.match(/matrix\(([^)]+)\)/)![1].split(",")[3]);
+    });
+  const litDots = () =>
+    page
+      .locator(".timeline-entry")
+      .evaluateAll(
+        (els) =>
+          els.filter(
+            (el) =>
+              getComputedStyle(el, "::before").backgroundColor ===
+              getComputedStyle(document.querySelector(".timeline")!, "::after")
+                .backgroundColor,
+          ).length,
+      );
+
+  // Avant la frise : rien de tracé, aucune étape allumée.
+  await page.evaluate(() => {
+    const t = document.querySelector(".timeline")!;
+    window.scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight);
+  });
+  await expect.poll(progress).toBeLessThan(0.05);
+  expect(await litDots()).toBe(0);
+
+  // Frise lue en entier : ligne complète, toutes les étapes allumées.
+  await page.evaluate(() => {
+    const t = document.querySelector(".timeline")!;
+    window.scrollTo(0, t.getBoundingClientRect().bottom + scrollY);
+  });
+  await expect.poll(progress).toBeGreaterThan(0.99);
+  await expect
+    .poll(litDots)
+    .toBe(await page.locator(".timeline-entry").count());
 });
 
 test("scroll reveals end up visible and never keep content hidden", async ({
@@ -546,12 +817,33 @@ for (const width of [390, 1440]) {
       await page
         .getByRole("button", { name: "Voir mes projets académiques" })
         .click();
-      await expect(page.locator(".modal")).toBeVisible();
+      await expect(page.locator(".modal-academic")).toBeVisible();
       const modalAudit = await new AxeBuilder({ page })
-        .include(".modal")
+        .include(".modal-academic")
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
         .analyze();
       expect(modalAudit.violations).toEqual([]);
+      await page.keyboard.press("Escape");
+
+      // La modale d'étude de cas, auditée de même.
+      await page.locator(".showcase-open").first().focus();
+      await page.keyboard.press("Enter");
+      await expect(page.locator(".modal-case")).toBeVisible();
+      const caseAudit = await new AxeBuilder({ page })
+        .include(".modal-case")
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze();
+      expect(caseAudit.violations).toEqual([]);
+      await page.keyboard.press("Escape");
+
+      // Mouvement réduit : aucun plan d'illustration n'est décalé.
+      expect(
+        await page
+          .locator(".showcase-media .layer")
+          .evaluateAll((els) =>
+            els.every((el) => getComputedStyle(el).transform === "none"),
+          ),
+      ).toBe(true);
       expect(
         await page
           .locator(".hero-line > span")
