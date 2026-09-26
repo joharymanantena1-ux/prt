@@ -52,6 +52,13 @@ every transition and animation. Keep entrances transform/opacity only, one per b
 `delay` staggers siblings. Opening a `<details>` animates its panel (`detail-in`),
 never the element itself — `details` has no native transition.
 
+Scroll-linked effects use **native CSS scroll-driven animations** (`view-timeline` /
+`animation-timeline`), always inside `@supports (animation-timeline: view())` and
+`prefers-reduced-motion: no-preference`. Firefox stable still ships them behind a
+flag (2026): it gets the static layout, which must always be the finished state —
+keyframes animate *from* an offset *to* the element's normal style, never the reverse.
+No GSAP / Three.js: evaluated and declined, see "Case studies — showcase".
+
 Hover conventions, all ≤ 0.3s and colour/transform only: arrows translate
 `2px,-2px`, the primary button lifts 2px, nav links grow an underline, icon buttons
 take a `color-mix(currentColor 12%)` ground, archive rows nudge 3px and their brand
@@ -117,18 +124,41 @@ first load). The modal carries the free-text search plus one chip per family
 (`short` in `academicThemes`), and every family keeps its teaching goal and takeaway.
 Never move coursework back into the page flow.
 
-### Case studies — editorial spreads
+### Case studies — showcase
 
-The three case studies are full-width spreads, not cards: a hairline separates each,
-the visual alternates side (`:nth-child(even)` swaps both the grid areas **and** the
-column proportions, so the visual always keeps the wide column), and a large index
-anchors the head rail next to the category and the client mark. Visuals use a constant
-`aspect-ratio` (16/10, 4/3 under 768px) rather than fixed heights. On one column the
-alternation is cancelled — the visual always leads, like an article.
+The three case studies are a **showcase of dark tinted panels** on the paper plane
+(`.showcase` → `.showcase-item` → `.showcase-panel.theme-<key>`): little text (index,
+category, name, one-line headline, three tech tags, one button), an illustration
+first. The full story (enjeu → contribution → résultat, full stack, link) lives in
+[CaseStudyModal](src/components/CaseStudyModal.tsx), which also browses previous /
+next without closing — the nav is never remounted so keyboard focus stays put, the
+body scrolls back to top and an `aria-live` line announces the project.
 
-No boxes, no shared borders around cells: the structure comes from alignment, rhythm
-and hairlines. A bento version with shared ink borders was built and rejected as too
-hard against the rest of the page — don't reintroduce it.
+- **Illustrations** — [ShowcaseArt](src/components/ShowcaseArt.tsx): abstract UI
+  compositions, not screenshots (storefront + phone + GraphQL chip; school dashboard
+  + report card + SMS toast; route map + driver app). Nothing confidential, nothing
+  that reads as a real capture. Colours come only from the panel's `--panel`,
+  `--art-accent`, `--art-hi`. Each SVG has `layer-back/mid/front` groups for depth;
+  ids go through `useSvgId()` (the art renders twice when the modal is open). The
+  client's real logo is set **inside the mock** (store header, driver-app header) via
+  an SVG `<mask style="mask-type:alpha">` over the same alpha masks as `BrandMark`.
+- **Whole panel clickable** — one `<button class="showcase-open">` whose `::after`
+  covers the panel; never nest another interactive element in a panel.
+- **Stacking** — on `min-width: 900px and min-height: 700px` the items are sticky
+  (top 104px + `i × 16px` staircase); the covered panel scales down via the list's
+  `view-timeline` (`exit-crossing` split in `--n` ranges). Below that height a stuck
+  panel's bottom would be unreachable, so it's plain flow. **A keyboard-focused
+  panel is raised above the stack** (`:has(:focus-visible)` → `z-index`) — without it
+  Shift+Tab lands on a button hidden under another panel (WCAG 2.2 focus not
+  obscured; the test covers it, with smooth scrolling disabled while measuring).
+- **Parallax** — the three layers rise at different depths during the media's `entry`
+  range; the Konecta route draws itself (`pathLength=1`, dashoffset). Hover lifts the
+  front layers with the `translate` property, which composes with the scroll
+  `transform` instead of overriding it.
+
+Earlier versions: editorial spreads with alternating visuals (judged not modern
+enough), and a bento grid with shared ink borders (rejected as too hard). Don't bring
+either back.
 
 ### Modal
 
@@ -163,10 +193,13 @@ Page depth comes from two planes: the ink page and a **paper** plane
 via `--ink` / `--paper-muted` / `--paper-line`. Light mode replays the same rhythm
 (near-white page, ivory band) — keep the two tones distinct enough to read.
 
-Typography: **DM Sans only**, self-hosted in `public/fonts/*.woff2` (400 and a 500–700
-face), preloaded in `index.html`. `--font-mono` is a system stack, used only for
-`.eyebrow` labels (small uppercase mono: kickers, dates, categories, counts).
-No serif display face.
+Typography: **Mona Sans** (GitHub, OFL) for every heading via `--font-display`
+(`h1–h4` consume it), **DM Sans** for body and UI, both self-hosted woff2 and
+preloaded. Mona Sans ships as the weight-axis variable file only (40 kB) — the width
+axis doubled it (96 kB). Display tracking was loosened for it (h2 −0.045em, hero
+−0.058em): DM Sans values made its letters touch. The wordmark and the mobile "JM"
+monogram stay in DM Sans (they match the favicon/OG art). `--font-mono` is a system
+stack, used only for `.eyebrow` labels. No serif display face.
 
 Class naming: semantic, hand-written, BEM-ish (`.case-story`, `.timeline-entry`,
 `.theme-block`). Tailwind is kept **only** for preflight, `sr-only` and the token
@@ -195,8 +228,9 @@ Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm ru
 
 [tests/portfolio.spec.ts](tests/portfolio.spec.ts) (Playwright, Chrome, against
 `npm run preview`): layout and no-horizontal-overflow at nine widths from 320 to
-1920 px, mobile dialog focus trap, missions staying on the page while coursework
-stays out of it, the academic modal (open, family filters, search, focus trap, three
+1920 px, mobile dialog focus trap, the case-study showcase (little text, whole-panel click, modal
+with previous/next, focus kept, focused panel raised above the stack), missions
+staying on the page while coursework stays out of it, the academic modal (open, family filters, search, focus trap, three
 ways to close, full-screen on mobile), the welcome screen (plays once, skippable, absent under reduced motion), language
 and theme persistence, scroll reveals never leaving content hidden, the 404 page,
 analytics consent, the contact form (both outcomes, network intercepted) and four

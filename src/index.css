@@ -12,6 +12,15 @@
   font-weight: 500 700;
   font-display: swap;
 }
+/* Mona Sans (GitHub, OFL) — face d'affichage des titres. Fichier variable sur
+   l'axe de graisse seulement : l'axe de chasse doublait le poids (96 kB). */
+@font-face {
+  font-family: "Mona Sans";
+  src: url("/fonts/mona-sans-wght.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -44,7 +53,7 @@
     --success: 76 90% 68%;
     --success-foreground: 150 7% 6%;
     --radius: 0.3rem;
-    --font-display: "DM Sans", sans-serif;
+    --font-display: "Mona Sans", "DM Sans", sans-serif;
     --font-body: "DM Sans", sans-serif;
     --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
     --paper: #efefe8;
@@ -142,13 +151,15 @@
   }
   h1,
   h2,
-  h3 {
+  h3,
+  h4 {
+    font-family: var(--font-display);
     font-weight: 500;
   }
   h2 {
     font-size: clamp(2.65rem, 5.2vw, 5rem);
     line-height: 1.03;
-    letter-spacing: -0.065em;
+    letter-spacing: -0.045em;
   }
   img,
   svg {
@@ -431,7 +442,7 @@
 .hero-title {
   font-size: clamp(75px, 7.7vw, 116px);
   line-height: 0.97;
-  letter-spacing: -0.078em;
+  letter-spacing: -0.058em;
   margin-left: -0.055em;
   font-weight: 500;
 }
@@ -566,61 +577,7 @@
 .experience-section .section-kicker {
   color: var(--paper-muted);
 }
-/* ── Études de cas, en doubles pages éditoriales ────────────────────────────
-   Pas de cartes ni de boîtes : un filet sépare chaque projet, l'index ancre la
-   composition à gauche, et le visuel alterne de côté d'un projet à l'autre.
-   La structure vient de l'alignement et du rythme, pas de contours. */
-.case-item {
-  border-top: 1px solid var(--paper-line);
-}
-.case-item > article {
-  padding-block: clamp(38px, 4.6vw, 74px);
-}
-.case-head {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px 22px;
-  margin-bottom: clamp(24px, 2.8vw, 40px);
-}
-.case-index {
-  font-size: clamp(28px, 3.2vw, 44px);
-  font-weight: 500;
-  line-height: 0.85;
-  letter-spacing: -0.06em;
-  /* Assez clair pour rester en retrait, assez dense pour être lisible :
-     le filet (--paper-line) tombait à 1,37:1. */
-  color: #7a7c77;
-  color: color-mix(in srgb, var(--ink) 55%, var(--paper));
-  transition: color 0.3s;
-}
-.case-item:hover .case-index {
-  color: var(--ink);
-}
-.case-category {
-  color: var(--paper-muted);
-}
-.case-body {
-  display: grid;
-  grid-template-columns: 6.5fr 5fr;
-  gap: clamp(30px, 3.6vw, 60px);
-  align-items: center;
-}
-/* Alternance : le deuxième projet inverse visuel et récit — les proportions
-   suivent, sinon le visuel se retrouverait dans la colonne étroite. */
-.case-item:nth-child(even) .case-body {
-  grid-template-columns: 5fr 6.5fr;
-}
-.case-item:nth-child(even) .case-figure {
-  grid-area: 1 / 2;
-}
-.case-item:nth-child(even) .case-content {
-  grid-area: 1 / 1;
-}
-.case-figure {
-  margin: 0;
-  min-width: 0;
-}
+
 /* Marques monochromes : le masque porte la forme, `currentColor` la couleur —
    les logos suivent donc le plan (encre/papier) et le thème. Repli en texte si
    le navigateur ne sait pas masquer (voir @supports plus bas). */
@@ -651,171 +608,7 @@
     clip-path: inset(50%);
   }
 }
-.project-visual {
-  aspect-ratio: 16 / 10;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.visual-label,
-.visual-caption {
-  position: absolute;
-  left: 25px;
-  font-size: 10px;
-  z-index: 1;
-}
-.visual-label {
-  top: 20px;
-}
-.visual-caption {
-  bottom: 18px;
-}
-.visual-beauty {
-  background: #dacfe5;
-  color: #44295f;
-}
-.beauty-word {
-  font-weight: 600;
-  font-size: clamp(65px, 7.2vw, 110px);
-  line-height: 0.85;
-  letter-spacing: -0.095em;
-  position: relative;
-  transform: rotate(-7deg);
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.beauty-word > span:first-child {
-  display: block;
-  padding-left: 40px;
-}
-/* Marque cliente dans le rail de méta de la carte : même hauteur sur les trois
-   cartes, alignée à droite avec le nom qu'elle remplace. */
-.case-mark {
-  height: 22px;
-  color: var(--paper-muted);
-  transition: color 0.25s;
-}
-.case-item:hover .case-mark {
-  color: var(--ink);
-}
-.beauty-asterisk {
-  position: absolute;
-  font-size: 145px;
-  right: -32px;
-  bottom: -15px;
-  color: #faff80;
-  line-height: 1;
-}
-.visual-platforms {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: absolute;
-  bottom: 65px;
-  left: 25px;
-  right: 25px;
-  font: 10px var(--font-mono);
-  text-transform: uppercase;
-}
-.visual-platforms > span:not(.platform-line) {
-  border: 1px solid #44295f66;
-  padding: 10px;
-}
-.platform-line {
-  flex: 1;
-  height: 1px;
-  background: #44295f66;
-}
-.visual-edu {
-  background: #dfe7da;
-  color: #344c2e;
-  flex-direction: column;
-  gap: 15px;
-}
-.edu-symbol {
-  position: relative;
-  height: 95px;
-  width: 160px;
-}
-.edu-symbol span {
-  display: block;
-  width: 125px;
-  height: 48px;
-  border: 1px solid #344c2e;
-  position: absolute;
-  left: 18px;
-  transform: skewY(-15deg);
-  background: #dfe7da;
-  transition: transform 0.65s;
-}
-.edu-symbol span:nth-child(2) {
-  top: 22px;
-}
-.edu-symbol span:nth-child(3) {
-  top: 44px;
-}
-.visual-word {
-  font-size: 48px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.07em;
-  position: relative;
-}
-.visual-word > span {
-  font-size: 18px;
-  letter-spacing: -0.04em;
-  padding-left: 9px;
-}
-.visual-konecta {
-  background: #cddbe3;
-  color: #273e50;
-}
-.route-art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.route-grid {
-  stroke: #273e50;
-  opacity: 0.09;
-}
-.route-path {
-  stroke: #273e50;
-  stroke-width: 2;
-  stroke-dasharray: 800;
-  stroke-dashoffset: 0;
-}
-.route-art circle {
-  fill: #273e50;
-  stroke: #cddbe3;
-  stroke-width: 4;
-}
-.visual-konecta .visual-word {
-  background: #cddbe3;
-  padding: 12px 18px 15px;
-}
-/* Le logotype réel remplace le mot retapé : la trame de trajets reste lisible
-   derrière, le cartouche l'isole du quadrillage. */
-.visual-word-mark {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.visual-word-mark .brand-mark {
-  width: clamp(200px, 28vw, 330px);
-}
-.case-content {
-  min-width: 0;
-}
-.case-content h3 {
-  font-size: clamp(26px, 2.9vw, 42px);
-  line-height: 1.06;
-  letter-spacing: -0.05em;
-  max-width: 13ch;
-  margin-bottom: clamp(22px, 2.2vw, 32px);
-}
+
 .case-story {
   margin: 0;
 }
@@ -837,15 +630,513 @@
   line-height: 1.7;
   color: var(--paper-muted);
 }
-.case-stack {
-  font-size: 10px;
-  padding-block: 26px 10px;
-  color: var(--paper-muted);
-}
+
 .private-project {
   padding-top: 14px;
   font-size: 10px;
 }
+/* ── Vitrine des études de cas ──────────────────────────────────────────────
+   Un panneau par projet : l'image d'abord, peu de texte, le récit complet dans
+   la modale. Panneaux sombres teintés sur le plan papier — ils reprennent
+   l'encre du hero. Sur grand écran ils s'empilent au défilement (sticky) ; là
+   où le navigateur sait lier une animation au défilement, le panneau recouvert
+   recule légèrement et les plans de l'illustration montent en parallaxe. Tout
+   est en CSS natif : aucune bibliothèque, rien sur le premier chargement. */
+.showcase {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(18px, 2.4vw, 32px);
+}
+.showcase-panel {
+  --panel: #16181a;
+  --art-accent: #cfd2c8;
+  --art-hi: #d2f663;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  min-height: clamp(460px, 66vh, 640px);
+  border-radius: 20px;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--panel);
+  color: #efefec;
+  transform-origin: 50% 0;
+}
+/* Grille de fond : fine, estompée vers l'illustration. */
+.showcase-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(
+    120% 95% at 72% 45%,
+    #000 25%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(120% 95% at 72% 45%, #000 25%, transparent 78%);
+}
+.theme-beauty {
+  --panel: #1d1526;
+  --art-accent: #c6b0ea;
+  --art-hi: #f2ef8c;
+}
+.theme-edu {
+  --panel: #121c16;
+  --art-accent: #a3c69b;
+  --art-hi: #d2f663;
+}
+.theme-konecta {
+  --panel: #0f1a23;
+  --art-accent: #8cb7d5;
+  --art-hi: #d2f663;
+}
+
+.showcase-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  min-width: 0;
+  padding: clamp(28px, 3.2vw, 48px);
+}
+.showcase-meta {
+  display: flex;
+  gap: 16px;
+  color: rgb(239 239 236 / 0.6);
+}
+.showcase-meta span:first-child {
+  color: var(--art-hi);
+}
+.showcase-mark {
+  height: 30px;
+  width: 90px;
+  margin-bottom: 22px;
+  color: #efefec;
+}
+.showcase-title h3 {
+  font-size: clamp(40px, 4.8vw, 74px);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+.showcase-headline {
+  max-width: 24ch;
+  margin-top: 16px;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.45;
+  color: rgb(239 239 236 / 0.72);
+}
+.showcase-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+.showcase-tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.showcase-tags li {
+  padding: 6px 12px;
+  border: 1px solid rgb(239 239 236 / 0.18);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(239 239 236 / 0.78);
+}
+.showcase-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 0 20px 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #efefec;
+  color: var(--panel);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.25s;
+}
+.showcase-open svg {
+  transition: transform 0.25s;
+}
+/* Le panneau entier est cliquable, sans imbriquer d'éléments interactifs :
+   l'::after du bouton couvre le panneau (positionné, lui). */
+.showcase-open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.showcase-open:focus-visible {
+  outline: none;
+}
+.showcase-panel:has(.showcase-open:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.showcase-media {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: clamp(20px, 2.6vw, 40px);
+}
+.showcase-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Vocabulaire des illustrations. L'ordre compte : `.st` et `.ac-st` posent
+   `fill: none`, les surfaces qui suivent le reprennent quand elles sont
+   combinées (un cadre = surface + filet). */
+.showcase-svg .st {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.14);
+  stroke-width: 1;
+}
+.showcase-svg .ac-st {
+  fill: none;
+  stroke: var(--art-accent);
+  stroke-width: 1.25;
+}
+.showcase-svg .s1 {
+  fill: rgb(255 255 255 / 0.04);
+}
+.showcase-svg .s2 {
+  fill: rgb(255 255 255 / 0.08);
+}
+.showcase-svg .phone {
+  fill: color-mix(in srgb, var(--panel) 68%, #000);
+}
+.showcase-svg .chip {
+  fill: color-mix(in srgb, var(--panel) 84%, #fff);
+}
+.showcase-svg .tx {
+  fill: rgb(255 255 255 / 0.26);
+}
+.showcase-svg .tx2 {
+  fill: rgb(255 255 255 / 0.13);
+}
+.showcase-svg .tx-strong {
+  fill: rgb(255 255 255 / 0.62);
+}
+.showcase-svg .ac {
+  fill: var(--art-accent);
+}
+.showcase-svg .ac-soft {
+  fill: color-mix(in srgb, var(--art-accent) 18%, transparent);
+}
+.showcase-svg .hi {
+  fill: var(--art-hi);
+}
+.showcase-svg .ink {
+  fill: var(--panel);
+}
+.showcase-svg .ink-st {
+  fill: none;
+  stroke: var(--panel);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.showcase-svg .dashed {
+  stroke-dasharray: 3 5;
+}
+.showcase-svg .product {
+  fill: var(--art-accent);
+  opacity: 0.85;
+}
+.showcase-svg .product-cut {
+  fill: color-mix(in srgb, var(--panel) 60%, transparent);
+}
+.showcase-svg .street {
+  stroke: rgb(255 255 255 / 0.07);
+}
+.showcase-svg .route {
+  fill: none;
+  stroke: var(--art-hi);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.showcase-svg .route-mini {
+  stroke-width: 3;
+}
+.showcase-svg .stop {
+  fill: var(--panel);
+  stroke: var(--art-hi);
+  stroke-width: 3;
+}
+.showcase-svg .stop-start {
+  fill: var(--art-hi);
+}
+.showcase-svg .a-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.showcase-svg .a-sans {
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+.showcase-svg .a-strong {
+  fill: rgb(255 255 255 / 0.92);
+}
+.showcase-svg .a-faint {
+  fill: rgb(255 255 255 / 0.46);
+}
+
+/* Survol : les plans avant se soulèvent (propriété `translate`, qui se compose
+   avec le `transform` de la parallaxe au lieu de l'écraser). */
+.showcase-svg .layer {
+  transition: translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) {
+  .showcase-panel:hover .showcase-open {
+    background: var(--art-hi);
+  }
+  .showcase-panel:hover .showcase-open svg {
+    transform: translate(2px, -2px);
+  }
+  .showcase-panel:hover .layer-mid {
+    translate: 0 -4px;
+  }
+  .showcase-panel:hover .layer-front {
+    translate: 0 -9px;
+  }
+}
+
+/* Empilement : seulement si l'écran est assez haut pour qu'un panneau collé
+   reste entièrement visible — sinon son bas deviendrait inatteignable. */
+@media (min-width: 900px) and (min-height: 700px) {
+  .showcase-item {
+    position: sticky;
+    top: 104px;
+    padding-top: calc(var(--i) * 16px);
+  }
+  /* Un panneau recouvert qui reçoit le focus clavier (Maj+Tab en remontant)
+     repasse au-dessus de la pile : le focus ne doit jamais être masqué. */
+  .showcase-item:has(.showcase-open:focus-visible) {
+    z-index: 3;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Parallaxe : les trois plans montent à des vitesses différentes pendant
+       que le panneau entre à l'écran. */
+    .showcase-media {
+      view-timeline: --media block;
+    }
+    .showcase-media .layer {
+      animation: layer-rise linear both;
+      animation-timeline: --media;
+      animation-range: entry 0% entry 100%;
+    }
+    .showcase-media .layer-back {
+      --depth: 18px;
+    }
+    .showcase-media .layer-mid {
+      --depth: 54px;
+    }
+    .showcase-media .layer-front {
+      --depth: 96px;
+    }
+    /* L'itinéraire se trace au fil du défilement. */
+    .showcase-svg .route {
+      stroke-dasharray: 1;
+    }
+    .showcase-media .route {
+      animation: route-draw linear both;
+      animation-timeline: --media;
+      animation-range: entry 25% entry 100%;
+    }
+  }
+  @media (min-width: 900px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+    /* Le panneau recouvert recule d'un cran à chaque panneau qui passe dessus. */
+    .showcase {
+      view-timeline: --showcase block;
+    }
+    .showcase-panel {
+      animation: stack-recede linear both;
+      animation-timeline: --showcase;
+      animation-range: exit-crossing calc(var(--i) / var(--n) * 100%)
+        exit-crossing calc((var(--i) + 1) / var(--n) * 100%);
+    }
+  }
+}
+@keyframes layer-rise {
+  from {
+    transform: translateY(var(--depth));
+    opacity: 0.15;
+  }
+}
+@keyframes route-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes stack-recede {
+  to {
+    transform: scale(calc(1 - (var(--n) - 1 - var(--i)) * 0.035));
+  }
+}
+
+/* ── Modale d'étude de cas ────────────────────────────────────────────────── */
+.modal.modal-case {
+  width: min(100% - 40px, 1040px);
+}
+.case-detail {
+  display: grid;
+  gap: 30px;
+}
+.case-detail-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: clamp(22px, 3vw, 40px);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.case-detail-art .showcase-svg {
+  max-height: 360px;
+}
+.case-detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 16px 48px;
+  align-items: start;
+}
+.case-detail-headline {
+  grid-row: span 3;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.6vw, 34px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+.case-detail-body .case-story > div:first-child {
+  margin-top: 0;
+}
+.case-detail-stack {
+  margin-top: 6px;
+}
+.case-detail-stack li {
+  border-color: var(--paper-line);
+  color: var(--paper-muted);
+}
+.case-detail-link {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 16px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+.case-detail-link:hover {
+  transform: translateY(-2px);
+}
+.case-detail-body .private-project {
+  padding-top: 6px;
+}
+.case-detail-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px solid var(--paper-line);
+}
+.case-detail-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 15px;
+  text-align: left;
+}
+.case-detail-nav button:last-child {
+  text-align: right;
+}
+.case-detail-nav button > span {
+  display: grid;
+  gap: 3px;
+}
+.case-detail-nav .eyebrow {
+  color: var(--paper-muted);
+}
+.case-detail-nav svg {
+  transition: transform 0.25s;
+}
+.case-detail-nav button:first-child:hover svg {
+  transform: translateX(-3px);
+}
+.case-detail-nav button:last-child:hover svg {
+  transform: translateX(3px);
+}
+
+/* Une colonne : l'illustration passe en tête, le texte dessous. */
+@media (max-width: 899px) {
+  .showcase-panel {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    border-radius: 16px;
+  }
+  .showcase-panel::before {
+    -webkit-mask-image: radial-gradient(
+      120% 70% at 50% 25%,
+      #000 25%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(120% 70% at 50% 25%, #000 25%, transparent 75%);
+  }
+  .showcase-media {
+    order: -1;
+    padding: 18px 18px 0;
+  }
+  .showcase-info {
+    gap: 26px;
+    padding: 22px 22px 26px;
+  }
+  .showcase-title h3 {
+    font-size: clamp(34px, 9vw, 52px);
+  }
+  .case-detail-body {
+    grid-template-columns: 1fr;
+  }
+  .case-detail-headline {
+    grid-row: auto;
+  }
+}
+
 .project-index {
   margin-top: 80px;
   padding-top: 30px;
@@ -1426,7 +1717,7 @@ summary::-webkit-details-marker {
 }
 .contact-invitation h2 {
   font-size: clamp(60px, 8.3vw, 125px);
-  letter-spacing: -0.075em;
+  letter-spacing: -0.055em;
   line-height: 0.98;
 }
 .contact-invitation h2 span {
@@ -1582,7 +1873,7 @@ summary::-webkit-details-marker {
 .notfound h1 {
   font-size: clamp(48px, 8vw, 104px);
   line-height: 0.98;
-  letter-spacing: -0.07em;
+  letter-spacing: -0.05em;
 }
 .notfound h1 span {
   color: hsl(var(--primary));
@@ -1632,28 +1923,7 @@ summary::-webkit-details-marker {
     transform: translateY(0);
   }
 }
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .case-item:hover .beauty-word {
-    transform: rotate(0deg) scale(1.025);
-  }
-  .case-item:hover .edu-symbol span:first-child {
-    transform: skewY(-15deg) translateY(-8px);
-  }
-  .case-item:hover .edu-symbol span:last-child {
-    transform: skewY(-15deg) translateY(8px);
-  }
-  .case-item:hover .route-path {
-    animation: route-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-@keyframes route-draw {
-  from {
-    stroke-dashoffset: 800;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
+
 @media (min-width: 1600px) {
   .hero-composition {
     padding-block: 65px;
@@ -1685,12 +1955,7 @@ summary::-webkit-details-marker {
   .hero-title {
     font-size: 8.5vw;
   }
-  .case-body {
-    gap: 34px;
-  }
-  .case-content h3 {
-    max-width: none;
-  }
+
   .about-layout,
   .experience-layout {
     gap: 50px;
@@ -1772,7 +2037,7 @@ summary::-webkit-details-marker {
   }
   .hero-title {
     font-size: clamp(55px, 13.5vw, 99px);
-    letter-spacing: -0.075em;
+    letter-spacing: -0.055em;
   }
   .hero-description {
     margin-top: 25px;
@@ -1872,39 +2137,7 @@ summary::-webkit-details-marker {
   h2 {
     font-size: clamp(39px, 9.2vw, 60px);
   }
-  .case-body {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  /* L'alternance n'a plus de sens sur une colonne : le visuel passe toujours
-     en tête, comme dans un article. */
-  .case-item:nth-child(even) .case-figure,
-  .case-item:nth-child(even) .case-content {
-    grid-area: auto;
-  }
-  .project-visual {
-    aspect-ratio: 4 / 3;
-  }
-  .case-head {
-    gap: 8px 16px;
-    margin-bottom: 20px;
-  }
-  .case-index {
-    font-size: 26px;
-  }
-  .beauty-word {
-    font-size: 80px;
-  }
-  .beauty-asterisk {
-    font-size: 110px;
-    right: -18px;
-  }
-  .visual-platforms {
-    bottom: 42px;
-  }
-  .case-content h3 {
-    font-size: 28px;
-  }
+
   .case-story > div {
     grid-template-columns: 78px 1fr;
     gap: 12px;
@@ -1915,14 +2148,7 @@ summary::-webkit-details-marker {
   .case-story dd {
     font-size: 12px;
   }
-  .case-stack {
-    font-size: 10px;
-  }
-  .visual-label,
-  .visual-caption {
-    left: 20px;
-    font-size: 10px;
-  }
+
   .project-index {
     margin-top: 50px;
   }
@@ -1980,7 +2206,8 @@ summary::-webkit-details-marker {
     padding-inline: 18px;
     font-size: 12px;
   }
-  .modal {
+  .modal,
+  .modal.modal-case {
     width: 100%;
     height: 100dvh;
     max-height: none;
@@ -2178,22 +2405,12 @@ summary::-webkit-details-marker {
     right: 0;
     width: 180px;
   }
-  .project-visual {
-    aspect-ratio: 5 / 4;
-  }
-  .beauty-word {
-    font-size: 68px;
-  }
-  .beauty-asterisk {
-    font-size: 90px;
-  }
+
   .case-story > div {
     grid-template-columns: 1fr;
     gap: 3px;
   }
-  .case-content h3 {
-    font-size: 26px;
-  }
+
   .site-footer .text-link {
     margin-left: 0;
   }
