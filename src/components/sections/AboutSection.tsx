@@ -1,5 +1,6 @@
 import Reveal from "@/components/motion/Reveal";
 import { useT } from "@/i18n";
+import Lines from "@/components/motion/Lines";
 export default function AboutSection() {
   const { lang } = useT();
   return (
@@ -8,29 +9,31 @@ export default function AboutSection() {
       className="about-section shell section-space"
       aria-labelledby="about-title"
     >
-      <Reveal>
+      <Reveal at={15}>
         <p className="eyebrow section-kicker">
           02 / {lang === "fr" ? "L’approche" : "The approach"}
         </p>
         <div className="about-layout">
           <h2 id="about-title">
-            {lang === "fr" ? (
-              <>
-                Comprendre.
-                <br />
-                Construire.
-                <br />
-                <span>Faire avancer.</span>
-              </>
-            ) : (
-              <>
-                Understand.
-                <br />
-                Build.
-                <br />
-                <span>Move forward.</span>
-              </>
-            )}
+            <Lines
+              lines={
+                lang === "fr"
+                  ? [
+                      "Comprendre.",
+                      "Construire.",
+                      <span key="accent" className="title-accent">
+                        Faire avancer.
+                      </span>,
+                    ]
+                  : [
+                      "Understand.",
+                      "Build.",
+                      <span key="accent" className="title-accent">
+                        Move forward.
+                      </span>,
+                    ]
+              }
+            />
           </h2>
           <div className="about-copy">
             <p className="about-lead">
@@ -57,7 +60,7 @@ export default function AboutSection() {
           </div>
         </div>
       </Reveal>
-      <Reveal className="approach-principles">
+      <Reveal className="approach-principles" at={25}>
         <div>
           <span className="eyebrow">
             01 — {lang === "fr" ? "Le besoin d’abord" : "Needs first"}

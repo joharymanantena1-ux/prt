@@ -6,6 +6,7 @@ import { clientMarks } from "@/data/brandMarks";
 import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 import MissionList from "@/components/MissionList";
+import Lines from "@/components/motion/Lines";
 /* Hors du chemin critique : le portrait du hero (l'élément LCP) attend que le
    bundle principal soit exécuté — illustrations et modales n'ont rien à y faire.
    Les illustrations sont sous la ligne de flottaison ; les modales se chargent
@@ -33,25 +34,19 @@ export default function ProjectsSection() {
       aria-labelledby="work-title"
     >
       <div className="shell">
-        <Reveal className="section-heading">
+        <Reveal className="section-heading" at={15}>
           <div>
             <p className="eyebrow section-kicker">
               01 / {lang === "fr" ? "Réalisations choisies" : "Selected work"}
             </p>
             <h2 id="work-title">
-              {lang === "fr" ? (
-                <>
-                  Des idées.
-                  <br />
-                  Du concret.
-                </>
-              ) : (
-                <>
-                  Ideas.
-                  <br />
-                  Made real.
-                </>
-              )}
+              <Lines
+                lines={
+                  lang === "fr"
+                    ? ["Des idées.", "Du concret."]
+                    : ["Ideas.", "Made real."]
+                }
+              />
             </h2>
           </div>
           <p>

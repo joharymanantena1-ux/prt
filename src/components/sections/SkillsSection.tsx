@@ -1,5 +1,6 @@
 import Reveal from "@/components/motion/Reveal";
 import { useT } from "@/i18n";
+import Lines from "@/components/motion/Lines";
 const skills = [
   {
     n: "01",
@@ -46,23 +47,17 @@ export default function SkillsSection() {
       className="skills-section shell section-space"
       aria-labelledby="skills-title"
     >
-      <Reveal className="section-heading">
+      <Reveal className="section-heading" at={15}>
         <div>
           <p className="eyebrow section-kicker">03 / Expertise</p>
           <h2 id="skills-title">
-            {lang === "fr" ? (
-              <>
-                La bonne stack.
-                <br />
-                Pour le bon usage.
-              </>
-            ) : (
-              <>
-                The right stack.
-                <br />
-                For the right job.
-              </>
-            )}
+            <Lines
+              lines={
+                lang === "fr"
+                  ? ["La bonne stack.", "Pour le bon usage."]
+                  : ["The right stack.", "For the right job."]
+              }
+            />
           </h2>
         </div>
         <p>
@@ -73,7 +68,7 @@ export default function SkillsSection() {
       </Reveal>
       <div className="skill-list">
         {skills.map((s) => (
-          <Reveal key={s.n}>
+          <Reveal key={s.n} at={12}>
             <article className="skill-row">
               <span className="eyebrow skill-number">{s.n}</span>
               <h3>{s[lang]}</h3>

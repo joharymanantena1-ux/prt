@@ -49,45 +49,76 @@ One primitive: [Reveal](src/components/motion/Reveal.tsx) — a single
 (0.65s, `cubic-bezier(.22,1,.36,1)`). Reduced motion (or no `IntersectionObserver`)
 reveals immediately; the global `prefers-reduced-motion` block in `index.css` kills
 every transition and animation. Keep entrances transform/opacity only, one per block;
-`delay` staggers siblings. Opening a `<details>` animates its panel (`detail-in`),
-never the element itself — `details` has no native transition.
+`delay` staggers siblings. `at` (default 6) is how far above the bottom edge, in %,
+the block must be before it plays: headings use 15, the Approche sequence 25, skill
+rows 12 — a sequence that fires at the very bottom edge plays unseen, which is why
+the first round of section effects read as "nothing changed". Opening a `<details>`
+animates its panel (`detail-in`), never the element itself — `details` has no
+native transition.
+
+**The page's common motif: section titles compose line by line**, like the hero
+title. [Lines](src/components/motion/Lines.tsx) wraps each line of an h2 in a
+`.title-line` mask; the parent Reveal slides the lines up in turn (95 ms apart).
+The accent word is a `.title-accent` span — never style `h2 span`, every line is
+a span now. The masks carry 0.1em of clip room (accents, descenders) given back by
+negative margins, so titles take exactly the space they did before (measured to
+the pixel); lines keep a trailing space so the heading still reads as one sentence.
 
 Scroll-linked effects use **native CSS scroll-driven animations** (`view-timeline` /
 `animation-timeline`), always inside `@supports (animation-timeline: view())` and
 `prefers-reduced-motion: no-preference`. Firefox stable still ships them behind a
 flag (2026): it gets the static layout, which must always be the finished state —
 keyframes animate *from* an offset *to* the element's normal style, never the reverse.
-No GSAP / Three.js: evaluated and declined, see "Case studies — showcase".
+Anything the reader must *see happen* (titles, sequences) is IO-triggered instead,
+so it plays in every browser. No GSAP / Three.js: evaluated and declined, see
+"Case studies — showcase".
 
-Section effects (all scroll-linked, all in the same `@supports` + reduced-motion
-guard, amplitudes reduced under 768 px):
-- **Hero** — on exit the portrait lags (`--portrait-lag`), the copy lifts and fades,
-  the orbits breathe, the cross turns 90°.
-- **Approche** — the principles' top hairline draws itself on entry.
-- **Parcours** — an ink progress line (`.timeline::after`, `scaleY`) draws down to a
-  reading line at 40 % of the viewport, and each step's dot fills as the line
-  reaches it (one `view-timeline` per entry). Without support the grey timeline
-  stays as it was — the ink line is progress, not content.
-- **Contact** — the showcase's fine grid behind the title drifts; the big arrow
-  aims into place. Its hover uses `translate` so it composes with the scroll
-  `transform`.
+Section effects (amplitudes reduced under 768 px):
+- **Hero** (scroll-linked) — three planes on exit: the plate and its orbits lag the
+  most (`--plate-lag` 150 px), the photo less (`--photo-lag` 64 px), the green
+  caption stays with the page, the copy lifts (`--copy-lift`) and fades to 0.15;
+  orbits open to 1.32 / close to 0.5, the cross turns 135°. `.hero-portrait` clips
+  so the receding layers slide behind the caption. The first version (photo only,
+  60 px) was imperceptible.
+- **Approche** (IO) — three hairline segments in the principles' accent colour,
+  split by the column gutter, draw one after another; each principle's text rises
+  behind its line. The block itself no longer fades as a whole.
+- **Expertise** — each row's top rule draws on entry; on hover (and on keyboard
+  focus) an accent rule draws over it, the number takes the accent, the title moves
+  8 px, the stack line brightens. A tinted hover band was tried and rejected — its
+  hard edge read as a selected cell, and it overflowed the gutter under 768 px.
+- **Parcours** (scroll-linked) — a 2 px ink progress line (`.timeline::after`,
+  `scaleY`) draws down to a reading line at 40 % of the viewport; each step's 12 px
+  dot fills and takes a ring as the line reaches it, and its dates darken (one
+  `view-timeline` per entry). Without support the grey timeline stays as it was.
+- **Contact** — title lines (IO); the showcase grid (11 % `currentColor`, masked so
+  it fades out before the column edges) fades in on arrival and drifts; the big arrow
+  aims into place and its hover pushes it 10 px (`translate`, so it composes with
+  the scroll `transform`). No glow blob behind the title: generic, declined.
 
-Navigation marks the section being read (`aria-current="true"`, primary colour +
-the hover underline kept) — a rAF-throttled check of which section top passed 35 %
-of the viewport. Not an IntersectionObserver: the lazy Contact section replaces its
-element on mount and an observer stays bound to the old one.
+Navigation marks the section being read (`aria-current="true"`) — a rAF-throttled
+check of which section top passed 35 % of the viewport. Not an IntersectionObserver:
+the lazy Contact section replaces its element on mount and an observer stays bound
+to the old one. Inactive desktop links sit at 62 % of the text colour; the current
+one is full ink with a 2 px accent **indicator** (`.nav-indicator`, placed by
+`useNavIndicator` from the link's `offsetLeft`/`offsetWidth`, recomputed on language
+change, resize and font load) that slides from link to link. It is placed once
+without sliding, and fades out in place where no desktop link applies (hero,
+Expertise, Contact — the Contact button takes the accent instead).
 
 Performance is measured, not assumed: scrolling the whole page at a steady pace
-with the CPU throttled ×4 stays at 60 fps on mobile, tablet and desktop (no frame
-over 33 ms), and Lighthouse mobile stays at 98 with LCP ≈ 2.35 s. The portrait is the
-LCP element and waits for the main bundle, so anything below the fold that is heavy
-in JS (`ShowcaseArt`, `CaseStudyModal`) is lazy — that is what kept LCP flat.
+with the CPU throttled ×4 stays at 60 fps on mobile, tablet and desktop (at most
+one frame at 33 ms over five desktop runs), and Lighthouse mobile stays at 97–98
+with LCP ≈ 2.35 s and CLS 0. The portrait is the LCP element and waits for the main
+bundle, so anything below the fold that is heavy in JS (`ShowcaseArt`,
+`CaseStudyModal`) is lazy — that is what kept LCP flat.
 
-Hover conventions, all ≤ 0.3s and colour/transform only: arrows translate
-`2px,-2px`, the primary button lifts 2px, nav links grow an underline, icon buttons
-take a `color-mix(currentColor 12%)` ground, archive rows nudge 3px and their brand
-mark goes to full ink, the archive toggle gains inner padding. Modals fade the
-backdrop and lift the panel 16px (`modal-in` / `backdrop-in`).
+Hover conventions, colour/transform only and ≤ 0.3s unless drawing a line: arrows
+translate `2px,-2px` (the Contact arrow 10 px), the primary button lifts 2px, nav
+links grow an underline, icon buttons take a `color-mix(currentColor 12%)` ground,
+archive rows nudge 3px and their brand mark goes to full ink, the archive toggle
+gains inner padding, skill rows draw an accent rule. Modals fade the backdrop and
+lift the panel 16px (`modal-in` / `backdrop-in`).
 
 ### Welcome screen
 
@@ -255,8 +286,9 @@ Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm ru
 1920 px, mobile dialog focus trap, the case-study showcase (little text, whole-panel click, modal
 with previous/next, focus kept, focused panel raised above the stack), missions
 staying on the page while coursework stays out of it, the academic modal (open, family filters, search, focus trap, three
-ways to close, full-screen on mobile), the navigation's current section, the
-timeline drawing itself, the welcome screen (plays once, skippable, absent under reduced motion), language
+ways to close, full-screen on mobile), the navigation's current section and its
+sliding indicator, section titles composing line by line (and reading as one
+sentence), the hero's three planes, the timeline drawing itself, the welcome screen (plays once, skippable, absent under reduced motion), language
 and theme persistence, scroll reveals never leaving content hidden, the 404 page,
 analytics consent, the contact form (both outcomes, network intercepted) and four
 axe WCAG 2.1 AA audits (dark/light × 390/1440). Keep them green — they encode

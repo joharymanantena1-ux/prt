@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, Moon, Sun, X } from "lucide-react";
 import { useT } from "@/i18n";
 
@@ -54,9 +54,43 @@ function useActiveSection() {
   return active;
 }
 
+/**
+ * Indicateur de la section lue : une barre d'accent posée sous le lien actif,
+ * qui glisse d'un lien à l'autre. Hors des liens (hero, Expertise, Contact),
+ * elle s'efface sur place et repart de là.
+ */
+function useNavIndicator(active: string | null, lang: string) {
+  const nav = useRef<HTMLElement>(null);
+  const bar = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const list = nav.current;
+    const el = bar.current;
+    if (!list || !el) return;
+    const place = () => {
+      const link = list.querySelector<HTMLElement>('a[aria-current="true"]');
+      el.style.setProperty("--ind-o", link ? "1" : "0");
+      if (!link) return;
+      el.style.setProperty("--ind-x", `${link.offsetLeft}px`);
+      el.style.setProperty("--ind-w", `${link.offsetWidth}px`);
+      if (el.dataset.placed === undefined) {
+        // Premier placement sans glissement ; les suivants s'animent.
+        void el.offsetWidth;
+        el.dataset.placed = "";
+      }
+    };
+    place();
+    // Les largeurs changent quand la police arrive et à chaque redimensionnement.
+    document.fonts?.ready.then(place);
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [active, lang]);
+  return { nav, bar };
+}
+
 export default function Navigation() {
   const { lang, setLang, t } = useT();
   const active = useActiveSection();
+  const indicator = useNavIndicator(active, lang);
   const [light, setLight] = useState(
     () => localStorage.getItem("portfolio-theme") === "light",
   );
@@ -110,7 +144,11 @@ export default function Navigation() {
           jm<span>.</span>
           <span className="wordmark-name">Johary Manantena</span>
         </a>
-        <nav className="desktop-nav" aria-label={t("nav.mainNav")}>
+        <nav
+          ref={indicator.nav}
+          className="desktop-nav"
+          aria-label={t("nav.mainNav")}
+        >
           {links.map((link) => (
             <a
               key={link.id}
@@ -120,6 +158,11 @@ export default function Navigation() {
               {link[lang]}
             </a>
           ))}
+          <span
+            ref={indicator.bar}
+            className="nav-indicator"
+            aria-hidden="true"
+          />
         </nav>
         <div className="nav-tools">
           <button

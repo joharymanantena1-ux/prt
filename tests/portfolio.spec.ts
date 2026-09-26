@@ -451,6 +451,104 @@ test("the navigation marks the section being read", async ({ page }) => {
   );
 });
 
+test("the navigation indicator slides under the section being read", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const nav = page.locator(".desktop-nav");
+  const bar = page.locator(".nav-indicator");
+  const goTo = (id: string) =>
+    page.evaluate((target) => {
+      const el = document.getElementById(target)!;
+      window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100);
+    }, id);
+  const opacity = () =>
+    bar.evaluate((el) => Number(getComputedStyle(el).opacity));
+  // L'écart entre la barre et le lien, une fois le glissement terminé.
+  const offset = (name: string) =>
+    page.evaluate((label) => {
+      const link = [...document.querySelectorAll(".desktop-nav a")].find(
+        (a) => a.textContent === label,
+      )!;
+      const a = link.getBoundingClientRect();
+      const b = document
+        .querySelector(".nav-indicator")!
+        .getBoundingClientRect();
+      return Math.abs(a.left - b.left) + Math.abs(a.width - b.width);
+    }, name);
+
+  // Dans le hero, aucun lien n'est actif : pas de barre.
+  expect(await opacity()).toBe(0);
+  await goTo("projets");
+  await expect.poll(opacity).toBe(1);
+  await expect.poll(() => offset("Projets")).toBeLessThan(1);
+  // Expertise n'a pas de lien : la barre s'efface sur place…
+  await goTo("competences");
+  await expect.poll(opacity).toBe(0);
+  // … et reparaît sous Parcours.
+  await goTo("parcours");
+  await expect.poll(opacity).toBe(1);
+  await expect.poll(() => offset("Parcours")).toBeLessThan(1);
+  await expect(nav.getByRole("link", { name: "Parcours" })).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+});
+
+test("section titles compose line by line and still read as one sentence", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const title = page.locator("#about-title");
+  await expect(title).toHaveText("Comprendre. Construire. Faire avancer.");
+  const lift = () =>
+    title
+      .locator(".title-line > span")
+      .evaluateAll((els) =>
+        els.map((el) => new DOMMatrix(getComputedStyle(el).transform).m42),
+      );
+  // Sous la ligne de flottaison, chaque ligne attend sous son masque.
+  const hidden = await lift();
+  expect(hidden).toHaveLength(3);
+  expect(hidden.every((y) => y > 0)).toBe(true);
+  // À l'arrivée, elles montent toutes à leur place.
+  await page.evaluate(() => {
+    const el = document.getElementById("about-title")!;
+    window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 300);
+  });
+  await expect
+    .poll(async () => (await lift()).every((y) => y === 0))
+    .toBe(true);
+});
+
+test("the hero recedes in three planes as it scrolls away", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const shift = (selector: string) =>
+    page
+      .locator(selector)
+      .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42);
+  await page.evaluate(() => window.scrollTo(0, 400));
+  // Le fond (plaque) recule plus que la photo ; le texte, lui, avance.
+  await expect.poll(() => shift(".portrait-art")).toBeGreaterThan(30);
+  const plate = await shift(".portrait-art");
+  const photo = await shift(".hero-portrait picture");
+  const copy = await shift(".hero-copy");
+  expect(photo).toBeGreaterThan(0);
+  expect(plate).toBeGreaterThan(photo);
+  expect(copy).toBeLessThan(0);
+});
+
 test("the timeline draws itself as it is read", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");

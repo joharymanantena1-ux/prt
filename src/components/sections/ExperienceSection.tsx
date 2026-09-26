@@ -1,6 +1,7 @@
 import { experiences, education } from "@/data/experience";
 import { useT, tx } from "@/i18n";
 import Reveal from "@/components/motion/Reveal";
+import Lines from "@/components/motion/Lines";
 export default function ExperienceSection() {
   const { lang } = useT();
   return (
@@ -10,28 +11,18 @@ export default function ExperienceSection() {
       aria-labelledby="experience-title"
     >
       <div className="shell experience-layout">
-        <Reveal className="experience-heading">
+        <Reveal className="experience-heading" at={15}>
           <p className="eyebrow section-kicker">
             04 / {lang === "fr" ? "Parcours" : "Experience"}
           </p>
           <h2 id="experience-title">
-            {lang === "fr" ? (
-              <>
-                Apprendre.
-                <br />
-                Faire.
-                <br />
-                Évoluer.
-              </>
-            ) : (
-              <>
-                Learn.
-                <br />
-                Build.
-                <br />
-                Grow.
-              </>
-            )}
+            <Lines
+              lines={
+                lang === "fr"
+                  ? ["Apprendre.", "Faire.", "Évoluer."]
+                  : ["Learn.", "Build.", "Grow."]
+              }
+            />
           </h2>
           <p>
             {lang === "fr"

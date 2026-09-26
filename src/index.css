@@ -1549,7 +1549,7 @@
 .about-layout h2 {
   font-size: clamp(42px, 5vw, 76px);
 }
-.about-layout h2 span {
+.about-layout h2 .title-accent {
   color: hsl(var(--primary));
 }
 .about-copy p {
@@ -1734,7 +1734,7 @@ summary::-webkit-details-marker {
   letter-spacing: -0.055em;
   line-height: 0.98;
 }
-.contact-invitation h2 span {
+.contact-invitation h2 .title-accent {
   color: hsl(var(--primary));
 }
 .contact-arrow {
@@ -1745,7 +1745,7 @@ summary::-webkit-details-marker {
 }
 /* `translate` (et non `transform`) : se compose avec l'animation de défilement. */
 .contact-invitation:hover .contact-arrow {
-  translate: 7px -7px;
+  translate: 10px -10px;
 }
 .contact-bottom {
   display: grid;
@@ -2430,40 +2430,190 @@ summary::-webkit-details-marker {
     margin-left: 0;
   }
 }
-/* ── Section en cours dans la navigation ─────────────────────────────────────
-   Le soulignement du survol reste posé sous la section lue (aria-current). */
-.desktop-nav a[aria-current="true"] {
-  color: hsl(var(--primary));
+/* ── Titres de section composés ligne par ligne ──────────────────────────────
+   Le geste du titre du hero, repris par chaque section : c'est le fil
+   typographique de la page. Déclenché par le Reveal parent (IntersectionObserver),
+   donc visible dans tous les navigateurs, sans dépendre du défilement lié. */
+.title-line {
+  display: block;
+  overflow: clip;
+  /* Une marge de rognage autour de la ligne : ni accents (É) ni jambages
+     (p, g) ne sont coupés. Les marges négatives rendent la place prise —
+     posées d'un seul côté entre deux lignes, elles ne se replient pas. */
+  padding: 0.1em 0.06em;
+  margin: 0 -0.06em -0.2em;
 }
+.title-line:first-child {
+  margin-top: -0.1em;
+}
+.title-line:last-child {
+  margin-bottom: -0.1em;
+}
+.title-line > span {
+  display: block;
+  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1)
+    calc(var(--line) * 95ms + 80ms);
+}
+.reveal[data-revealed="false"] .title-line > span {
+  transform: translateY(125%);
+}
+
+/* ── Navigation : un indicateur glisse vers la section lue ─────────────────── */
+.desktop-nav {
+  position: relative;
+}
+.desktop-nav a {
+  color: hsl(var(--foreground) / 0.62);
+  transition: color 0.3s;
+}
+.desktop-nav a:hover,
+.desktop-nav a[aria-current="true"] {
+  color: hsl(var(--foreground));
+}
+/* Sous la section lue, l'indicateur remplace le soulignement du survol. */
 .desktop-nav a[aria-current="true"]::after {
-  transform: scaleX(1);
+  transform: scaleX(0);
+}
+.nav-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: var(--ind-w, 0);
+  height: 2px;
+  border-radius: 2px;
+  background: hsl(var(--primary));
+  opacity: var(--ind-o, 0);
+  transform: translateX(var(--ind-x, 0));
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+/* Posé une première fois sans bouger, il glisse ensuite d'un lien à l'autre. */
+.nav-indicator[data-placed] {
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s;
 }
 .nav-contact[aria-current="true"] {
   border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
 }
 .mobile-menu nav a[aria-current="true"] {
   color: hsl(var(--primary));
 }
 
-/* ── Micro-interactions sans dépendance au défilement ──────────────────────── */
+/* ── Approche : les principes arrivent en séquence ─────────────────────────
+   Chaque principe a son filet, dans la couleur de son libellé ; ils se
+   tracent l'un après l'autre et le texte monte derrière. Le bloc, lui, ne
+   fait plus de fondu d'ensemble : c'est la séquence qui se voit. */
+.approach-principles {
+  border-top-color: transparent;
+}
+.approach-principles > div {
+  position: relative;
+}
+/* Trois segments, séparés par la gouttière des colonnes : on lit trois
+   principes, pas une règle continue. */
+.approach-principles > div::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 20px;
+  height: 1px;
+  background: hsl(var(--primary) / 0.7);
+  transform-origin: left;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1)
+    calc(var(--step, 0) * 190ms);
+}
+.approach-principles .eyebrow {
+  display: block;
+}
+.approach-principles > div > * {
+  transition:
+    opacity 0.6s ease calc(var(--step, 0) * 190ms + 300ms),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)
+      calc(var(--step, 0) * 190ms + 300ms);
+}
+.approach-principles > div:nth-child(2) {
+  --step: 1;
+}
+.approach-principles > div:nth-child(3) {
+  --step: 2;
+}
+.reveal.approach-principles[data-revealed="false"] {
+  opacity: 1;
+  transform: none;
+}
+.approach-principles[data-revealed="false"] > div::before {
+  transform: scaleX(0);
+}
+.approach-principles[data-revealed="false"] > div > * {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+/* ── Expertise : filet tracé à l'entrée, filet d'accent au survol ─────────── */
+.skill-row {
+  position: relative;
+  border-top-color: transparent;
+}
+.skill-row::before,
+.skill-row::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform-origin: left;
+  pointer-events: none;
+}
+.skill-row::before {
+  background: hsl(var(--border));
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal[data-revealed="false"] > .skill-row::before {
+  transform: scaleX(0);
+}
+/* Au survol (ou au clavier), la ligne s'allume : son filet se trace en
+   accent, le numéro prend la couleur, le titre avance, le détail s'éclaire. */
+.skill-row::after {
+  background: hsl(var(--primary));
+  transform: scaleX(0);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
 .skill-row h3,
-.skill-number {
+.skill-number,
+.skill-other {
   transition:
     color 0.3s,
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skill-row:focus-within::after {
+  transform: scaleX(1);
+}
+.skill-row:focus-within .skill-number {
+  color: hsl(var(--primary));
 }
 @media (hover: hover) {
+  .skill-row:hover::after {
+    transform: scaleX(1);
+  }
   .skill-row:hover .skill-number {
     color: hsl(var(--primary));
   }
   .skill-row:hover h3 {
-    transform: translateX(4px);
+    transform: translateX(8px);
+  }
+  .skill-row:hover .skill-other {
+    color: hsl(var(--foreground) / 0.8);
   }
 }
 
-/* Frise du Parcours : la ligne de progression existe partout, invisible tant
-   que le navigateur ne sait pas la lier au défilement (Firefox garde la frise
-   grise d'origine). */
+/* ── Parcours : la frise, affirmée ─────────────────────────────────────────
+   Ligne d'encre de 2 px sur la frise grise ; une étape atteinte prend un
+   anneau. Sans défilement lié (Firefox) : la frise grise d'origine. */
 .timeline {
   position: relative;
 }
@@ -2473,19 +2623,29 @@ summary::-webkit-details-marker {
   top: 0;
   bottom: 0;
   left: -1px;
-  width: 1px;
+  width: 2px;
   background: var(--ink);
   transform: scaleY(0);
   transform-origin: top;
   pointer-events: none;
 }
+/* 12 px, centré sur la ligne de 2 px. */
 .timeline-entry::before {
-  transition:
-    background 0.3s,
-    border-color 0.3s;
+  width: 12px;
+  height: 12px;
+  left: -42px;
+  top: 3px;
+}
+@media (max-width: 767px) {
+  .approach-principles > div::before {
+    right: 0;
+  }
+  .timeline-entry::before {
+    left: -28px;
+  }
 }
 
-/* Fond du Contact : la grille fine de la vitrine, estompée sous le titre. */
+/* ── Contact : la grille de la vitrine, derrière le titre ──────────────────── */
 .contact-section {
   position: relative;
   isolation: isolate;
@@ -2496,77 +2656,68 @@ summary::-webkit-details-marker {
   inset: 0;
   z-index: -1;
   /* Teinte relative au texte : visible sur l'encre comme sur le fond clair. */
-  --grid-line: color-mix(in srgb, currentColor 7%, transparent);
+  --grid-line: color-mix(in srgb, currentColor 11%, transparent);
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: 56px 56px;
+  /* Centrée sur le titre, éteinte avant les bords de la colonne : la grille
+     ne s'arrête jamais sur une coupe nette. */
   -webkit-mask-image: radial-gradient(
-    60% 55% at 30% 30%,
-    #000 10%,
-    transparent 72%
+    55% 65% at 45% 42%,
+    #000 25%,
+    transparent 85%
   );
-  mask-image: radial-gradient(60% 55% at 30% 30%, #000 10%, transparent 72%);
+  mask-image: radial-gradient(55% 65% at 45% 42%, #000 25%, transparent 85%);
   pointer-events: none;
 }
 
 /* ── Effets liés au défilement (amélioration progressive) ──────────────────
-   Toujours : l'état statique est l'état final, rien n'est masqué sans eux. */
+   L'état statique est toujours l'état final ; ils ne font qu'accompagner. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    /* Hero : en quittant l'écran, le portrait recule (plus lent), le texte
-       avance et s'estompe, les orbites respirent — une profondeur de départ. */
+    /* Hero : trois plans. Au fond, la plaque et ses orbites (le plus de
+       retard) ; au milieu, la photo ; devant, le texte, qui avance et
+       s'estompe. Le cartouche vert reste accroché à la page. */
     .hero {
       view-timeline: --hero block;
     }
-    .hero-portrait picture {
-      animation: hero-portrait-out linear both;
+    .hero-portrait {
+      overflow: clip;
+    }
+    .portrait-art,
+    .hero-portrait picture,
+    .hero-copy,
+    .orbit-one,
+    .orbit-two,
+    .portrait-cross {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: --hero;
       animation-range: exit 0% exit 100%;
+    }
+    .portrait-art {
+      animation-name: hero-plate-out;
+    }
+    .hero-portrait picture {
+      animation-name: hero-photo-out;
     }
     .hero-copy {
-      animation: hero-copy-out linear both;
-      animation-timeline: --hero;
-      animation-range: exit 0% exit 90%;
+      animation-name: hero-copy-out;
+      animation-range: exit 0% exit 85%;
     }
     .orbit-one {
-      animation: orbit-open linear both;
-      animation-timeline: --hero;
-      animation-range: exit 0% exit 100%;
+      animation-name: orbit-open;
     }
     .orbit-two {
-      animation: orbit-close linear both;
-      animation-timeline: --hero;
-      animation-range: exit 0% exit 100%;
+      animation-name: orbit-close;
     }
     .portrait-cross {
-      animation: cross-turn linear both;
-      animation-timeline: --hero;
-      animation-range: exit 0% exit 100%;
+      animation-name: cross-turn;
     }
 
-    /* Approche : le filet des principes se trace en entrant. */
-    .approach-principles {
-      view-timeline: --principles block;
-      border-top-color: transparent;
-      position: relative;
-    }
-    .approach-principles::before {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: hsl(var(--border));
-      transform-origin: left;
-      animation: line-draw linear both;
-      animation-timeline: --principles;
-      animation-range: entry 0% cover 35%;
-    }
-
-    /* Parcours : la frise se trace au fil de la lecture ; chaque étape
-       s'allume quand la ligne l'atteint (même repère : 40 % de l'écran). */
+    /* Parcours : la frise se trace jusqu'au repère de lecture (40 % de
+       l'écran) ; chaque étape s'allume quand la ligne l'atteint. */
     .timeline {
       view-timeline: --timeline block;
     }
@@ -2578,20 +2729,33 @@ summary::-webkit-details-marker {
     .timeline-entry {
       view-timeline: --entry block;
     }
-    .timeline-entry::before {
-      animation: dot-on linear both;
+    .timeline-entry::before,
+    .timeline-entry .timeline-meta {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: --entry;
-      animation-range: cover calc(60vh - 12px) cover calc(60vh + 12px);
+      animation-range: cover calc(60vh - 16px) cover calc(60vh + 16px);
+    }
+    .timeline-entry::before {
+      animation-name: dot-on;
+    }
+    .timeline-entry .timeline-meta {
+      animation-name: meta-on;
     }
 
-    /* Contact : la grille glisse, la flèche s'oriente vers l'adresse. */
+    /* Contact : la grille s'allume à l'arrivée puis glisse sous le titre ;
+       la flèche pivote vers l'adresse. */
     .contact-section {
       view-timeline: --contact block;
     }
     .contact-section::before {
-      animation: grid-drift linear both;
-      animation-timeline: --contact;
-      animation-range: cover 0% cover 100%;
+      animation:
+        grid-in linear both,
+        grid-drift linear both;
+      animation-timeline: --contact, --contact;
+      animation-range:
+        entry 0% cover 45%,
+        cover 0% cover 100%;
     }
     .contact-arrow {
       animation: arrow-aim linear both;
@@ -2601,30 +2765,40 @@ summary::-webkit-details-marker {
   }
 }
 
-/* Petits écrans : mêmes effets, amplitudes réduites. */
+/* Amplitudes du hero : franches sur grand écran, réduites sur téléphone
+   (le portrait n'y fait que 230 px de haut). */
+.hero {
+  --plate-lag: 150px;
+  --photo-lag: 64px;
+  --copy-lift: -72px;
+}
 @media (max-width: 767px) {
-  .hero-portrait picture {
-    --portrait-lag: 24px;
-  }
-  .hero-copy {
-    --copy-lift: -14px;
+  .hero {
+    --plate-lag: 44px;
+    --photo-lag: 18px;
+    --copy-lift: -22px;
   }
 }
 
-@keyframes hero-portrait-out {
+@keyframes hero-plate-out {
   to {
-    transform: translateY(var(--portrait-lag, 60px));
+    transform: translateY(var(--plate-lag));
+  }
+}
+@keyframes hero-photo-out {
+  to {
+    transform: translateY(var(--photo-lag));
   }
 }
 @keyframes hero-copy-out {
   to {
-    transform: translateY(var(--copy-lift, -34px));
-    opacity: 0.35;
+    transform: translateY(var(--copy-lift));
+    opacity: 0.15;
   }
 }
 @keyframes orbit-open {
   to {
-    transform: scale(1.12);
+    transform: scale(1.32);
   }
 }
 @keyframes orbit-close {
@@ -2632,17 +2806,12 @@ summary::-webkit-details-marker {
     transform: scale(0.74);
   }
   to {
-    transform: scale(0.62);
+    transform: scale(0.5);
   }
 }
 @keyframes cross-turn {
   to {
-    transform: rotate(90deg);
-  }
-}
-@keyframes line-draw {
-  from {
-    transform: scaleX(0);
+    transform: rotate(135deg);
   }
 }
 @keyframes timeline-draw {
@@ -2657,20 +2826,33 @@ summary::-webkit-details-marker {
   to {
     background: var(--ink);
     border-color: var(--ink);
+    box-shadow:
+      0 0 0 4px var(--paper),
+      0 0 0 5px var(--ink);
+  }
+}
+@keyframes meta-on {
+  to {
+    color: var(--ink);
+  }
+}
+@keyframes grid-in {
+  from {
+    opacity: 0;
   }
 }
 @keyframes grid-drift {
   from {
-    background-position: 0 40px;
+    background-position: 0 110px;
   }
   to {
-    background-position: 0 -40px;
+    background-position: 0 -110px;
   }
 }
 @keyframes arrow-aim {
   from {
-    transform: rotate(-40deg) scale(0.86);
-    opacity: 0.35;
+    transform: rotate(-45deg) scale(0.8);
+    opacity: 0.3;
   }
 }
 
@@ -2688,7 +2870,11 @@ summary::-webkit-details-marker {
   .hero-line > span {
     transform: none;
   }
-  .reveal[data-revealed="false"] {
+  .reveal[data-revealed="false"],
+  .reveal[data-revealed="false"] .title-line > span,
+  .approach-principles[data-revealed="false"] > div > *,
+  .approach-principles[data-revealed="false"] > div::before,
+  .reveal[data-revealed="false"] > .skill-row::before {
     opacity: 1;
     transform: none;
   }
