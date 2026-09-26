@@ -59,6 +59,30 @@ flag (2026): it gets the static layout, which must always be the finished state 
 keyframes animate *from* an offset *to* the element's normal style, never the reverse.
 No GSAP / Three.js: evaluated and declined, see "Case studies — showcase".
 
+Section effects (all scroll-linked, all in the same `@supports` + reduced-motion
+guard, amplitudes reduced under 768 px):
+- **Hero** — on exit the portrait lags (`--portrait-lag`), the copy lifts and fades,
+  the orbits breathe, the cross turns 90°.
+- **Approche** — the principles' top hairline draws itself on entry.
+- **Parcours** — an ink progress line (`.timeline::after`, `scaleY`) draws down to a
+  reading line at 40 % of the viewport, and each step's dot fills as the line
+  reaches it (one `view-timeline` per entry). Without support the grey timeline
+  stays as it was — the ink line is progress, not content.
+- **Contact** — the showcase's fine grid behind the title drifts; the big arrow
+  aims into place. Its hover uses `translate` so it composes with the scroll
+  `transform`.
+
+Navigation marks the section being read (`aria-current="true"`, primary colour +
+the hover underline kept) — a rAF-throttled check of which section top passed 35 %
+of the viewport. Not an IntersectionObserver: the lazy Contact section replaces its
+element on mount and an observer stays bound to the old one.
+
+Performance is measured, not assumed: scrolling the whole page at a steady pace
+with the CPU throttled ×4 stays at 60 fps on mobile, tablet and desktop (no frame
+over 33 ms), and Lighthouse mobile stays at 98 with LCP ≈ 2.35 s. The portrait is the
+LCP element and waits for the main bundle, so anything below the fold that is heavy
+in JS (`ShowcaseArt`, `CaseStudyModal`) is lazy — that is what kept LCP flat.
+
 Hover conventions, all ≤ 0.3s and colour/transform only: arrows translate
 `2px,-2px`, the primary button lifts 2px, nav links grow an underline, icon buttons
 take a `color-mix(currentColor 12%)` ground, archive rows nudge 3px and their brand
@@ -231,7 +255,8 @@ Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm ru
 1920 px, mobile dialog focus trap, the case-study showcase (little text, whole-panel click, modal
 with previous/next, focus kept, focused panel raised above the stack), missions
 staying on the page while coursework stays out of it, the academic modal (open, family filters, search, focus trap, three
-ways to close, full-screen on mobile), the welcome screen (plays once, skippable, absent under reduced motion), language
+ways to close, full-screen on mobile), the navigation's current section, the
+timeline drawing itself, the welcome screen (plays once, skippable, absent under reduced motion), language
 and theme persistence, scroll reveals never leaving content hidden, the 404 page,
 analytics consent, the contact form (both outcomes, network intercepted) and four
 axe WCAG 2.1 AA audits (dark/light × 390/1440). Keep them green — they encode

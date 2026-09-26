@@ -6,8 +6,13 @@ import { clientMarks } from "@/data/brandMarks";
 import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 import MissionList from "@/components/MissionList";
-import ShowcaseArt from "@/components/ShowcaseArt";
-import CaseStudyModal from "@/components/CaseStudyModal";
+/* Hors du chemin critique : le portrait du hero (l'élément LCP) attend que le
+   bundle principal soit exécuté — illustrations et modales n'ont rien à y faire.
+   Les illustrations sont sous la ligne de flottaison ; les modales se chargent
+   à la demande (préchargées au survol du bouton). */
+const ShowcaseArt = lazy(() => import("@/components/ShowcaseArt"));
+const loadCaseModal = () => import("@/components/CaseStudyModal");
+const CaseStudyModal = lazy(loadCaseModal);
 /* Les 31 projets de formation ne sont chargés qu'à l'ouverture de la modale. */
 const AcademicModal = lazy(() => import("@/components/AcademicModal"));
 
@@ -17,6 +22,9 @@ export default function ProjectsSection() {
      premier chargement. */
   const [archiveOpen, setArchiveOpen] = useState<boolean | null>(null);
   const [caseOpen, setCaseOpen] = useState<number | null>(null);
+  /* Monté une fois ouvert, puis gardé : la modale se referme sans se démonter. */
+  const [caseEverOpened, setCaseEverOpened] = useState(false);
+  if (caseOpen !== null && !caseEverOpened) setCaseEverOpened(true);
 
   return (
     <section
@@ -97,6 +105,8 @@ export default function ProjectsSection() {
                         type="button"
                         className="showcase-open"
                         onClick={() => setCaseOpen(index)}
+                        onPointerEnter={loadCaseModal}
+                        onFocus={loadCaseModal}
                       >
                         {lang === "fr"
                           ? "Voir l’étude de cas"
@@ -107,7 +117,14 @@ export default function ProjectsSection() {
                     </div>
                   </div>
                   <div className="showcase-media">
-                    <ShowcaseArt kind={item.key} />
+                    {/* Même proportion que le SVG : aucun décalage à l'arrivée. */}
+                    <Suspense
+                      fallback={
+                        <div className="showcase-svg" aria-hidden="true" />
+                      }
+                    >
+                      <ShowcaseArt kind={item.key} />
+                    </Suspense>
                   </div>
                 </article>
               </li>
@@ -160,11 +177,15 @@ export default function ProjectsSection() {
           </Suspense>
         )}
       </div>
-      <CaseStudyModal
-        index={caseOpen}
-        onClose={() => setCaseOpen(null)}
-        onNavigate={setCaseOpen}
-      />
+      {caseEverOpened && (
+        <Suspense fallback={null}>
+          <CaseStudyModal
+            index={caseOpen}
+            onClose={() => setCaseOpen(null)}
+            onNavigate={setCaseOpen}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }

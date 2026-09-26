@@ -8,8 +8,55 @@ const links = [
   { id: "parcours", fr: "Parcours", en: "Experience" },
 ];
 
+/* Sections suivies, dans l'ordre de la page. */
+const SPIED = [
+  "accueil",
+  "projets",
+  "apropos",
+  "competences",
+  "parcours",
+  "contact",
+];
+
+/**
+ * Section en cours de lecture : la dernière dont le haut a passé la ligne des
+ * 35 % de l'écran. Recalculée à chaque image de défilement plutôt qu'avec un
+ * IntersectionObserver : la section Contact est chargée en différé (son
+ * élément est remplacé au montage) et les observateurs restaient sur l'ancien.
+ */
+function useActiveSection() {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.35;
+      let current: string | null = null;
+      for (const id of SPIED) {
+        const section = document.getElementById(id);
+        if (section && section.getBoundingClientRect().top <= line)
+          current = id;
+      }
+      setActive(current);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+  return active;
+}
+
 export default function Navigation() {
   const { lang, setLang, t } = useT();
+  const active = useActiveSection();
   const [light, setLight] = useState(
     () => localStorage.getItem("portfolio-theme") === "light",
   );
@@ -65,7 +112,11 @@ export default function Navigation() {
         </a>
         <nav className="desktop-nav" aria-label={t("nav.mainNav")}>
           {links.map((link) => (
-            <a key={link.id} href={`#${link.id}`}>
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              aria-current={active === link.id ? "true" : undefined}
+            >
               {link[lang]}
             </a>
           ))}
@@ -86,7 +137,11 @@ export default function Navigation() {
           >
             {light ? <Moon size={17} /> : <Sun size={17} />}
           </button>
-          <a href="#contact" className="nav-contact">
+          <a
+            href="#contact"
+            className="nav-contact"
+            aria-current={active === "contact" ? "true" : undefined}
+          >
             {lang === "fr" ? "Échangeons" : "Let's talk"}
             <ArrowUpRight size={16} />
           </a>
@@ -149,7 +204,12 @@ export default function Navigation() {
             { id: "competences", fr: "Expertise", en: "Expertise" },
             { id: "contact", fr: "Échangeons", en: "Let's talk" },
           ].map((link, index) => (
-            <a key={link.id} href={`#${link.id}`} onClick={navigateFromMenu}>
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={navigateFromMenu}
+              aria-current={active === link.id ? "true" : undefined}
+            >
               <span className="eyebrow">0{index + 1}</span>
               {link[lang]}
               <ArrowUpRight size={24} />

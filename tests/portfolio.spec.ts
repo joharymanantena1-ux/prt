@@ -411,6 +411,90 @@ test("brand marks load and keep the client names readable", async ({
   }
 });
 
+test("the navigation marks the section being read", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const nav = page.locator(".desktop-nav");
+  const current = () =>
+    page.evaluate(
+      () =>
+        document.querySelector('.site-header [aria-current="true"]')
+          ?.textContent ?? null,
+    );
+  const goTo = (id: string) =>
+    page.evaluate((target) => {
+      const el = document.getElementById(target)!;
+      window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100);
+    }, id);
+
+  // Dans le hero, aucune section de la navigation n'est active.
+  expect(await current()).toBeNull();
+  await goTo("projets");
+  await expect(nav.getByRole("link", { name: "Projets" })).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await goTo("parcours");
+  await expect(nav.getByRole("link", { name: "Parcours" })).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await expect(nav.getByRole("link", { name: "Projets" })).not.toHaveAttribute(
+    "aria-current",
+  );
+  await goTo("contact");
+  await expect(page.locator(".nav-contact")).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+});
+
+test("the timeline draws itself as it is read", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.addStyleTag({ content: "html{scroll-behavior:auto!important}" });
+  const progress = () =>
+    page.locator(".timeline").evaluate((el) => {
+      const m = getComputedStyle(el, "::after").transform;
+      return m === "none"
+        ? 1
+        : Number(m.match(/matrix\(([^)]+)\)/)![1].split(",")[3]);
+    });
+  const litDots = () =>
+    page
+      .locator(".timeline-entry")
+      .evaluateAll(
+        (els) =>
+          els.filter(
+            (el) =>
+              getComputedStyle(el, "::before").backgroundColor ===
+              getComputedStyle(document.querySelector(".timeline")!, "::after")
+                .backgroundColor,
+          ).length,
+      );
+
+  // Avant la frise : rien de tracé, aucune étape allumée.
+  await page.evaluate(() => {
+    const t = document.querySelector(".timeline")!;
+    window.scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight);
+  });
+  await expect.poll(progress).toBeLessThan(0.05);
+  expect(await litDots()).toBe(0);
+
+  // Frise lue en entier : ligne complète, toutes les étapes allumées.
+  await page.evaluate(() => {
+    const t = document.querySelector(".timeline")!;
+    window.scrollTo(0, t.getBoundingClientRect().bottom + scrollY);
+  });
+  await expect.poll(progress).toBeGreaterThan(0.99);
+  await expect
+    .poll(litDots)
+    .toBe(await page.locator(".timeline-entry").count());
+});
+
 test("scroll reveals end up visible and never keep content hidden", async ({
   page,
 }) => {

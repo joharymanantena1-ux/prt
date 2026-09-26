@@ -799,6 +799,7 @@
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 640 / 440; /* viewBox : l'espace réservé a la même hauteur */
   overflow: visible;
 }
 
@@ -956,6 +957,19 @@
     }
     .showcase-media .layer-front {
       --depth: 96px;
+    }
+    /* Sur petit écran l'illustration fait ~240 px de haut : les profondeurs
+       desktop (jusqu'à 96 px) y paraîtraient exagérées. Même effet, à l'échelle. */
+    @media (max-width: 899px) {
+      .showcase-media .layer-back {
+        --depth: 8px;
+      }
+      .showcase-media .layer-mid {
+        --depth: 24px;
+      }
+      .showcase-media .layer-front {
+        --depth: 42px;
+      }
     }
     /* L'itinéraire se trace au fil du défilement. */
     .showcase-svg .route {
@@ -1727,10 +1741,11 @@ summary::-webkit-details-marker {
   width: 20%;
   height: auto;
   color: hsl(var(--primary));
-  transition: transform 0.4s;
+  transition: translate 0.4s;
 }
+/* `translate` (et non `transform`) : se compose avec l'animation de défilement. */
 .contact-invitation:hover .contact-arrow {
-  transform: translate(7px, -7px);
+  translate: 7px -7px;
 }
 .contact-bottom {
   display: grid;
@@ -2415,6 +2430,250 @@ summary::-webkit-details-marker {
     margin-left: 0;
   }
 }
+/* ── Section en cours dans la navigation ─────────────────────────────────────
+   Le soulignement du survol reste posé sous la section lue (aria-current). */
+.desktop-nav a[aria-current="true"] {
+  color: hsl(var(--primary));
+}
+.desktop-nav a[aria-current="true"]::after {
+  transform: scaleX(1);
+}
+.nav-contact[aria-current="true"] {
+  border-color: hsl(var(--primary));
+}
+.mobile-menu nav a[aria-current="true"] {
+  color: hsl(var(--primary));
+}
+
+/* ── Micro-interactions sans dépendance au défilement ──────────────────────── */
+.skill-row h3,
+.skill-number {
+  transition:
+    color 0.3s,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) {
+  .skill-row:hover .skill-number {
+    color: hsl(var(--primary));
+  }
+  .skill-row:hover h3 {
+    transform: translateX(4px);
+  }
+}
+
+/* Frise du Parcours : la ligne de progression existe partout, invisible tant
+   que le navigateur ne sait pas la lier au défilement (Firefox garde la frise
+   grise d'origine). */
+.timeline {
+  position: relative;
+}
+.timeline::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 1px;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: top;
+  pointer-events: none;
+}
+.timeline-entry::before {
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+
+/* Fond du Contact : la grille fine de la vitrine, estompée sous le titre. */
+.contact-section {
+  position: relative;
+  isolation: isolate;
+}
+.contact-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Teinte relative au texte : visible sur l'encre comme sur le fond clair. */
+  --grid-line: color-mix(in srgb, currentColor 7%, transparent);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    60% 55% at 30% 30%,
+    #000 10%,
+    transparent 72%
+  );
+  mask-image: radial-gradient(60% 55% at 30% 30%, #000 10%, transparent 72%);
+  pointer-events: none;
+}
+
+/* ── Effets liés au défilement (amélioration progressive) ──────────────────
+   Toujours : l'état statique est l'état final, rien n'est masqué sans eux. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hero : en quittant l'écran, le portrait recule (plus lent), le texte
+       avance et s'estompe, les orbites respirent — une profondeur de départ. */
+    .hero {
+      view-timeline: --hero block;
+    }
+    .hero-portrait picture {
+      animation: hero-portrait-out linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .hero-copy {
+      animation: hero-copy-out linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 90%;
+    }
+    .orbit-one {
+      animation: orbit-open linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .orbit-two {
+      animation: orbit-close linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .portrait-cross {
+      animation: cross-turn linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+
+    /* Approche : le filet des principes se trace en entrant. */
+    .approach-principles {
+      view-timeline: --principles block;
+      border-top-color: transparent;
+      position: relative;
+    }
+    .approach-principles::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: hsl(var(--border));
+      transform-origin: left;
+      animation: line-draw linear both;
+      animation-timeline: --principles;
+      animation-range: entry 0% cover 35%;
+    }
+
+    /* Parcours : la frise se trace au fil de la lecture ; chaque étape
+       s'allume quand la ligne l'atteint (même repère : 40 % de l'écran). */
+    .timeline {
+      view-timeline: --timeline block;
+    }
+    .timeline::after {
+      animation: timeline-draw linear both;
+      animation-timeline: --timeline;
+      animation-range: cover 60vh cover calc(100% - 40vh);
+    }
+    .timeline-entry {
+      view-timeline: --entry block;
+    }
+    .timeline-entry::before {
+      animation: dot-on linear both;
+      animation-timeline: --entry;
+      animation-range: cover calc(60vh - 12px) cover calc(60vh + 12px);
+    }
+
+    /* Contact : la grille glisse, la flèche s'oriente vers l'adresse. */
+    .contact-section {
+      view-timeline: --contact block;
+    }
+    .contact-section::before {
+      animation: grid-drift linear both;
+      animation-timeline: --contact;
+      animation-range: cover 0% cover 100%;
+    }
+    .contact-arrow {
+      animation: arrow-aim linear both;
+      animation-timeline: --contact;
+      animation-range: entry 20% cover 45%;
+    }
+  }
+}
+
+/* Petits écrans : mêmes effets, amplitudes réduites. */
+@media (max-width: 767px) {
+  .hero-portrait picture {
+    --portrait-lag: 24px;
+  }
+  .hero-copy {
+    --copy-lift: -14px;
+  }
+}
+
+@keyframes hero-portrait-out {
+  to {
+    transform: translateY(var(--portrait-lag, 60px));
+  }
+}
+@keyframes hero-copy-out {
+  to {
+    transform: translateY(var(--copy-lift, -34px));
+    opacity: 0.35;
+  }
+}
+@keyframes orbit-open {
+  to {
+    transform: scale(1.12);
+  }
+}
+@keyframes orbit-close {
+  from {
+    transform: scale(0.74);
+  }
+  to {
+    transform: scale(0.62);
+  }
+}
+@keyframes cross-turn {
+  to {
+    transform: rotate(90deg);
+  }
+}
+@keyframes line-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes timeline-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes dot-on {
+  to {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+}
+@keyframes grid-drift {
+  from {
+    background-position: 0 40px;
+  }
+  to {
+    background-position: 0 -40px;
+  }
+}
+@keyframes arrow-aim {
+  from {
+    transform: rotate(-40deg) scale(0.86);
+    opacity: 0.35;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
