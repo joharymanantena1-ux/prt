@@ -15,7 +15,7 @@ npm run format        # Prettier write · `format:check` in CI
 npm run preview       # Preview the production build locally
 ```
 
-Node version: 18.18.0 (`.nvmrc`). Deployment target: Netlify.
+Node version: 18.18.0 (`.nvmrc`). Deployment target: Vercel (`vercel.json`: headers, SPA rewrite; the contact function is `api/contact.mjs`).
 
 ## Architecture
 
@@ -29,7 +29,7 @@ Before adding one, check whether ~30 lines of CSS would do; the first-load budge
 
 ### Page shell
 
-[src/App.tsx](src/App.tsx) has no router: Netlify rewrites every path to `index.html`,
+[src/App.tsx](src/App.tsx) has no router: Vercel rewrites every path to `index.html`,
 so `App` renders [Index](src/pages/Index.tsx) for `/` and [NotFound](src/pages/NotFound.tsx)
 for anything else. Sections are plain anchors; scrolling is native
 (`scroll-behavior: smooth` + `scroll-padding-top` in `index.css`), never hijacked.
@@ -264,8 +264,8 @@ mirror — do not write utility classes in components, and do not reintroduce sh
 ### Contact form
 
 [ContactSection](src/components/sections/ContactSection.tsx) POSTs to
-`/.netlify/functions/contact` ([netlify/functions/contact.mjs](netlify/functions/contact.mjs)),
-which relays server-side to Google Apps Script (`GOOGLE_SCRIPT_URL`, set in Netlify —
+`/api/contact` ([api/contact.mjs](api/contact.mjs)),
+which relays server-side to Google Apps Script (`GOOGLE_SCRIPT_URL`, set in Vercel —
 see [google-apps-script/Code.gs](google-apps-script/Code.gs)). Includes a honeypot
 field and a required consent checkbox. Public contact details come from
 `VITE_CONTACT_EMAIL` / `VITE_CONTACT_PHONE`.
@@ -277,7 +277,7 @@ Analytics (GA4) loads **only** after explicit opt-in via
 
 `canonical`, `og:url` and `og:image` are absolute and injected at build time by the
 `inject-site-meta` plugin in [vite.config.ts](vite.config.ts), from `VITE_SITE_URL` or
-Netlify's `URL`. Nothing is emitted locally, so those tags are absent in `npm run dev`.
+Vercel's `VERCEL_PROJECT_PRODUCTION_URL`. Nothing is emitted locally, so those tags are absent in `npm run dev`.
 
 ### Tests
 

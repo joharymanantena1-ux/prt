@@ -10,7 +10,7 @@ Audit réalisé le 10 septembre 2026, avant modification du design. Branche : `c
 - Palette ivoire/bleu royal, trois familles de polices distantes, CSS global et longues compositions Tailwind.
 - Hero statique dans le graphe JavaScript ; sections chargées avec `React.lazy`, mais montées simultanément, donc pas réellement différées au scroll.
 - Portrait AVIF/WebP avec `srcset`, dimensions intrinsèques et préchargement déjà présents : acquis conservés.
-- Formulaire transmis à une fonction Netlify, qui relaie à Apps Script. Contrat de données et confirmation serveur conservés.
+- Formulaire transmis à une fonction Vercel, qui relaie à Apps Script. Contrat de données et confirmation serveur conservés.
 
 ## Première impression et parcours recruteur
 

@@ -762,7 +762,7 @@ for (const status of ["success", "failure"] as const) {
     page,
   }) => {
     let payload: Record<string, string> | undefined;
-    await page.route("**/.netlify/functions/contact", async (route) => {
+    await page.route("**/api/contact", async (route) => {
       payload = route.request().postDataJSON();
       await route.fulfill({
         status: status === "success" ? 200 : 500,

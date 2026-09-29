@@ -1,8 +1,8 @@
 /**
  * Apps Script — réception du formulaire de contact du portfolio.
  *
- * Flux : Front (ContactSection.tsx) → Fonction Netlify (contact.mjs) → CE script.
- * Le proxy Netlify POST un JSON : { name, email, subject, message }.
+ * Flux : Front (ContactSection.tsx) → Fonction Vercel (api/contact.mjs) → CE script.
+ * Le proxy Vercel POST un JSON : { name, email, subject, message }.
  *
  * Ce script :
  *   1. Écrit chaque message dans le Google Sheet (avec mise en forme soignée).
@@ -21,7 +21,7 @@
  *        - Exécuter en tant que : Moi
  *        - Accès : Tout le monde
  *      Copie l'URL « /exec ».
- *   7. Sur Netlify (Site settings → Environment variables) :
+ *   7. Sur Vercel (Settings → Environment Variables) :
  *        GOOGLE_SCRIPT_URL = <l'URL /exec copiée>
  *      Re-déploie le site.
  *
@@ -38,7 +38,7 @@ var BRAND        = "#14b8a6";            // teal — accent du portfolio (en-tê
 
 var HEADERS = ["Date", "Nom", "Email", "Sujet", "Message", "Statut"];
 
-// ── Endpoint POST (appelé par le proxy Netlify) ───────────────────────────────
+// ── Endpoint POST (appelé par le proxy Vercel) ───────────────────────────────
 function doPost(e) {
   try {
     var data = parsePayload(e);

@@ -225,8 +225,8 @@ export const academicProjects: AcademicProject[] = [
   {
     title: "Portfolio Web",
     description: {
-      fr: "Portfolio personnel développé avec React.js, TypeScript et Vite, déployé sur Netlify.",
-      en: "Personal portfolio built with React.js, TypeScript and Vite, deployed on Netlify.",
+      fr: "Portfolio personnel développé avec React.js, TypeScript et Vite, déployé sur Vercel.",
+      en: "Personal portfolio built with React.js, TypeScript and Vite, deployed on Vercel.",
     },
     technologies: ["React.js", "TypeScript", "Vite"],
     category: "Web",

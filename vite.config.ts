@@ -3,13 +3,14 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // Meta tags à URL absolue (canonical, og:url, og:image) — injectés seulement
-// quand l'origine de prod est connue : VITE_SITE_URL (prioritaire) ou URL,
-// fournie automatiquement par Netlify au build. En local, aucun tag n'est émis.
+// quand l'origine de prod est connue : VITE_SITE_URL (prioritaire) ou
+// VERCEL_PROJECT_PRODUCTION_URL, fournie par Vercel au build. En local, aucun tag n'est émis.
 const injectSiteMeta = (): Plugin => {
-  const siteUrl = (process.env.VITE_SITE_URL || process.env.URL || "").replace(
-    /\/+$/,
-    "",
-  );
+  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const siteUrl = (
+    process.env.VITE_SITE_URL ||
+    (vercelUrl ? `https://${vercelUrl}` : "")
+  ).replace(/\/+$/, "");
   return {
     name: "inject-site-meta",
     transformIndexHtml(html) {

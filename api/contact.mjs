@@ -1,4 +1,4 @@
-// Netlify serverless proxy for the contact form.
+// Vercel serverless proxy for the contact form.
 //
 // Why: posting directly from the browser to Apps Script needs `no-cors` (Google
 // sends no CORS headers), which makes the response opaque AND drops the body on
@@ -7,28 +7,25 @@
 // here, and we relay to Apps Script server-side where the redirect + response
 // are followed normally, so we can return the REAL result to the client.
 //
-// Config: set GOOGLE_SCRIPT_URL in Netlify env (Site settings → Environment).
+// Config: set GOOGLE_SCRIPT_URL in the Vercel project (Settings → Environment Variables).
 // Falls back to the build-time VITE_GOOGLE_SCRIPT_URL if present.
 
 const SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL || process.env.VITE_GOOGLE_SCRIPT_URL || "";
 
-const json = (statusCode, body) => ({
-  statusCode,
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body),
-});
+const json = (status, body) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 
-export const handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return json(405, { result: "error", reason: "method_not_allowed" });
-  }
+export async function POST(request) {
   if (!SCRIPT_URL) {
     return json(500, { result: "error", reason: "endpoint_not_configured" });
   }
 
   let data;
   try {
-    data = JSON.parse(event.body || "{}");
+    data = (await request.json()) || {};
   } catch {
     return json(400, { result: "error", reason: "bad_json" });
   }
@@ -74,4 +71,8 @@ export const handler = async (event) => {
   } catch (err) {
     return json(502, { result: "error", reason: String(err) });
   }
-};
+}
+
+export function GET() {
+  return json(405, { result: "error", reason: "method_not_allowed" });
+}
