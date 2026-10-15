@@ -2,8 +2,9 @@ import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { useT } from "@/i18n";
 import type { CSSProperties } from "react";
 
-const CV =
-  "https://drive.google.com/file/d/1yJRJjEtqKmmKQsksbJHn5eYcRBE6KP-O/view?usp=sharing";
+/* Le CV est servi par le site (public/cv) : chaque déploiement publie la
+   version à jour, sans lien externe à resynchroniser. */
+const CV = "/cv/johary-andrianjafinoro-cv.pdf";
 
 export default function HeroSection() {
   const { lang, t } = useT();
