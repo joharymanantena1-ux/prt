@@ -1,4 +1,11 @@
-import { lazy, Suspense, useState, type CSSProperties } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { ArrowUpRight, GraduationCap } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import { caseStudies, caseStudyProject } from "@/data/caseStudies";
@@ -26,6 +33,45 @@ export default function ProjectsSection() {
   /* Monté une fois ouvert, puis gardé : la modale se referme sans se démonter. */
   const [caseEverOpened, setCaseEverOpened] = useState(false);
   if (caseOpen !== null && !caseEverOpened) setCaseEverOpened(true);
+
+  /* Les boucles des illustrations (navette, notes, reflet) se mettent en pause
+     quand on ne voit pas leur panneau : recouvert par la pile, hors écran, ou
+     sous une modale. Trois SVG animés repeints ensemble faisaient tomber le
+     desktop à ~40 fps sous CPU ×4. Une lecture par frame, au défilement. */
+  const showcase = useRef<HTMLOListElement>(null);
+  const modalOpen = caseOpen !== null || archiveOpen === true;
+  useEffect(() => {
+    const list = showcase.current;
+    if (!list) return;
+    const panels = [...list.querySelectorAll<HTMLElement>(".showcase-panel")];
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      panels.forEach((panel, i) => {
+        const media = panel
+          .querySelector(".showcase-media")
+          .getBoundingClientRect();
+        const next = panels[i + 1]?.getBoundingClientRect();
+        const hidden =
+          modalOpen ||
+          media.bottom <= 0 ||
+          media.top >= window.innerHeight ||
+          (next !== undefined && next.top < media.bottom - 24);
+        panel.toggleAttribute("data-still", hidden);
+      });
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [modalOpen]);
 
   return (
     <section
@@ -60,6 +106,7 @@ export default function ProjectsSection() {
             Le récit détaillé vit dans la modale. Sur grand écran les panneaux
             s'empilent au défilement (sticky), voir index.css. */}
         <ol
+          ref={showcase}
           className="showcase"
           style={{ "--n": caseStudies.length } as CSSProperties}
         >

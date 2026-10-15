@@ -56,10 +56,16 @@
     --font-display: "Mona Sans", "DM Sans", sans-serif;
     --font-body: "DM Sans", sans-serif;
     --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
-    --paper: #efefe8;
-    --ink: #181b18;
-    --paper-muted: #595d55;
-    --paper-line: #cdcec5;
+    /* Plan des sections Projets et Parcours, et des modales. En sombre, un
+       plan d'encre relevé : le garder ivoire laissait la moitié de la page
+       — et chaque modale — en clair dans le mode sombre. */
+    --paper: #161917;
+    --ink: #efefec;
+    --paper-muted: #a3a6a0;
+    --paper-line: #2c312d;
+    --paper-primary: 76 90% 68%;
+    --paper-muted-fg: 90 3% 64%;
+    --paper-focus: #d0f764;
     color-scheme: dark;
   }
   :root[data-theme="light"] {
@@ -88,8 +94,12 @@
     --ring: 93 65% 25%;
     --success: 93 65% 25%;
     --paper: #ebe9de;
+    --ink: #181b18;
     --paper-muted: #565a51;
     --paper-line: #d2d0c3;
+    --paper-primary: 93 65% 25%;
+    --paper-muted-fg: 90 4% 35%;
+    --paper-focus: #385d16;
     color-scheme: light;
   }
   * {
@@ -566,12 +576,12 @@
 .experience-section {
   background: var(--paper);
   color: var(--ink);
-  --primary: 93 65% 25%;
-  --muted-foreground: 90 4% 35%;
+  --primary: var(--paper-primary);
+  --muted-foreground: var(--paper-muted-fg);
 }
 .work-section :focus-visible,
 .experience-section :focus-visible {
-  outline-color: #385d16;
+  outline-color: var(--paper-focus);
 }
 .work-section .section-kicker,
 .experience-section .section-kicker {
@@ -664,6 +674,10 @@
   color: #efefec;
   transform-origin: 50% 0;
 }
+/* En sombre, le plan est lui-même sombre : un filet détache le panneau. */
+:root:not([data-theme="light"]) .showcase-panel {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
 /* Grille de fond : fine, estompée vers l'illustration. */
 .showcase-panel::before {
   content: "";
@@ -681,10 +695,12 @@
   );
   mask-image: radial-gradient(120% 95% at 72% 45%, #000 25%, transparent 78%);
 }
+/* Teintes de panneau : BB neutre (sa page blanche se détache sur l'encre),
+   Levitation et Konecta celles de leurs compositions d'origine. */
 .theme-beauty {
-  --panel: #1d1526;
-  --art-accent: #c6b0ea;
-  --art-hi: #f2ef8c;
+  --panel: #151618;
+  --art-accent: #cfd2c8;
+  --art-hi: #d2f663;
 }
 .theme-edu {
   --panel: #121c16;
@@ -799,13 +815,13 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 640 / 440; /* viewBox : l'espace réservé a la même hauteur */
+  aspect-ratio: 640 / 352; /* viewBox : l'espace réservé a la même hauteur */
   overflow: visible;
 }
 
-/* Vocabulaire des illustrations. L'ordre compte : `.st` et `.ac-st` posent
-   `fill: none`, les surfaces qui suivent le reprennent quand elles sont
-   combinées (un cadre = surface + filet). */
+/* Vocabulaire des compositions Levitation et Konecta. L'ordre compte : `.st`
+   et `.ac-st` posent `fill: none`, les surfaces qui suivent le reprennent
+   quand elles sont combinées (un cadre = surface + filet). */
 .showcase-svg .st {
   fill: none;
   stroke: rgb(255 255 255 / 0.14);
@@ -856,16 +872,6 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.showcase-svg .dashed {
-  stroke-dasharray: 3 5;
-}
-.showcase-svg .product {
-  fill: var(--art-accent);
-  opacity: 0.85;
-}
-.showcase-svg .product-cut {
-  fill: color-mix(in srgb, var(--panel) 60%, transparent);
-}
 .showcase-svg .street {
   stroke: rgb(255 255 255 / 0.07);
 }
@@ -902,6 +908,135 @@
   fill: rgb(255 255 255 / 0.46);
 }
 
+/* Appareils : fenêtre desktop simple et téléphone, mêmes matières pour les
+   trois projets. */
+.showcase-svg .win {
+  fill: #141518;
+  stroke: rgb(255 255 255 / 0.18);
+  stroke-width: 1;
+}
+.showcase-svg .win-dot {
+  fill: rgb(255 255 255 / 0.22);
+}
+.showcase-svg .win-url {
+  fill: rgb(255 255 255 / 0.08);
+}
+.showcase-svg .frame {
+  fill: #141518;
+  stroke: rgb(255 255 255 / 0.22);
+  stroke-width: 1;
+}
+.showcase-svg .key {
+  fill: #2a2c31;
+}
+.showcase-svg .island {
+  fill: #050505;
+}
+/* Barre d'accueil : encre sur écran clair, blanc sur écran sombre. */
+.showcase-svg .ui-light {
+  fill: #0e100f;
+}
+.showcase-svg .ui-dark {
+  fill: rgb(255 255 255 / 0.6);
+}
+/* Halo derrière les appareils : ce qui les détache du panneau. */
+.showcase-svg .glow-a {
+  stop-color: var(--art-hi);
+  stop-opacity: 0.2;
+}
+.showcase-svg .glow-b {
+  stop-color: var(--art-hi);
+  stop-opacity: 0;
+}
+
+/* Le geste commun aux trois logos : une respiration lente, à peine visible.
+   Écran d'ouverture, pas indicateur de chargement. */
+.showcase-svg .logo-breathe {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logo-breathe 5.2s ease-in-out infinite;
+}
+@keyframes logo-breathe {
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+/* BeautyBay : page blanche, et un reflet qui traverse le logo (blanc sur
+   blanc, il n'éclaire que l'encre du logo ; pas de `mix-blend-mode`, qui
+   recomposait tout le dessin à chaque frame). */
+.showcase-svg .bb-page {
+  fill: #fff;
+}
+.showcase-svg .bb-sheen {
+  transform-box: fill-box;
+  animation: bb-sheen 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes bb-sheen {
+  0%,
+  18% {
+    transform: translateX(-110%);
+  }
+  62%,
+  100% {
+    transform: translateX(240%);
+  }
+}
+
+/* Levitation : le flux clé de la plateforme (notes, bulletin, SMS) sur un
+   cycle de 9 s. Les keyframes, une par étape, sont générées par ShowcaseArt
+   (`LV_STEPS`) ; ici la durée et la boîte de transformation. Sans animation
+   (mouvement réduit), chaque étape garde son style normal : la scène est
+   complète. */
+.showcase-svg .lv-step {
+  animation: 9s ease-out infinite both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.showcase-svg .lv-grow {
+  transform-origin: left center;
+}
+
+/* Konecta : une navette parcourt l'itinéraire de la carte et allume chaque
+   arrêt à son passage. Cycle de 7 s : trajet sur les 80 premiers %, puis elle
+   s'efface au terminus et réapparaît au départ (pas de saut visible). Ses
+   keyframes (les sommets du trajet) sont générées par ShowcaseArt ; les
+   arrêts sont décalés de leur position le long du trajet (`--at`). */
+.showcase-svg .kn-bus {
+  animation: kn-bus 7s linear infinite;
+}
+.showcase-svg .kn-bus-ring {
+  fill: var(--panel);
+}
+.showcase-svg .kn-bus-dot {
+  fill: #fff;
+}
+.showcase-svg .kn-stop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kn-stop 7s ease-out infinite;
+  animation-delay: calc(var(--at) * 5.6s);
+}
+@keyframes kn-stop {
+  0% {
+    fill: var(--art-hi);
+    transform: scale(1.3);
+  }
+  18%,
+  100% {
+    fill: var(--panel);
+    transform: scale(1);
+  }
+}
+
+/* Panneau qu'on ne voit pas (recouvert par la pile, hors écran, sous une
+   modale — `data-still`, posé par ProjectsSection) : ses boucles s'arrêtent,
+   elles ne repeignent plus rien. */
+.showcase-panel[data-still]
+  :is(.kn-bus, .kn-stop, .lv-step, .logo-breathe, .bb-sheen) {
+  animation-play-state: paused;
+}
+
 /* Survol : les plans avant se soulèvent (propriété `translate`, qui se compose
    avec le `transform` de la parallaxe au lieu de l'écraser). */
 .showcase-svg .layer {
@@ -922,18 +1057,31 @@
   }
 }
 
-/* Empilement : seulement si l'écran est assez haut pour qu'un panneau collé
-   reste entièrement visible — sinon son bas deviendrait inatteignable. */
-@media (min-width: 900px) and (min-height: 700px) {
+/* Empilement, sur toutes les largeurs : chaque panneau se colle sous l'en-tête
+   et le suivant vient le recouvrir. Condition : un panneau collé doit tenir
+   entier sous l'en-tête, sinon son bas (le bouton) serait recouvert avant
+   d'avoir été vu. Mesuré : c'est le cas dès 640 px de haut, du 360 px au
+   1920 px de large (le plafond de l'illustration en une colonne, plus bas,
+   y contribue). En dessous — téléphone à l'horizontale, petite fenêtre — les
+   panneaux restent dans le flux. */
+@media (min-height: 640px) {
   .showcase-item {
+    --stick: 104px; /* en-tête 88 px + respiration */
+    --step: 16px; /* marche entre panneaux empilés */
     position: sticky;
-    top: 104px;
-    padding-top: calc(var(--i) * 16px);
+    top: var(--stick);
+    padding-top: calc(var(--i) * var(--step));
   }
   /* Un panneau recouvert qui reçoit le focus clavier (Maj+Tab en remontant)
      repasse au-dessus de la pile : le focus ne doit jamais être masqué. */
   .showcase-item:has(.showcase-open:focus-visible) {
     z-index: 3;
+  }
+}
+@media (min-height: 640px) and (max-width: 767px) {
+  .showcase-item {
+    --stick: 84px; /* en-tête 72 px */
+    --step: 10px;
   }
 }
 
@@ -981,7 +1129,7 @@
       animation-range: entry 25% entry 100%;
     }
   }
-  @media (min-width: 900px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+  @media (min-height: 640px) and (prefers-reduced-motion: no-preference) {
     /* Le panneau recouvert recule d'un cran à chaque panneau qui passe dessus. */
     .showcase {
       view-timeline: --showcase block;
@@ -1136,6 +1284,14 @@
     order: -1;
     padding: 18px 18px 0;
   }
+  /* En une colonne, l'illustration suit la largeur ; sur une tablette ou une
+     fenêtre basse elle deviendrait plus haute que l'écran ne le permet pour
+     empiler. Plafond en hauteur d'écran — sans effet sur un téléphone, où
+     elle reste bien en dessous. La boîte garde sa largeur, le dessin
+     (preserveAspectRatio par défaut) se centre dedans. */
+  .showcase-media .showcase-svg {
+    max-height: min(36svh, 100svh - 440px);
+  }
   .showcase-info {
     gap: 26px;
     padding: 22px 22px 26px;
@@ -1206,7 +1362,6 @@
   background: transparent;
   color: var(--ink);
   font-size: 13px;
-  color-scheme: light;
   transition: border-color 0.25s;
 }
 .mission-search input:hover,
@@ -1382,6 +1537,14 @@
   padding-bottom: 22px;
   border-bottom: 1px solid var(--paper-line);
 }
+/* La recherche sur sa ligne, les familles dessous : dans la ligne flex, le
+   libellé prenait la largeur de son contenu et tronquait l'indication. */
+.academic-filters .mission-search {
+  flex: 1 1 100%;
+}
+.academic-filters .mission-search input {
+  width: min(100%, 380px);
+}
 .academic-filters .archive-count {
   margin: 0;
   margin-left: auto;
@@ -1497,9 +1660,6 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 24px 30px 34px;
-}
-.modal-body .archive-search {
-  max-width: 380px;
 }
 .modal-body .theme-block:first-of-type {
   padding-top: 20px;
@@ -1662,7 +1822,7 @@
   color: var(--paper-muted);
 }
 .current-label {
-  color: #36541f;
+  color: hsl(var(--primary));
 }
 .timeline-entry h3 {
   font-size: 30px;
