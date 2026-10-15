@@ -397,11 +397,12 @@ test("brand marks load and keep the client names readable", async ({
         ),
       ),
     ]);
-  // …ainsi que les logos incrustés dans les maquettes des études de cas.
+  // …ainsi que les logos incrustés dans les maquettes des études de cas : BB
+  // au centre de ses deux écrans, Konecta dans l'en-tête de l'app chauffeur.
   const artLogos = await page
     .locator(".showcase-svg image")
     .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
-  expect(artLogos.length).toBe(2);
+  expect(artLogos.length).toBe(3);
   urls.push(...artLogos.map((href) => new URL(href!, page.url()).href));
   expect(urls.length).toBeGreaterThan(4);
   for (const url of urls) {

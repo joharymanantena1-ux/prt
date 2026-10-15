@@ -68,12 +68,13 @@ Scroll-linked effects use **native CSS scroll-driven animations** (`view-timelin
 `animation-timeline`), always inside `@supports (animation-timeline: view())` and
 `prefers-reduced-motion: no-preference`. Firefox stable still ships them behind a
 flag (2026): it gets the static layout, which must always be the finished state —
-keyframes animate *from* an offset *to* the element's normal style, never the reverse.
-Anything the reader must *see happen* (titles, sequences) is IO-triggered instead,
+keyframes animate _from_ an offset _to_ the element's normal style, never the reverse.
+Anything the reader must _see happen_ (titles, sequences) is IO-triggered instead,
 so it plays in every browser. No GSAP / Three.js: evaluated and declined, see
 "Case studies — showcase".
 
 Section effects (amplitudes reduced under 768 px):
+
 - **Hero** (scroll-linked) — three planes on exit: the plate and its orbits lag the
   most (`--plate-lag` 150 px), the photo less (`--photo-lag` 64 px), the green
   caption stays with the page, the copy lifts (`--copy-lift`) and fades to 0.15;
@@ -123,7 +124,7 @@ lift the panel 16px (`modal-in` / `backdrop-in`).
 ### Welcome screen
 
 The intro lives **in [index.html](index.html)** — markup, inline CSS and a small
-inline script — not in React: rendered from the bundle it would appear *after* the
+inline script — not in React: rendered from the bundle it would appear _after_ the
 hero and read as a bug. It mirrors the hero (ink ground, mono kicker, the three
 title lines with the last in lime, a lime progress rule) and runs ~5.6s.
 
@@ -189,20 +190,50 @@ first. The full story (enjeu → contribution → résultat, full stack, link) l
 next without closing — the nav is never remounted so keyboard focus stays put, the
 body scrolls back to top and an `aria-live` line announces the project.
 
-- **Illustrations** — [ShowcaseArt](src/components/ShowcaseArt.tsx): abstract UI
-  compositions, not screenshots (storefront + phone + GraphQL chip; school dashboard
-  + report card + SMS toast; route map + driver app). Nothing confidential, nothing
-  that reads as a real capture. Colours come only from the panel's `--panel`,
-  `--art-accent`, `--art-hi`. Each SVG has `layer-back/mid/front` groups for depth;
-  ids go through `useSvgId()` (the art renders twice when the modal is open). The
-  client's real logo is set **inside the mock** (store header, driver-app header) via
-  an SVG `<mask style="mask-type:alpha">` over the same alpha masks as `BrandMark`.
+- **Illustrations** — [ShowcaseArt](src/components/ShowcaseArt.tsx): one stage
+  for the three projects (viewBox `0 20 640 352`) — a **simple desktop window**
+  (`Desktop`: title bar with three dots and an address pill, 16:10 screen
+  below), same size and place everywhere (`WIN` / `DESK`), with the project's
+  second plane standing in front of its right edge and a little below it
+  (`FRONT`): the phone (`Phone`) for BB and Konecta, the generated report card
+  for Levitation. The devices take about three quarters of the width and leave
+  air around — a MacBook frame was tried and rejected: it filled the panel.
+  An accent radial glow sits behind (`layer-back`), the window is `layer-mid`,
+  the second plane `layer-front`. No device labels.
+  **BB** is a white page with the BB logo exactly centred on both screens, a
+  sheen sweeping across it and a slow breathe (`bb-sheen` / `logo-breathe`, CSS
+  loops, killed under reduced motion). The logo is the alpha-mask PNG drawn
+  **directly as an `<image>`** (its opaque pixels are pure black) and the sheen
+  is a rect in `mix-blend-mode: screen` clipped to the logo box — invisible on
+  the white page, it lights only the logo. Never put an animated SVG `<mask>`
+  there: re-rasterising the masked group every frame measured ~17 fps under CPU
+  ×4 against ~54 fps without. **Levitation and Konecta keep their original
+  compositions** (grades dashboard + report card + n8n SMS toast; route map +
+  ETA chip + driver app with the real logo, a static `<mask>`), drawn for the
+  old 640×440 box and placed unchanged inside the screens by `Fit` (uniform
+  scale, centred; `deskArea` crops them to 16:10 — the dashboard shows four
+  pupils instead of five). Their colours come only from the panel's `--panel`,
+  `--art-accent`, `--art-hi` (the shared drawing vocabulary `.st`, `.s1`,
+  `.tx`, `.ac`, `.hi`…, order matters). On the Konecta map a shuttle (`kn-bus`,
+  a round-capped dash on the route with `pathLength=1`) runs the route in 7 s,
+  fades out at the terminus and reappears at the start; each stop lights as it
+  passes (`kn-stop`, delayed by its fraction along the route, `fractionAt`).
+  The route still draws itself on scroll. Panel tints: BB neutral ink
+  (`#151618`), Levitation and Konecta their original green / blue-grey. Ids go
+  through `useSvgId()` (the art renders twice when the modal is open).
+  Screenshotting the stacked panels needs `reducedMotion: "reduce"` — the
+  sticky scale animation never lets them settle. A logo-only version of the
+  Levitation and Konecta screens was tried and rejected — keep the compositions.
 - **Whole panel clickable** — one `<button class="showcase-open">` whose `::after`
   covers the panel; never nest another interactive element in a panel.
-- **Stacking** — on `min-width: 900px and min-height: 700px` the items are sticky
-  (top 104px + `i × 16px` staircase); the covered panel scales down via the list's
-  `view-timeline` (`exit-crossing` split in `--n` ranges). Below that height a stuck
-  panel's bottom would be unreachable, so it's plain flow. **A keyboard-focused
+- **Stacking** — on **every width** with `min-height: 640px` the items are sticky
+  (top 104px + `i × 16px` staircase; 84px + `i × 10px` under 768 px, where the
+  header is 72px); the covered panel scales down via the list's `view-timeline`
+  (`exit-crossing` split in `--n` ranges). A stuck panel must fit whole under the
+  header or its button is covered before it is seen: measured from 360×640 to
+  1920×1080 in FR and EN (tightest: 820×640, 9 px to spare). In one column the
+  illustration is capped at `min(36svh, 100svh − 440px)` for that reason. Below
+  640 px of height (landscape phones, short windows) it's plain flow. **A keyboard-focused
   panel is raised above the stack** (`:has(:focus-visible)` → `z-index`) — without it
   Shift+Tab lands on a button hidden under another panel (WCAG 2.2 focus not
   obscured; the test covers it, with smooth scrolling disabled while measuring).
@@ -236,17 +267,24 @@ strings (`fr.ts` / `en.ts`, kept trimmed to what is actually used), and
 HSL CSS variables in [src/index.css](src/index.css), mirrored in
 [tailwind.config.ts](tailwind.config.ts). **Dark-first**: `:root, .dark` holds the dark
 tokens, `:root[data-theme="light"]` overrides for light. An inline script in
-[index.html](index.html) sets `data-theme` *and* the `dark` class before the first
+[index.html](index.html) sets `data-theme` _and_ the `dark` class before the first
 paint from `localStorage["portfolio-theme"]` (dark unless `"light"`) — it is the single
 source of truth, don't add a second one.
 
 Palette: ink `#0e100f` page, lime accent `#d0f764` (`--primary` / `--brand`, `#d2f663`
 where the accent is hard-coded in decorative art), text `#efefec`. In light mode
 `--primary` becomes a deep green (`#3c6916`) so accent text stays AA-legible.
-Page depth comes from two planes: the ink page and a **paper** plane
-(`--paper`, ivory) used by the Projects and Experience sections, which carry ink text
-via `--ink` / `--paper-muted` / `--paper-line`. Light mode replays the same rhythm
-(near-white page, ivory band) — keep the two tones distinct enough to read.
+Page depth comes from two planes: the page and a second plane (`--paper`) used
+by the Projects and Experience sections **and by every modal**, which carry their
+text via `--ink` / `--paper-muted` / `--paper-line`, their accent via
+`--paper-primary` and their focus ring via `--paper-focus`. The plane follows the
+theme: **light** — near-white page, ivory band (`#ebe9de`), ink text, deep-green
+accent; **dark** — ink page, raised ink plane (`#161917`), light text, lime
+accent. It used to stay ivory in dark mode, which left half the page and every
+modal bright in the dark theme. On the dark plane the dark showcase panels get a
+1px inset hairline so they still detach. Never hard-code a light-only colour in
+those sections — go through the tokens (the old `.current-label` green and the
+search field's forced `color-scheme: light` were the leftovers).
 
 Typography: **Mona Sans** (GitHub, OFL) for every heading via `--font-display`
 (`h1–h4` consume it), **DM Sans** for body and UI, both self-hosted woff2 and
@@ -278,6 +316,17 @@ Analytics (GA4) loads **only** after explicit opt-in via
 `canonical`, `og:url` and `og:image` are absolute and injected at build time by the
 `inject-site-meta` plugin in [vite.config.ts](vite.config.ts), from `VITE_SITE_URL` or
 Vercel's `VERCEL_PROJECT_PRODUCTION_URL`. Nothing is emitted locally, so those tags are absent in `npm run dev`.
+The image URL carries a content hash (`og-image.jpg?v=<sha256:8>`): LinkedIn,
+Slack and X cache previews by image URL, so a new image needs a new address
+(LinkedIn also caches per page — refresh with its Post Inspector after a deploy).
+
+[public/og-image.jpg](public/og-image.jpg) (1200×630, committed) mirrors the
+current hero and is rendered **by the browser**:
+`node scripts/generate-og-image.mjs` (Playwright + sharp, site fonts and portrait
+embedded as data URIs, captured ×2 then downsampled). librsvg cannot read the
+site's woff2 — that is why the previous image was stuck in Helvetica. Re-run it
+whenever the hero changes; [generate-brand-assets.mjs](scripts/generate-brand-assets.mjs)
+now only makes the icons.
 
 ### Tests
 
