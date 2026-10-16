@@ -37,7 +37,7 @@ const [mona, dmRegular, dmMedium, portrait] = await Promise.all([
 
 // Valeurs reprises d'index.css (thème sombre, hero) — à garder alignées.
 const html = `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><style>
+<html lang="en"><head><meta charset="utf-8"><style>
 @font-face { font-family: "Mona Sans"; src: url(${mona}) format("woff2"); font-weight: 200 900; }
 @font-face { font-family: "DM Sans"; src: url(${dmRegular}) format("woff2"); font-weight: 400; }
 @font-face { font-family: "DM Sans"; src: url(${dmMedium}) format("woff2"); font-weight: 500 700; }
@@ -83,8 +83,8 @@ figcaption svg { align-self: end; grid-row: 1 / 3; grid-column: 2; }
 <body><main class="og">
   <section class="copy">
     <div class="brand"><span class="wm">jm<i>.</i></span><span class="name">Johary Manantena</span></div>
-    <p class="kicker mono">Développeur Full-Stack / Web &amp; Mobile</p>
-    <h1><span>Du code.</span><span>Du sens.</span><span class="accent">De l’impact.</span></h1>
+    <p class="kicker mono">Full-Stack Developer / Web &amp; Mobile</p>
+    <h1><span>Code.</span><span>Purpose.</span><span class="accent">Real impact.</span></h1>
     <p class="foot mono">React · TypeScript · Node.js · React Native</p>
   </section>
   <figure>
@@ -92,7 +92,7 @@ figcaption svg { align-self: end; grid-row: 1 / 3; grid-column: 2; }
     <img class="photo" src="${portrait}" alt="">
     <figcaption>
       <span class="mono">Antananarivo, MG</span>
-      <p>Un esprit curieux.<br>Des solutions concrètes.</p>
+      <p>A curious mind.<br>Practical solutions.</p>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
     </figcaption>

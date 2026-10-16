@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -66,29 +66,29 @@
       content="#0e100f"
     />
 
-    <title>Johary Manantena | Développeur Full-Stack</title>
+    <title>Johary Manantena | Full-Stack Developer</title>
     <meta
       name="description"
-      content="Portfolio de Johary Manantena, développeur web full-stack (React, Node.js, TypeScript, Laravel, Spring Boot). Disponible pour missions freelance."
+      content="Portfolio of Johary Manantena, full-stack web developer (React, Node.js, TypeScript, Laravel, Spring Boot). Available for freelance missions."
     />
     <meta name="author" content="Johary Manantena" />
     <meta
       name="keywords"
-      content="développeur full-stack, React, Node.js, TypeScript, Laravel, Spring Boot, portfolio, freelance"
+      content="full-stack developer, React, Node.js, TypeScript, Laravel, Spring Boot, portfolio, freelance"
     />
 
     <meta
       property="og:title"
-      content="Johary Manantena | Développeur Full-Stack"
+      content="Johary Manantena | Full-Stack Developer"
     />
     <meta
       property="og:description"
-      content="Applications web modernes et performantes — front, back et mobile."
+      content="Modern, fast web applications — front end, back end and mobile."
     />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Johary Manantena" />
-    <meta property="og:locale" content="fr_FR" />
-    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fr_FR" />
     <!-- canonical + og:url + og:image (URLs absolues) sont injectés au build par
          le plugin inject-site-meta (vite.config.ts) à partir de VITE_SITE_URL,
          ou automatiquement de l’URL de production fournie par Vercel. -->
@@ -96,11 +96,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="Johary Manantena | Développeur Full-Stack"
+      content="Johary Manantena | Full-Stack Developer"
     />
     <meta
       name="twitter:description"
-      content="Applications web modernes et performantes — front, back et mobile."
+      content="Modern, fast web applications — front end, back end and mobile."
     />
 
     <!-- Écran d'accueil : peint avant React (sinon le hero apparaîtrait d'abord
@@ -308,8 +308,8 @@
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Johary Manantena",
-        "jobTitle": "Développeur Full-Stack",
-        "description": "Développeur web full-stack freelance — React, Node.js, TypeScript, Laravel, Spring Boot.",
+        "jobTitle": "Full-Stack Developer",
+        "description": "Freelance full-stack web developer — React, Node.js, TypeScript, Laravel, Spring Boot.",
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Antananarivo",
@@ -365,9 +365,9 @@
           intro.remove();
           return;
         }
-        var en = false;
+        var en = true; // anglais par défaut, sauf choix « fr » enregistré
         try {
-          en = localStorage.getItem("portfolio-lang") === "en";
+          en = localStorage.getItem("portfolio-lang") !== "fr";
           if (localStorage.getItem("portfolio-theme") === "light")
             intro.classList.add("intro-light");
         } catch (e) {}

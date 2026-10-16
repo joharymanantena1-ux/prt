@@ -33,13 +33,15 @@ interface Ctx {
 const LanguageContext = createContext<Ctx | null>(null);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLangState] = useState<Lang>("fr");
-
-  // Hydrate from storage (default FR for the primary francophone audience).
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === "fr" || saved === "en") setLangState(saved);
-  }, []);
+  // English by default; a saved choice wins. Read before the first render so
+  // a returning French visitor never sees the English text flash first.
+  const [lang, setLangState] = useState<Lang>(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === "fr" ? "fr" : "en";
+    } catch {
+      return "en";
+    }
+  });
 
   // Keep <html lang> in sync for a11y / SEO.
   useEffect(() => {

@@ -7,9 +7,11 @@ const sizes = [320, 375, 390, 430, 768, 1024, 1280, 1440, 1920];
    pour tous les tests, sauf ceux qui l'étudient (ils lèvent le drapeau eux-mêmes,
    les scripts d'init s'exécutant dans l'ordre d'ajout). */
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() =>
-    localStorage.setItem("portfolio-intro-seen", "1"),
-  );
+  await page.addInitScript(() => {
+    localStorage.setItem("portfolio-intro-seen", "1");
+    // Le site s'ouvre en anglais par défaut ; les assertions sont en français.
+    localStorage.setItem("portfolio-lang", "fr");
+  });
 });
 
 for (const width of sizes) {

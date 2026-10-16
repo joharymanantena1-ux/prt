@@ -19,7 +19,7 @@ Node version: 18.18.0 (`.nvmrc`). Deployment target: Vercel (`vercel.json`: head
 
 ## Architecture
 
-Single-page portfolio (bilingual FR/EN, French first) for a full-stack developer.
+Single-page portfolio (bilingual EN/FR, **English by default**) for a full-stack developer.
 Stack: React 18 + TypeScript + Vite. **No UI framework and no animation library** —
 the interface is hand-written CSS in [src/index.css](src/index.css) plus `lucide-react` icons.
 
@@ -291,8 +291,13 @@ audit of the open modal in the test suite.
 
 [src/i18n/](src/i18n/) — `LanguageProvider` + `useT()`. `t("nav.menu")` for chrome
 strings (`fr.ts` / `en.ts`, kept trimmed to what is actually used), and
-`tx({fr, en}, lang)` for bilingual data fields. The choice persists in
-`localStorage["portfolio-lang"]` and syncs `<html lang>`.
+`tx({fr, en}, lang)` for bilingual data fields. **English is the default**: the
+provider reads `localStorage["portfolio-lang"]` before the first render (no
+flash) and only a saved `"fr"` switches to French; the welcome screen, the
+static `<head>` (title, description, OG/Twitter, JSON-LD, `og:locale en_US`)
+and the share image follow English too. The choice persists and syncs
+`<html lang>`. Tests pin `portfolio-lang = "fr"` in their `beforeEach` — their
+assertions are in French.
 
 ### Design tokens & theming
 

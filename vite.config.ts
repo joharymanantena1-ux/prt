@@ -20,7 +20,7 @@ const injectSiteMeta = (): Plugin => {
     .slice(0, 8);
   const ogImage = `${siteUrl}/og-image.jpg?v=${ogVersion}`;
   const ogAlt =
-    "Johary Manantena — Développeur Full-Stack. Du code. Du sens. De l’impact.";
+    "Johary Manantena — Full-Stack Developer. Code. Purpose. Real impact.";
   return {
     name: "inject-site-meta",
     transformIndexHtml(html) {
