@@ -9,6 +9,12 @@ import { prefersReducedMotion, useIntroDone } from "./useIntroDone";
  * seulement), la photo redevient particules, qui s'écartent du curseur puis se
  * remettent en place ; au départ du curseur, la photo revient.
  *
+ * Au toucher, pas de survol : un tap éclabousse les points autour du doigt, un
+ * glissé horizontal les balaie comme un pinceau (`touch-action: pan-y` : le
+ * défilement vertical reste natif et annule le geste), et le lâcher rend la
+ * photo. L'assemblage attend que le portrait soit à moitié à l'écran — sur
+ * téléphone il est sous la ligne de flottaison, il se jouait hors de vue.
+ *
  * L'état est porté par la figure (`data-fx` : `ghost` = points visibles, photo
  * en filigrane ; `photo` = photo nette) et les fondus vivent dans index.css.
  * Rendu par ImageData (un bloc de pixels par point) : des milliers de fillRect
@@ -227,7 +233,26 @@ export default function ParticlePortrait() {
     };
     // Après le chargement de la page : l'échantillonnage et les premières
     // frames ne disputent pas le fil principal au rendu initial.
-    const later = () => window.setTimeout(start, 300);
+    // Tactile : la figure se lit plus bas, on attend qu'elle soit visible.
+    const fine = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+    let seen: IntersectionObserver | null = null;
+    const later = () => {
+      if (fine) {
+        window.setTimeout(start, 300);
+        return;
+      }
+      seen = new IntersectionObserver(
+        (entries) => {
+          if (!entries[0].isIntersecting) return;
+          seen.disconnect();
+          window.setTimeout(start, 150);
+        },
+        { threshold: 0.5 },
+      );
+      seen.observe(figure);
+    };
     const ready = () => {
       if (document.readyState === "complete") later();
       else window.addEventListener("load", later, { once: true });
@@ -236,9 +261,6 @@ export default function ParticlePortrait() {
     else img.addEventListener("load", ready, { once: true });
 
     // Survol : seulement avec une vraie souris (pas de « survol » au toucher).
-    const fine = window.matchMedia(
-      "(hover: hover) and (pointer: fine)",
-    ).matches;
     const local = (e: PointerEvent) => {
       const box = canvas.getBoundingClientRect();
       return { x: e.clientX - box.left, y: e.clientY - box.top };
@@ -266,8 +288,49 @@ export default function ParticlePortrait() {
       figure.addEventListener("pointermove", onMove);
       figure.addEventListener("pointerleave", onLeave);
     }
+
+    // Toucher : éclaboussure au contact, pinceau au glissé, photo au lâcher.
+    const SPLASH = 100;
+    const onTouchDown = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" || !particles || mode === "assemble")
+        return;
+      const p = particles;
+      const at = local(e);
+      for (let j = 0; j < p.n; j++) {
+        const dx = p.x[j] - at.x;
+        const dy = p.y[j] - at.y;
+        const d = Math.hypot(dx, dy);
+        if (d >= SPLASH || d < 0.01) continue;
+        const f = (1 - d / SPLASH) * 11;
+        p.vx[j] += (dx / d) * f;
+        p.vy[j] += (dy / d) * f;
+      }
+      pointer = at;
+      figure.dataset.fx = "ghost";
+      mode = "settle";
+      calm = 0;
+      run();
+    };
+    const onTouchMove = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" || !pointer) return;
+      pointer = local(e);
+      run();
+    };
+    const onTouchEnd = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      onLeave();
+    };
+    figure.addEventListener("pointerdown", onTouchDown);
+    figure.addEventListener("pointermove", onTouchMove);
+    figure.addEventListener("pointerup", onTouchEnd);
+    figure.addEventListener("pointercancel", onTouchEnd);
+
+    // iOS redimensionne à chaque apparition de la barre d'adresse : on ne
+    // rééchantillonne que si la boîte du portrait a vraiment changé.
     const onResize = () => {
-      if (mode === "idle" && particles) setup();
+      if (mode !== "idle" || !particles) return;
+      const box = canvas.getBoundingClientRect();
+      if (Math.abs(box.width - w) > 1 || Math.abs(box.height - h) > 1) setup();
     };
     window.addEventListener("resize", onResize);
 
@@ -279,6 +342,11 @@ export default function ParticlePortrait() {
       figure.removeEventListener("pointerenter", onEnter);
       figure.removeEventListener("pointermove", onMove);
       figure.removeEventListener("pointerleave", onLeave);
+      figure.removeEventListener("pointerdown", onTouchDown);
+      figure.removeEventListener("pointermove", onTouchMove);
+      figure.removeEventListener("pointerup", onTouchEnd);
+      figure.removeEventListener("pointercancel", onTouchEnd);
+      seen?.disconnect();
       window.removeEventListener("resize", onResize);
       figure.dataset.fx = "photo";
     };

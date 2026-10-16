@@ -604,6 +604,20 @@
 .hero-portrait[data-fx="ghost"] .portrait-particles {
   opacity: 1;
 }
+/* Au toucher, le portrait se joue au doigt (ParticlePortrait) : le
+   défilement vertical reste natif, le glissé horizontal balaie les points ;
+   ni menu « enregistrer l'image » ni flash de sélection sur un appui. */
+@media (hover: none) {
+  .hero-portrait {
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .hero-portrait img {
+    -webkit-touch-callout: none;
+  }
+}
 @keyframes photo-fallback {
   to {
     opacity: 1;
@@ -2343,7 +2357,7 @@ summary::-webkit-details-marker {
     font-size: 12px;
   }
   .hero-portrait {
-    height: 230px;
+    height: 270px;
     max-width: none;
     align-self: stretch;
   }
@@ -2353,8 +2367,8 @@ summary::-webkit-details-marker {
   .hero-portrait picture,
   .portrait-particles {
     left: auto;
-    width: 190px;
-    right: 10px;
+    width: 215px;
+    right: 6px;
   }
   .hero-portrait img {
     object-position: center 0%;

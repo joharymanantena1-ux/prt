@@ -95,10 +95,19 @@ Section effects (amplitudes reduced under 768 px):
   script) keeps the photo at 7 % opacity from the first paint — never 0, it is
   the LCP element — with a 7 s CSS fallback if the chunk never comes. Drawn via
   ImageData at CSS resolution, shown `image-rendering: pixelated`.
+  **Touch** (no hover): the assembly waits until the portrait is half on
+  screen (it sits below the fold on phones); a tap splashes the dots away from
+  the finger, a horizontal drag brushes them, releasing brings the photo back.
+  The figure is `touch-action: pan-y` under `(hover: none)`, so vertical
+  scrolling stays native and cancels the gesture; no image callout. On iOS
+  the URL bar fires resizes: particles are re-sampled only if the box really
+  changed. Mobile portrait: 270 px tall, photo 215 px wide.
   **Water drops** (`WaterRipples`, lazy): a faint dot grid behind the hero;
-  mouse travel (every ~110 px) or a click/tap drops a ring that pushes the dots
+  mouse travel (every ~110 px) or a click drops a ring that pushes the dots
   and lights a few in the accent. Edge fade is a per-dot weight, not a CSS
   `mask-image` (a mask on a canvas redrawn every frame halved the frame rate).
+  On touch, drops wait for a real tap (`click`): `pointerdown` also fires at
+  the start of a scroll.
   **Text**: mono labels decode once (`ScrambleText`), name / description /
   actions rise after the title, a sheen crosses the accent line once — these
   wait for the welcome screen via `animation-play-state` under

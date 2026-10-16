@@ -145,9 +145,21 @@ export default function WaterRipples() {
       last = { ...p, t: now };
       drop(p.x, p.y, 0.55);
     };
+    let lastType = "";
     const onDown = (e: PointerEvent) => {
+      lastType = e.pointerType;
+      if (e.pointerType !== "mouse") return; // au toucher : `click` ci-dessous
       const p = local(e);
       drop(p.x, p.y, 1);
+    };
+    // Au toucher, `pointerdown` part aussi au début d'un défilement : la goutte
+    // n'attend que le vrai tap (le navigateur n'émet `click` que pour lui).
+    const onTap = (e: MouseEvent) => {
+      // Safari peut émettre `click` sans type de pointeur : on se fie au
+      // dernier `pointerdown`.
+      if (lastType === "mouse") return;
+      const box = hero.getBoundingClientRect();
+      drop(e.clientX - box.left, e.clientY - box.top, 1);
     };
 
     setup();
@@ -170,6 +182,7 @@ export default function WaterRipples() {
     }
     hero.addEventListener("pointermove", onMove);
     hero.addEventListener("pointerdown", onDown);
+    hero.addEventListener("click", onTap);
     const resize = new ResizeObserver(() => {
       setup();
       draw(performance.now());
@@ -188,6 +201,7 @@ export default function WaterRipples() {
       cancelAnimationFrame(raf);
       hero.removeEventListener("pointermove", onMove);
       hero.removeEventListener("pointerdown", onDown);
+      hero.removeEventListener("click", onTap);
       resize.disconnect();
       theme.disconnect();
     };
