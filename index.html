@@ -13,6 +13,11 @@
         document.documentElement.dataset.theme = light ? "light" : "dark";
         if (!light) document.documentElement.classList.add("dark");
       } catch (e) {}
+      // Effets d'introduction du hero (portrait en particules…) : jamais sous
+      // « mouvement réduit ». Posé avant la première peinture pour que la
+      // photo soit déjà en filigrane quand les particules arrivent.
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+        document.documentElement.classList.add("fx");
     </script>
 
     <link
