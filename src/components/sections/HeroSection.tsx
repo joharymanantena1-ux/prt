@@ -1,6 +1,16 @@
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { useT } from "@/i18n";
-import type { CSSProperties } from "react";
+import { lazy, Suspense, type CSSProperties } from "react";
+import ScrambleText from "@/components/hero/ScrambleText";
+import { useIntroDone } from "@/components/hero/useIntroDone";
+
+/* Effets d'introduction (gouttes d'eau, portrait en particules) : chargés à
+   part — ils enrichissent le hero, ils ne doivent pas retarder son affichage
+   (le portrait est l'élément LCP). */
+const WaterRipples = lazy(() => import("@/components/hero/WaterRipples"));
+const ParticlePortrait = lazy(
+  () => import("@/components/hero/ParticlePortrait"),
+);
 
 /* Le CV est servi par le site (public/cv) : chaque déploiement publie la
    version à jour, sans lien externe à resynchroniser. */
@@ -8,15 +18,24 @@ const CV = "/cv/johary-andrianjafinoro-cv.pdf";
 
 export default function HeroSection() {
   const { lang, t } = useT();
+  const introDone = useIntroDone();
   const lines =
     lang === "fr"
       ? ["Du code.", "Du sens.", "De l’impact."]
       : ["Code.", "Purpose.", "Real impact."];
   return (
     <section id="accueil" className="hero shell" aria-labelledby="hero-title">
+      <Suspense fallback={null}>
+        <WaterRipples />
+      </Suspense>
       <div className="hero-topline eyebrow">
-        <span>{t("hero.role")} / Web & Mobile</span>
-        <span className="hero-edition">Portfolio — 2026</span>
+        <ScrambleText
+          text={`${t("hero.role")} / Web & Mobile`}
+          start={introDone}
+        />
+        <span className="hero-edition">
+          <ScrambleText text="Portfolio — 2026" start={introDone} delay={150} />
+        </span>
       </div>
       <div className="hero-composition">
         <div className="hero-copy">
@@ -82,8 +101,17 @@ export default function HeroSection() {
               decoding="async"
             />
           </picture>
+          <Suspense fallback={null}>
+            <ParticlePortrait />
+          </Suspense>
           <figcaption>
-            <span className="eyebrow">Antananarivo, MG</span>
+            <span className="eyebrow">
+              <ScrambleText
+                text="Antananarivo, MG"
+                start={introDone}
+                delay={350}
+              />
+            </span>
             <span className="portrait-caption">
               {lang === "fr"
                 ? "Un esprit curieux.\nDes solutions concrètes."

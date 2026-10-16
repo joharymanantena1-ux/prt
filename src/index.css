@@ -558,6 +558,115 @@
 .hero-portrait figcaption svg {
   align-self: end;
 }
+/* ── Hero : effets d'introduction ────────────────────────────────────────────
+   Gouttes d'eau sur une grille de points derrière le contenu, portrait en
+   particules (src/components/hero). La photo reste l'état final : les points
+   ne sont qu'un passage, à l'arrivée et au survol. */
+.hero {
+  position: relative;
+}
+.hero > :not(.hero-ripples) {
+  position: relative;
+  z-index: 1;
+}
+.hero-ripples {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.portrait-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* Canvas à la résolution CSS : points nets, sans flou d'agrandissement. */
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.hero-portrait img {
+  transition: opacity 0.6s ease;
+}
+/* Avant le montage des particules, la photo attend en filigrane (jamais à 0 :
+   elle reste l'élément LCP). Filet de sécurité : si les particules ne
+   viennent pas, elle revient seule. */
+.fx .hero-portrait:not([data-fx]) img {
+  opacity: 0.07;
+  animation: photo-fallback 0.6s 7s both;
+}
+.hero-portrait[data-fx="ghost"] img {
+  opacity: 0.07;
+}
+.hero-portrait[data-fx="ghost"] .portrait-particles {
+  opacity: 1;
+}
+@keyframes photo-fallback {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Le texte prend le relais du titre : nom, description et actions montent
+   après lui, et un reflet traverse une fois la ligne d'accent. Sous l'écran
+   d'accueil, ces animations attendent son départ. */
+.hero-intro,
+.hero-description,
+.hero-actions {
+  animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-intro {
+  animation-delay: 0.1s;
+}
+.hero-description {
+  animation-delay: 0.42s;
+}
+.hero-actions {
+  animation-delay: 0.52s;
+}
+.hero-line:last-child > span {
+  background: linear-gradient(
+      100deg,
+      currentColor 40%,
+      color-mix(in srgb, currentColor 40%, #fff) 50%,
+      currentColor 60%
+    )
+    120% 0 / 260% 100%;
+  /* Répété : à toute position la ligne est couverte, seul le reflet passe. */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation:
+    type-enter 0.85s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--line) * 100ms)
+      both,
+    hero-sheen 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.15s both;
+}
+.intro-active .hero-intro,
+.intro-active .hero-description,
+.intro-active .hero-actions {
+  animation-play-state: paused;
+}
+.intro-active .hero-line:last-child > span {
+  animation-play-state: running, paused;
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes hero-sheen {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+
 .hero-foot {
   display: flex;
   align-items: center;
@@ -2241,7 +2350,8 @@ summary::-webkit-details-marker {
   .portrait-art {
     inset: 0;
   }
-  .hero-portrait picture {
+  .hero-portrait picture,
+  .portrait-particles {
     left: auto;
     width: 190px;
     right: 10px;
@@ -2576,7 +2686,8 @@ summary::-webkit-details-marker {
   .portrait-caption {
     font-size: 13px;
   }
-  .hero-portrait picture {
+  .hero-portrait picture,
+  .portrait-particles {
     right: 0;
     width: 180px;
   }
@@ -2847,6 +2958,7 @@ summary::-webkit-details-marker {
     }
     .portrait-art,
     .hero-portrait picture,
+    .portrait-particles,
     .hero-copy,
     .orbit-one,
     .orbit-two,
@@ -2859,7 +2971,8 @@ summary::-webkit-details-marker {
     .portrait-art {
       animation-name: hero-plate-out;
     }
-    .hero-portrait picture {
+    .hero-portrait picture,
+    .portrait-particles {
       animation-name: hero-photo-out;
     }
     .hero-copy {

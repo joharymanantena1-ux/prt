@@ -84,6 +84,26 @@ Section effects (amplitudes reduced under 768 px):
   orbits open to 1.32 / close to 0.5, the cross turns 135°. `.hero-portrait` clips
   so the receding layers slide behind the caption. The first version (photo only,
   60 px) was imperceptible.
+- **Hero intro** ([src/components/hero/](src/components/hero/)) — three
+  effects, all waiting for the welcome screen to leave (`useIntroDone`, which
+  watches `html.intro-active`) and all absent under reduced motion:
+  **particle portrait** (`ParticlePortrait`, lazy): a canvas exactly over the
+  photo samples it into grey dots that assemble from a dust cloud (~1.5 s), then
+  the real photo fades back and the loop stops; on hover (fine pointer only) the
+  photo turns back into dots that part around the cursor. State lives on the
+  figure (`data-fx="ghost" | "photo"`); `html.fx` (set by the inline theme
+  script) keeps the photo at 7 % opacity from the first paint — never 0, it is
+  the LCP element — with a 7 s CSS fallback if the chunk never comes. Drawn via
+  ImageData at CSS resolution, shown `image-rendering: pixelated`.
+  **Water drops** (`WaterRipples`, lazy): a faint dot grid behind the hero;
+  mouse travel (every ~110 px) or a click/tap drops a ring that pushes the dots
+  and lights a few in the accent. Edge fade is a per-dot weight, not a CSS
+  `mask-image` (a mask on a canvas redrawn every frame halved the frame rate).
+  **Text**: mono labels decode once (`ScrambleText`), name / description /
+  actions rise after the title, a sheen crosses the accent line once — these
+  wait for the welcome screen via `animation-play-state` under
+  `.intro-active`. Measured under CPU ×4: hover ~54–60 fps, drops 60 fps,
+  mobile load on par with the no-effects baseline; nothing runs when idle.
 - **Approche** (IO) — three hairline segments in the principles' accent colour,
   split by the column gutter, draw one after another; each principle's text rises
   behind its line. The block itself no longer fades as a whole.
