@@ -12,9 +12,10 @@ const ParticlePortrait = lazy(
   () => import("@/components/hero/ParticlePortrait"),
 );
 
-/* Le CV est servi par le site (public/cv) : chaque déploiement publie la
-   version à jour, sans lien externe à resynchroniser. */
-const CV = "/cv/johary-andrianjafinoro-cv.pdf";
+/* Le CV est hébergé sur Google Drive : il se met à jour en remplaçant le
+   fichier sur Drive, sans redéployer le site. */
+const CV =
+  "https://drive.google.com/file/d/1rvQizqBlXMcc6s2hv2QBF1QVL8OZoxXD/view?usp=sharing";
 
 export default function HeroSection() {
   const { lang, t } = useT();

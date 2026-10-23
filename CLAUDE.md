@@ -39,9 +39,9 @@ for anything else. Sections are plain anchors; scrolling is native
 `HeroSection` → `ProjectsSection` → `AboutSection` → `SkillsSection` →
 `ExperienceSection` → `ContactSection` (lazy), in [src/components/sections/](src/components/sections/).
 Anchors: `#accueil`, `#projets`, `#apropos`, `#competences`, `#parcours`, `#contact`.
-The hero's "Mon CV" link opens the résumé served by the site,
-[public/cv/johary-andrianjafinoro-cv.pdf](public/cv/johary-andrianjafinoro-cv.pdf)
-(one A4 page) — replace that file to publish a new version with the next deploy.
+The hero's "Mon CV" link opens the résumé on **Google Drive** (`CV` in
+[HeroSection](src/components/sections/HeroSection.tsx)) — update the Drive file
+to publish a new version, no deploy needed.
 [Navigation.tsx](src/components/Navigation.tsx) holds the desktop links, the language
 and theme toggles, and a native `<dialog>` mobile menu with a focus trap.
 
