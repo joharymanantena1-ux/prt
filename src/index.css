@@ -1911,6 +1911,55 @@
   color: var(--paper);
 }
 
+/* ── Univers tech ───────────────────────────────────────────────────────────
+   Un bouton sous la liste d'expertise ouvre la constellation de toutes les
+   technologies des projets (TechUniverse, chargé au premier clic), en plein
+   écran dans la Modal. Sa scène est toujours sombre : c'est un ciel. */
+.universe-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 40px;
+  margin-top: clamp(38px, 4vw, 58px);
+}
+.universe-cta p {
+  max-width: 460px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: hsl(var(--muted-foreground));
+}
+.universe-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 0 24px;
+  border: 1px solid hsl(var(--foreground));
+  border-radius: 2px;
+  background: transparent;
+  color: hsl(var(--foreground));
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.universe-open svg {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.universe-open:hover {
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+/* L'orbite tourne d'un quart, la flèche part en diagonale. */
+.universe-open:hover svg:first-child {
+  transform: rotate(90deg);
+}
+.universe-open:hover svg:last-child {
+  transform: translate(2px, -2px);
+}
+
 /* ── Fenêtre modale ─────────────────────────────────────────────────────────
    <dialog> natif : le fond et la touche Échap sont gérés par le navigateur,
    le corps seul défile pour que l'en-tête et la fermeture restent atteignables. */

@@ -299,6 +299,49 @@ Earlier versions: editorial spreads with alternating visuals (judged not modern
 enough), and a bento grid with shared ink borders (rejected as too hard). Don't bring
 either back.
 
+### Tech universe
+
+Under the Expertise list, "Explore my tech universe" opens
+[TechUniverse](src/components/universe/TechUniverse.tsx) — a full-screen
+constellation of every technology used in the projects, **lazy-loaded on the
+first click** (preloaded on hover/focus) with its own stylesheet
+([universe.css](src/components/universe/universe.css)), inside `Modal` (`modal-universe`:
+Escape closes, focus returns to the button, the page has not moved). The scene
+is always dark, whatever the theme.
+
+- **Data** ([src/data/techUniverse.ts](src/data/techUniverse.ts)) is computed
+  from `professionalProjects`, `academicProjects` and `experiences` — never
+  typed by hand. Only the family of each technology (`FAMILY`), label aliases
+  (`ALIASES`: ReactJS / React.js → React, Postgres → PostgreSQL…) and two
+  ignored generic tags ("Cloud", "Algorithmique") are hand-written; a new
+  technology label must be added to `FAMILY` or it is left out. Experiences
+  that tell an already-listed project (Regard Beauty → BeautyBay, Levitation,
+  Konecta) are merged into it so the same work never counts twice. A link joins
+  two technologies used in the same work. Today: 66 technologies, 44 works,
+  8 families.
+- **Layout** is computed once and deterministic — no physics running: clusters
+  on an ellipse (landscape) or two columns of four (portrait, picked from the
+  stage aspect and switched on orientation change), a Fibonacci spiral inside
+  each cluster with the most-used technology at its centre, spanning-tree lines
+  per cluster, rays to the "JM" core. Family names sit above/below their cluster
+  so the fit never cuts them.
+- **View**: pan (drag), zoom (wheel, trackpad pinch, two-finger pinch, + / −
+  buttons and keys, 0 to fit) write the group's `transform` directly — no React
+  render. Labels keep a constant screen size (`--k` on the SVG) and appear by
+  tier: the cluster's top star at overview, ranks 2–3 from k ≥ 0.7, the rest
+  from k ≥ 1.25, or whenever a star is active, linked, searched or in the chosen
+  family. Fitting and centring avoid the toolbar and the panel (right on wide
+  screens, a bottom sheet on phones).
+- **Interaction**: hover (mouse) or select a star → its links light up and the
+  rest dims; the panel shows its family, number of works (pro / coursework), the
+  works themselves and the technologies most often used with it (clickable).
+  Search (Enter opens the first match) and family chips (fit the cluster).
+  Keyboard: one star is in the tab order (roving tabindex), arrows move to the
+  nearest star in that direction, Enter opens.
+- **Motion**: rays and lines draw, stars light up from the core outwards
+  (`backwards` fill, so dimming stays free), two star layers drift on the
+  compositor, the selected star pulses. All off under reduced motion.
+
 ### Modal
 
 [Modal](src/components/Modal.tsx) wraps a native `<dialog>` — same base as the mobile
