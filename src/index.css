@@ -1498,55 +1498,244 @@
   color: var(--paper-muted);
   justify-self: end;
 }
+/* ── Index des missions ──────────────────────────────────────────────────
+   Un titre par ligne, numéroté, en typographie d'affichage. Au survol : le
+   titre roule vers sa copie à l'accent, les autres lignes s'estompent, un
+   aperçu suit le curseur (MissionList). À l'entrée, les titres montent dans
+   leur masque l'un après l'autre et les filets se tracent — le geste des
+   titres de section. */
+.mission-rows {
+  position: relative; /* repère de l'aperçu */
+}
 .mission-row {
-  border-bottom: 1px solid var(--paper-line);
+  /* Filet en arrière-plan : il se trace à l'entrée sans pseudo-élément. */
+  background: linear-gradient(var(--paper-line), var(--paper-line)) 0 100% /
+    100% 1px no-repeat;
+  transition: background-size 0.9s cubic-bezier(0.22, 1, 0.36, 1)
+    calc(var(--i, 0) * 55ms);
 }
 .mission-row summary {
   display: grid;
-  /* marque · titre · catégorie · signe (le ::after est un quatrième enfant) */
-  grid-template-columns: 62px 1fr auto auto;
+  /* numéro · titre · catégorie · signe (le ::after est un quatrième enfant) */
+  grid-template-columns: 56px 1fr auto auto;
   align-items: center;
   gap: 18px;
-  min-height: 58px;
+  min-height: clamp(68px, 6.4vw, 92px);
   list-style: none;
+  transition: opacity 0.3s ease;
 }
-.mission-mark {
-  display: block;
-  height: 22px;
-}
-.mission-mark .brand-mark {
-  height: 22px;
-  width: 62px;
+.mission-num {
   color: var(--paper-muted);
-  transition: color 0.25s;
+  transition: color 0.3s;
 }
 .mission-title {
-  font-size: 16px;
-  letter-spacing: -0.02em;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  display: block;
+  min-width: 0;
+  overflow: clip;
+  /* Marge de rognage (accents, jambages) rendue par les marges négatives :
+     même technique que les titres de section. */
+  padding-block: 0.08em 0.14em;
+  margin-block: -0.08em -0.14em;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.1vw, 46px);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
 }
-.mission-row summary:hover .mission-title {
-  transform: translateX(3px);
+.mission-title-in {
+  display: block;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1)
+    calc(var(--i, 0) * 55ms);
 }
-.mission-row summary:hover .brand-mark {
-  color: var(--ink);
+.mission-roll {
+  position: relative;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.mission-roll > span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mission-roll > span + span {
+  position: absolute;
+  inset: 100% 0 auto;
+  padding-top: 0.22em; /* l'écart des marges de rognage, haut + bas */
+  color: hsl(var(--primary));
 }
 .mission-category {
   color: var(--paper-muted);
+  transition: color 0.3s;
 }
-/* Le détail s'aligne sur la colonne du titre, pas sur la gouttière. */
+.mission-row summary::after {
+  transition:
+    color 0.3s,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Entrée : les titres montent dans leur masque, numéros et catégories se
+   posent, les filets se tracent de gauche à droite. Seul le contenu bouge,
+   jamais le bloc. */
+.reveal.mission-reveal[data-revealed="false"] {
+  opacity: 1;
+  transform: none;
+}
+.mission-reveal[data-revealed="false"] .mission-row {
+  background-size: 0% 1px;
+}
+.mission-reveal[data-revealed="false"] .mission-title-in {
+  transform: translateY(112%);
+}
+.mission-num,
+.mission-category {
+  transition-property: color, opacity;
+  transition-duration: 0.3s, 0.6s;
+  transition-delay: 0s, calc(var(--i, 0) * 55ms + 0.2s);
+}
+.mission-reveal[data-revealed="false"] :is(.mission-num, .mission-category) {
+  opacity: 0;
+}
+
+/* Survol (et focus clavier) : la ligne active prend l'accent, son titre
+   roule, les autres s'estompent. Souris seulement — au toucher, un appui
+   ouvre le détail. */
+@media (hover: hover) {
+  .mission-row summary:hover .mission-roll {
+    transform: translateY(calc(-100% - 0.22em));
+  }
+  .mission-row summary:hover :is(.mission-num, .mission-category),
+  .mission-row summary:hover::after {
+    color: hsl(var(--primary));
+  }
+  .mission-row summary:hover::after {
+    transform: translateX(-4px);
+  }
+  /* `:hover` sur la ligne, pas `:has()` : un `:has` réévalué à chaque
+     changement de survol doublait le recalcul de styles (CPU ×4, balayage
+     de la liste : ~115 → ~150 frames / 3 s, ~165 sans aucun effet). */
+  .mission-rows:hover .mission-row:not(:hover) > summary {
+    opacity: 0.32;
+  }
+  /* Calques composés : l'estompage et le roulement ne repeignent pas le
+     texte à chaque frame. */
+  .mission-row > summary {
+    will-change: opacity;
+  }
+  .mission-roll {
+    will-change: transform;
+  }
+}
+.mission-row summary:focus-visible .mission-roll {
+  transform: translateY(calc(-100% - 0.22em));
+}
+.mission-rows:has(summary:focus-visible)
+  .mission-row:not(:has(summary:focus-visible))
+  > summary {
+  opacity: 0.32;
+}
+
+/* L'aperçu : la marque du client sur une plaque sombre, dans la matière des
+   panneaux de la vitrine. Hors du flux, positionné par MissionList
+   (`transform`) ; il apparaît par `scale` et opacité, deux propriétés qui ne
+   se mêlent pas à la position. */
+.mission-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 264px;
+  aspect-ratio: 16 / 10;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px) 0
+      0 / 24px 24px,
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px) 0
+      0 / 24px 24px,
+    #151618;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.1),
+    0 24px 48px -20px rgb(0 0 0 / 0.55);
+  color: #efefec;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.9;
+  transition:
+    opacity 0.25s ease,
+    scale 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.mission-preview.is-on {
+  opacity: 1;
+  scale: 1;
+}
+.mission-preview-num {
+  color: #d2f663;
+}
+.mission-preview .mission-mark {
+  display: grid;
+  place-items: center;
+}
+.mission-preview .brand-mark {
+  width: 64%;
+  height: 46px;
+  color: #efefec;
+}
+.mission-initials {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+.mission-preview-meta {
+  overflow: hidden;
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgb(239 239 236 / 0.62);
+}
+/* Au toucher, pas de survol : la marque vit dans le détail. */
+@media (hover: none) {
+  .mission-preview {
+    display: none;
+  }
+}
+
+/* Le détail : la marque à gauche, sous le numéro ; le texte sous le titre. */
 .mission-detail {
-  padding: 2px 0 20px 80px;
-  max-width: 760px;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 760px);
+  gap: 18px;
+  padding: 4px 0 28px;
 }
-.mission-detail > p {
-  font-size: 13px;
+.mission-detail-mark {
+  display: block;
+  padding-top: 3px;
+  color: var(--paper-muted);
+}
+.mission-detail-mark .brand-mark {
+  width: 56px;
+  height: 20px;
+}
+.mission-detail-mark .mission-initials {
+  font-size: 18px;
+}
+.mission-detail p:first-child {
+  font-size: 14px;
   line-height: 1.75;
   color: var(--paper-muted);
 }
-.mission-detail > p.eyebrow {
+.mission-detail p.eyebrow {
   margin-top: 12px;
   font-size: 10px;
+  color: var(--paper-muted);
+}
+.mission-detail .text-link {
+  margin-top: 14px;
 }
 
 .archive-empty {
@@ -2523,16 +2712,17 @@ summary::-webkit-details-marker {
     width: 100%;
   }
   .mission-row summary {
-    grid-template-columns: 46px 1fr auto;
-    gap: 4px 14px;
-    padding-block: 10px;
+    grid-template-columns: 30px 1fr auto;
+    gap: 2px 12px;
+    min-height: 0;
+    padding-block: 16px;
   }
-  .mission-mark .brand-mark {
-    width: 46px;
-    height: 18px;
+  .mission-num {
+    align-self: start;
+    padding-top: 0.55em;
   }
   .mission-title {
-    font-size: 15px;
+    font-size: clamp(21px, 6.2vw, 26px);
   }
   /* La catégorie passe sous le titre, alignée avec lui. */
   .mission-category {
@@ -2542,8 +2732,13 @@ summary::-webkit-details-marker {
     grid-area: 1 / 3 / span 2 / auto;
     align-self: center;
   }
+  .mission-preview {
+    display: none;
+  }
   .mission-detail {
-    padding-left: 60px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-left: 42px;
   }
   .academic-cta {
     flex-direction: column;

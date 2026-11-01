@@ -216,8 +216,17 @@ in [vite.config.ts](vite.config.ts) keeps these masks out of the main JS chunk
 
 **Professional and academic work must stay visibly separate.**
 [MissionList](src/components/MissionList.tsx) keeps the ten paid missions **on the
-page** — one row each (mark · title · category · sign), detail behind a native
-`<details>`, with its own search field. The 31 coursework projects live only in
+page** as an **interactive index** — one numbered row each (number · display
+title · category · sign), detail behind a native `<details>` (brand mark, text,
+stack, link), with its own search field. On hover (fine pointer) the title rolls
+to an accent copy inside its mask, the other rows dim, and a dark preview plate
+(brand mark or monogram, first three technologies) follows the cursor with a
+slight lag and tilt — one plate moves, its loop stops once it catches up, the
+list box is cached (never read per event). Dimming uses `:hover` on the rows,
+**not `:has()`**: re-evaluating `:has` on every hover change doubled style
+recalc. Rows and titles are composited layers under `(hover: hover)`. On entry
+the titles rise in their masks one after another and the row rules draw (the
+page's line-by-line motif). Touch: no preview, the mark sits in the detail. The 31 coursework projects live only in
 [AcademicModal](src/components/AcademicModal.tsx), opened by the "Voir mes projets
 académiques" button and **lazy-loaded on that click** (~6 kB gzip kept out of the
 first load). The modal carries the free-text search plus one chip per family
