@@ -1,4 +1,19 @@
 import type { Bi } from "@/i18n";
+/* Logos d'établissement, couleurs d'origine, en deux versions selon le fond
+   (scripts/generate-school-logos.mjs). */
+import estiaDark from "@/assets/schools/estia-dark.png";
+import estiaLight from "@/assets/schools/estia-light.png";
+import googleCloudDark from "@/assets/schools/google-cloud-dark.svg";
+import googleCloudLight from "@/assets/schools/google-cloud-light.svg";
+import ituDark from "@/assets/schools/it-university-dark.png";
+import ituLight from "@/assets/schools/it-university-light.png";
+
+/** `scale` équilibre optiquement des logos de proportions différentes. */
+export interface SchoolLogo {
+  light: string;
+  dark: string;
+  scale?: number;
+}
 
 export interface ExpItem {
   title: Bi;
@@ -11,6 +26,7 @@ export interface ExpItem {
   technologies?: string[];
   result?: Bi;
   highlight?: Bi;
+  logo?: SchoolLogo;
 }
 
 export const experiences: ExpItem[] = [
@@ -72,6 +88,18 @@ export const experiences: ExpItem[] = [
 
 export const education: ExpItem[] = [
   {
+    title: { fr: "Master IA & Big Data", en: "Master’s in AI & Big Data" },
+    school: "eBIHAR · ESTIA",
+    period: { fr: "2026 – en cours", en: "2026 – present" },
+    current: true,
+    description: {
+      fr: "Master of Science BIHAR (Big Data & IA) de l’ESTIA Institute of Technology, suivi en ligne : ingénierie et analyse de données massives, apprentissage automatique et intégration de l’IA dans des applications, avec des modules Oracle et Google.",
+      en: "ESTIA Institute of Technology’s Master of Science BIHAR (Big Data & AI), taken online: big-data engineering and analytics, machine learning and bringing AI into applications, with Oracle and Google modules.",
+    },
+    highlight: { fr: "Master of Science", en: "Master of Science" },
+    logo: { light: estiaLight, dark: estiaDark, scale: 1.3 },
+  },
+  {
     title: {
       fr: "Licence en Informatique",
       en: "Bachelor’s in Computer Science",
@@ -83,6 +111,7 @@ export const education: ExpItem[] = [
       en: "Comprehensive training in algorithms, databases, object-oriented programming, web and mobile development. Varied academic projects throughout the curriculum.",
     },
     highlight: { fr: "Diplômé", en: "Graduated" },
+    logo: { light: ituLight, dark: ituDark },
   },
   {
     title: { fr: "Parcours IA Générative", en: "Generative AI Track" },
@@ -94,6 +123,7 @@ export const education: ExpItem[] = [
       en: "Generative AI training — prompting, language models, integrating AI into business applications.",
     },
     highlight: { fr: "Google Cloud", en: "Google Cloud" },
+    logo: { light: googleCloudLight, dark: googleCloudDark, scale: 0.8 },
   },
   {
     title: { fr: "Baccalauréat Série D", en: "High-School Diploma (Sciences)" },

@@ -124,6 +124,9 @@ Section effects (amplitudes reduced under 768 px):
   `scaleY`) draws down to a reading line at 40 % of the viewport; each step's 12 px
   dot fills and takes a ring as the line reaches it, and its dates darken (one
   `view-timeline` per entry). Without support the grey timeline stays as it was.
+  The "Formation & apprentissage" `<details>` follows the site rule for
+  details: its entries rise one after another on opening (`detail-in`,
+  70 ms apart via `--i`), and its label nudges 3 px on hover like archive rows.
 - **Contact** — title lines (IO); the showcase grid (11 % `currentColor`, masked so
   it fades out before the column edges) fades in on arrival and drifts; the big arrow
   aims into place and its hover pushes it 10 px (`translate`, so it composes with
@@ -189,6 +192,15 @@ renders them with `mask-image` over `background: currentColor`, so a mark takes
 the colour of its plane and follows the theme. Sizing is CSS-only (one height per
 context) — the uniform box keeps the logo wall optically aligned.
 
+**School logos are the exception**: the education entries in Parcours show
+each establishment's official logo **in its original colours** (ESTIA for the
+eBIHAR Master, IT University, Google Cloud; none found for Lycée Manjary Soa).
+[scripts/generate-school-logos.mjs](scripts/generate-school-logos.mjs) makes two
+files per logo from the official sources in `src/assets/schools/source` — only
+the neutral part (black or white wordmark) changes between the light and dark
+plane, brand colours never do. Both `<img>` are rendered, the plane's one is
+shown (the hidden one is never loaded); `scale` balances them optically.
+
 `brandMarks` in [src/data/brandMarks.ts](src/data/brandMarks.ts) maps an exact
 project title to its mask; `clientMarks` is the client wall under the case
 studies. Three placements: the client wall, the head rail of each case study
@@ -204,8 +216,17 @@ in [vite.config.ts](vite.config.ts) keeps these masks out of the main JS chunk
 
 **Professional and academic work must stay visibly separate.**
 [MissionList](src/components/MissionList.tsx) keeps the ten paid missions **on the
-page** — one row each (mark · title · category · sign), detail behind a native
-`<details>`, with its own search field. The 31 coursework projects live only in
+page** as an **interactive index** — one numbered row each (number · display
+title · category · sign), detail behind a native `<details>` (brand mark, text,
+stack, link), with its own search field. On hover (fine pointer) the title rolls
+to an accent copy inside its mask, the other rows dim, and a dark preview plate
+(brand mark or monogram, first three technologies) follows the cursor with a
+slight lag and tilt — one plate moves, its loop stops once it catches up, the
+list box is cached (never read per event). Dimming uses `:hover` on the rows,
+**not `:has()`**: re-evaluating `:has` on every hover change doubled style
+recalc. Rows and titles are composited layers under `(hover: hover)`. On entry
+the titles rise in their masks one after another and the row rules draw (the
+page's line-by-line motif). Touch: no preview, the mark sits in the detail. The 31 coursework projects live only in
 [AcademicModal](src/components/AcademicModal.tsx), opened by the "Voir mes projets
 académiques" button and **lazy-loaded on that click** (~6 kB gzip kept out of the
 first load). The modal carries the free-text search plus one chip per family
@@ -277,6 +298,49 @@ body scrolls back to top and an `aria-live` line announces the project.
 Earlier versions: editorial spreads with alternating visuals (judged not modern
 enough), and a bento grid with shared ink borders (rejected as too hard). Don't bring
 either back.
+
+### Tech universe
+
+Under the Expertise list, "Explore my tech universe" opens
+[TechUniverse](src/components/universe/TechUniverse.tsx) — a full-screen
+constellation of every technology used in the projects, **lazy-loaded on the
+first click** (preloaded on hover/focus) with its own stylesheet
+([universe.css](src/components/universe/universe.css)), inside `Modal` (`modal-universe`:
+Escape closes, focus returns to the button, the page has not moved). The scene
+is always dark, whatever the theme.
+
+- **Data** ([src/data/techUniverse.ts](src/data/techUniverse.ts)) is computed
+  from `professionalProjects`, `academicProjects` and `experiences` — never
+  typed by hand. Only the family of each technology (`FAMILY`), label aliases
+  (`ALIASES`: ReactJS / React.js → React, Postgres → PostgreSQL…) and two
+  ignored generic tags ("Cloud", "Algorithmique") are hand-written; a new
+  technology label must be added to `FAMILY` or it is left out. Experiences
+  that tell an already-listed project (Regard Beauty → BeautyBay, Levitation,
+  Konecta) are merged into it so the same work never counts twice. A link joins
+  two technologies used in the same work. Today: 66 technologies, 44 works,
+  8 families.
+- **Layout** is computed once and deterministic — no physics running: clusters
+  on an ellipse (landscape) or two columns of four (portrait, picked from the
+  stage aspect and switched on orientation change), a Fibonacci spiral inside
+  each cluster with the most-used technology at its centre, spanning-tree lines
+  per cluster, rays to the "JM" core. Family names sit above/below their cluster
+  so the fit never cuts them.
+- **View**: pan (drag), zoom (wheel, trackpad pinch, two-finger pinch, + / −
+  buttons and keys, 0 to fit) write the group's `transform` directly — no React
+  render. Labels keep a constant screen size (`--k` on the SVG) and appear by
+  tier: the cluster's top star at overview, ranks 2–3 from k ≥ 0.7, the rest
+  from k ≥ 1.25, or whenever a star is active, linked, searched or in the chosen
+  family. Fitting and centring avoid the toolbar and the panel (right on wide
+  screens, a bottom sheet on phones).
+- **Interaction**: hover (mouse) or select a star → its links light up and the
+  rest dims; the panel shows its family, number of works (pro / coursework), the
+  works themselves and the technologies most often used with it (clickable).
+  Search (Enter opens the first match) and family chips (fit the cluster).
+  Keyboard: one star is in the tab order (roving tabindex), arrows move to the
+  nearest star in that direction, Enter opens.
+- **Motion**: rays and lines draw, stars light up from the core outwards
+  (`backwards` fill, so dimming stays free), two star layers drift on the
+  compositor, the selected star pulses. All off under reduced motion.
 
 ### Modal
 

@@ -382,8 +382,8 @@ test("brand marks load and keep the client names readable", async ({
   }
   await expect(wall.locator(".brand-mark")).toHaveCount(4);
 
-  // Les missions professionnelles portent leur marque, alignées sur la même
-  // gouttière ; les projets académiques n'en ont pas.
+  // Chaque mission professionnelle a son aperçu (marque, ou monogramme quand
+  // elle manque) ; les projets académiques n'en ont pas.
   const missions = page.locator(".mission-list");
   await expect(missions.locator(".mission-mark")).toHaveCount(10);
   await expect(missions.locator(".mission-mark .brand-mark")).toHaveCount(8);
