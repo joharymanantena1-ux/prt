@@ -2,6 +2,7 @@ import { experiences, education } from "@/data/experience";
 import { useT, tx } from "@/i18n";
 import Reveal from "@/components/motion/Reveal";
 import Lines from "@/components/motion/Lines";
+import type { CSSProperties } from "react";
 export default function ExperienceSection() {
   const { lang } = useT();
   return (
@@ -55,15 +56,46 @@ export default function ExperienceSection() {
           ))}
           <details className="education-details">
             <summary>
-              {lang === "fr"
-                ? "Formation & apprentissage"
-                : "Education & learning"}
+              <span className="education-summary">
+                {lang === "fr"
+                  ? "Formation & apprentissage"
+                  : "Education & learning"}
+              </span>
             </summary>
-            {education.map((item) => (
-              <article key={item.school}>
-                <p className="eyebrow">
-                  {tx(item.period, lang)} · {item.school}
-                </p>
+            {education.map((item, index) => (
+              <article
+                key={item.school}
+                style={{ "--i": index } as CSSProperties}
+              >
+                <div className="education-head">
+                  <p className="eyebrow">
+                    {tx(item.period, lang)} · {item.school}
+                  </p>
+                  {/* Décoratif : l'établissement est déjà nommé à côté. Une
+                      version par plan, l'autre reste masquée (et non chargée). */}
+                  {item.logo && (
+                    <span
+                      className="school-logo"
+                      style={{ "--s": item.logo.scale ?? 1 } as CSSProperties}
+                      aria-hidden="true"
+                    >
+                      <img
+                        className="on-light"
+                        src={item.logo.light}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <img
+                        className="on-dark"
+                        src={item.logo.dark}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </span>
+                  )}
+                </div>
                 <h3>{tx(item.title, lang)}</h3>
                 <p>{tx(item.description, lang)}</p>
               </article>

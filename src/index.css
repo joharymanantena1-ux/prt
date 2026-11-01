@@ -1793,8 +1793,13 @@
    `details` n'anime rien nativement — on anime seulement son contenu. */
 .mission-row[open] .mission-detail,
 .archive-row[open] > p,
-.archive-row[open] > a {
+.archive-row[open] > a,
+.education-details[open] > article {
   animation: detail-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Le parcours se déplie établissement par établissement. */
+.education-details[open] > article {
+  animation-delay: calc(var(--i, 0) * 70ms);
 }
 @keyframes detail-in {
   from {
@@ -1995,6 +2000,52 @@ summary::-webkit-details-marker {
 }
 .education-details article {
   padding-top: 28px;
+}
+/* Établissement : la date et le nom à gauche, le logo à droite, sur la même
+   ligne — le texte garde son alignement, les logos forment une colonne. */
+.education-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.school-logo {
+  flex-shrink: 0;
+  display: block;
+  height: calc(22px * var(--s, 1));
+}
+.school-logo img {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+/* Une version par plan : sombre par défaut, claire en thème clair. */
+.school-logo .on-light,
+:root[data-theme="light"] .school-logo .on-dark {
+  display: none;
+}
+:root[data-theme="light"] .school-logo .on-light {
+  display: block;
+}
+/* Le libellé glisse au survol, comme les lignes de l'archive. */
+.education-summary {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.education-details summary:hover .education-summary {
+  transform: translateX(3px);
+}
+@media (max-width: 767px) {
+  .school-logo {
+    height: calc(18px * var(--s, 1));
+  }
+}
+/* Petit écran : le logo passe au-dessus, le libellé garde sa ligne. */
+@media (max-width: 479px) {
+  .education-head {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }
 .education-details h3 {
   font-size: 22px;

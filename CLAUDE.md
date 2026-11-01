@@ -124,6 +124,9 @@ Section effects (amplitudes reduced under 768 px):
   `scaleY`) draws down to a reading line at 40 % of the viewport; each step's 12 px
   dot fills and takes a ring as the line reaches it, and its dates darken (one
   `view-timeline` per entry). Without support the grey timeline stays as it was.
+  The "Formation & apprentissage" `<details>` follows the site rule for
+  details: its entries rise one after another on opening (`detail-in`,
+  70 ms apart via `--i`), and its label nudges 3 px on hover like archive rows.
 - **Contact** — title lines (IO); the showcase grid (11 % `currentColor`, masked so
   it fades out before the column edges) fades in on arrival and drifts; the big arrow
   aims into place and its hover pushes it 10 px (`translate`, so it composes with
@@ -188,6 +191,15 @@ extracts each shape into the **alpha channel** of a shared 3:1 box
 renders them with `mask-image` over `background: currentColor`, so a mark takes
 the colour of its plane and follows the theme. Sizing is CSS-only (one height per
 context) — the uniform box keeps the logo wall optically aligned.
+
+**School logos are the exception**: the education entries in Parcours show
+each establishment's official logo **in its original colours** (ESTIA for the
+eBIHAR Master, IT University, Google Cloud; none found for Lycée Manjary Soa).
+[scripts/generate-school-logos.mjs](scripts/generate-school-logos.mjs) makes two
+files per logo from the official sources in `src/assets/schools/source` — only
+the neutral part (black or white wordmark) changes between the light and dark
+plane, brand colours never do. Both `<img>` are rendered, the plane's one is
+shown (the hidden one is never loaded); `scale` balances them optically.
 
 `brandMarks` in [src/data/brandMarks.ts](src/data/brandMarks.ts) maps an exact
 project title to its mask; `clientMarks` is the client wall under the case
