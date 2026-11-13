@@ -163,6 +163,20 @@ const FAMILY: Record<string, CategoryKey> = {
   Odoo: "commerce",
   Frappe: "commerce",
   n8n: "commerce",
+  // Suivi paid media : publicité, consentement, flux produits.
+  "Google Ads": "commerce",
+  "Meta Conversions API": "commerce",
+  "Consent Mode v2": "commerce",
+  "Google Merchant Center": "commerce",
+  Channable: "commerce",
+  Klaviyo: "commerce",
+  Zenoti: "commerce",
+  OneTrust: "commerce",
+  Okendo: "commerce",
+  Axeptio: "commerce",
+  Criteo: "commerce",
+  "Google Tag Manager": "data",
+  GA4: "data",
 };
 
 /** Un travail : projet professionnel (éventuellement fusionné avec

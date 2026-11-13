@@ -12,11 +12,16 @@ import beautybay from "@/assets/logos/beautybay.png";
 import daybyday from "@/assets/logos/daybyday.png";
 import erpnext from "@/assets/logos/erpnext.png";
 import fingerInTheNose from "@/assets/logos/finger-in-the-nose.png";
+import janeDeBoy from "@/assets/logos/jane-de-boy.png";
 import konecta from "@/assets/logos/konecta.png";
+import laced from "@/assets/logos/laced.png";
+import mimitika from "@/assets/logos/mimitika.png";
 import musierParis from "@/assets/logos/musier-paris.png";
 import odoo from "@/assets/logos/odoo.png";
 import ota from "@/assets/logos/ota.png";
 import paulBeuscher from "@/assets/logos/paul-beuscher.png";
+import roseInc from "@/assets/logos/rose-inc.png";
+import seasonly from "@/assets/logos/seasonly.png";
 import theCoolRepublic from "@/assets/logos/the-cool-republic.png";
 
 /** Titre exact du projet (voir data/projects.ts) → masque de la marque. */
@@ -32,6 +37,12 @@ export const brandMarks: Record<string, string> = {
   "ERPNext Migration": erpnext,
   // L'outil convertit des fichiers XML Odoo : la marque situe l'écosystème.
   "bank-file-converter": odoo,
+  // Missions de tracking paid media.
+  Seasonly: seasonly,
+  "Rose Inc": roseInc,
+  Mimitika: mimitika,
+  "Jane de Boy": janeDeBoy,
+  Laced: laced,
 };
 
 /** Marques clientes affichées en mur de logos sous les études de cas. */

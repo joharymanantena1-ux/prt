@@ -5,7 +5,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import type { Project } from "@/data/projects";
 import { otherProfessionalProjects } from "@/data/caseStudies";
@@ -29,6 +29,10 @@ const initials = (title: string) =>
     .join("");
 
 const pad = (n: number) => String(n).padStart(2, "0");
+
+/* Lignes affichées avant « Afficher les autres missions ». Une recherche
+   montre toujours tous ses résultats. */
+const SHOWN = 5;
 
 /** La marque du client, ou son monogramme quand elle manque. */
 function Mark({ project }: { project: Project }) {
@@ -58,6 +62,10 @@ export default function MissionList() {
     () => otherProfessionalProjects.filter((p) => matches(p, needle)),
     [needle],
   );
+  const [expanded, setExpanded] = useState(false);
+  const limited = !needle && !expanded && missions.length > SHOWN;
+  const visible = limited ? missions.slice(0, SHOWN) : missions;
+  const hidden = missions.length - SHOWN;
   /* Numéro d'origine : il ne change pas quand la recherche filtre. */
   const order = useMemo(
     () => new Map(otherProfessionalProjects.map((p, i) => [p.title, i + 1])),
@@ -193,12 +201,12 @@ export default function MissionList() {
       ) : (
         <Reveal className="mission-reveal" at={10}>
           <div className="mission-rows" ref={rows}>
-            {missions.map((project, index) => {
+            {visible.map((project, index) => {
               const link = project.liveUrl || project.githubUrl;
               const n = pad(order.get(project.title) ?? index + 1);
               return (
                 <details
-                  className="mission-row"
+                  className={`mission-row${index >= SHOWN ? " is-more" : ""}`}
                   key={project.title}
                   style={{ "--i": index } as CSSProperties}
                 >
@@ -234,6 +242,14 @@ export default function MissionList() {
                     </span>
                     <div>
                       <p>{tx(project.description, lang)}</p>
+                      {/* Les tâches techniques, quand la mission les détaille. */}
+                      {project.keyPoints && (
+                        <ul className="mission-tasks">
+                          {project.keyPoints.map((task, t) => (
+                            <li key={t}>{tx(task, lang)}</li>
+                          ))}
+                        </ul>
+                      )}
                       <p className="eyebrow">
                         {project.technologies.join(" · ")}
                       </p>
@@ -259,6 +275,29 @@ export default function MissionList() {
               );
             })}
           </div>
+          {/* Hors recherche : 5 lignes, puis le reste à la demande. */}
+          {!needle && missions.length > SHOWN && (
+            <button
+              type="button"
+              className="mission-more"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((open) => !open)}
+            >
+              <span className="eyebrow mission-num">
+                {expanded ? "−" : `+${hidden}`}
+              </span>
+              <span>
+                {expanded
+                  ? lang === "fr"
+                    ? "Réduire la liste"
+                    : "Show fewer"
+                  : lang === "fr"
+                    ? `Afficher les ${hidden} autres missions`
+                    : `Show the ${hidden} other missions`}
+              </span>
+              <ChevronDown size={18} aria-hidden="true" />
+            </button>
+          )}
         </Reveal>
       )}
     </section>

@@ -216,7 +216,7 @@ in [vite.config.ts](vite.config.ts) keeps these masks out of the main JS chunk
 
 **Professional and academic work must stay visibly separate.**
 [MissionList](src/components/MissionList.tsx) keeps the ten paid missions **on the
-page** as an **interactive index** — one numbered row each (number · display
+page** as an **interactive index** (fifteen) — one numbered row each (number · display
 title · category · sign), detail behind a native `<details>` (brand mark, text,
 stack, link), with its own search field. On hover (fine pointer) the title rolls
 to an accent copy inside its mask, the other rows dim, and a dark preview plate
@@ -226,7 +226,15 @@ list box is cached (never read per event). Dimming uses `:hover` on the rows,
 **not `:has()`**: re-evaluating `:has` on every hover change doubled style
 recalc. Rows and titles are composited layers under `(hover: hover)`. On entry
 the titles rise in their masks one after another and the row rules draw (the
-page's line-by-line motif). Touch: no preview, the mark sits in the detail. The 31 coursework projects live only in
+page's line-by-line motif). Touch: no preview, the mark sits in the detail.
+Only the first five rows show; a row-shaped "Afficher les N autres missions"
+button (`mission-more`, `aria-expanded`) reveals the rest, which rise one after
+another, and folds them back. A search always shows all its matches, without
+the button. `keyPoints` (technical tasks) render as a list in the detail. The
+five paid-media tracking missions (Seasonly, Rose Inc, Mimitika, Jane de Boy,
+Laced) use the brands' official SVG logos, turned into masks with the
+`flatten` + `density` options of the masks script (transparent, tiny vector
+sources). The 31 coursework projects live only in
 [AcademicModal](src/components/AcademicModal.tsx), opened by the "Voir mes projets
 académiques" button and **lazy-loaded on that click** (~6 kB gzip kept out of the
 first load). The modal carries the free-text search plus one chip per family
@@ -317,7 +325,7 @@ is always dark, whatever the theme.
   technology label must be added to `FAMILY` or it is left out. Experiences
   that tell an already-listed project (Regard Beauty → BeautyBay, Levitation,
   Konecta) are merged into it so the same work never counts twice. A link joins
-  two technologies used in the same work. Today: 66 technologies, 44 works,
+  two technologies used in the same work. Today: 79 technologies, 49 works,
   8 families.
 - **Layout** is computed once and deterministic — no physics running: clusters
   on an ellipse (landscape) or two columns of four (portrait, picked from the

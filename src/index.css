@@ -1734,6 +1734,66 @@
   font-size: 10px;
   color: var(--paper-muted);
 }
+/* « Afficher les autres missions » : une ligne de l'index elle-même — numéro
+   (+10), libellé dans la colonne des titres, chevron à la place du signe. Les
+   lignes dévoilées entrent l'une après l'autre (`detail-in`). */
+.mission-more {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  min-height: 64px;
+  border-bottom: 1px solid var(--paper-line);
+  color: var(--ink);
+  font-size: 15px;
+  text-align: left;
+}
+.mission-more > span:nth-child(2) {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mission-more svg {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mission-more[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+@media (hover: hover) {
+  .mission-more:hover > span:nth-child(2) {
+    transform: translateX(3px);
+  }
+  .mission-more:hover :is(.mission-num, svg) {
+    color: hsl(var(--primary));
+  }
+}
+.mission-row.is-more {
+  animation: detail-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc((var(--i, 0) - 5) * 45ms);
+}
+
+/* Les tâches techniques d'une mission : une liste sobre sous la description. */
+.mission-tasks {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.mission-tasks li {
+  position: relative;
+  padding: 4px 0 4px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--paper-muted);
+}
+.mission-tasks li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.95em;
+  width: 7px;
+  height: 1px;
+  background: currentColor;
+}
+
 .mission-detail .text-link {
   margin-top: 14px;
 }
@@ -2759,6 +2819,15 @@ summary::-webkit-details-marker {
   }
   .mission-search input {
     width: 100%;
+  }
+  .mission-more {
+    grid-template-columns: 30px 1fr auto;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .mission-more .mission-num {
+    align-self: center;
+    padding-top: 0;
   }
   .mission-row summary {
     grid-template-columns: 30px 1fr auto;
