@@ -170,6 +170,11 @@ const FAMILY: Record<string, CategoryKey> = {
   "Google Merchant Center": "commerce",
   Channable: "commerce",
   Klaviyo: "commerce",
+  Zenoti: "commerce",
+  OneTrust: "commerce",
+  Okendo: "commerce",
+  Axeptio: "commerce",
+  Criteo: "commerce",
   "Google Tag Manager": "data",
   GA4: "data",
 };

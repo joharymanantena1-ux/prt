@@ -9,11 +9,8 @@ export interface Project {
   liveUrl?: string;
   /** Marks the flagship work — renders a small "Sélection" tag on the card. */
   featured?: boolean;
-  /** Short functional highlights — rendered as a compact mono checklist. */
+  /** Tâches techniques réalisées — listées dans le détail de l'index. */
   keyPoints?: Bi[];
-  /** Mission multi-marques : les tâches regroupées par marque, chaque marque
-   *  avec son logo (`brandMarks[name]`). Rendu dans le détail de l'index. */
-  brands?: { name: string; tasks: Bi[] }[];
 }
 
 // ─── PROJETS PROFESSIONNELS ──────────────────────────────────────────────────
@@ -71,160 +68,185 @@ export const professionalProjects: Project[] = [
     liveUrl: "https://musier-paris.com",
   },
   {
-    title: "Paid Media Tracking – Multi-brand E-commerce",
+    title: "Seasonly",
     description: {
-      fr: "Fiabilisation du suivi paid media de cinq marques e-commerce : consentement, conversions côté serveur, flux produits et nettoyage des tags.",
-      en: "Making paid-media tracking reliable for five e-commerce brands: consent, server-side conversions, product feeds and tag clean-up.",
+      fr: "Tracking paid media d’une boutique Shopify : checkout, consentement et conversions côté serveur.",
+      en: "Paid-media tracking for a Shopify store: checkout, consent and server-side conversions.",
     },
     technologies: [
       "Shopify",
-      "Google Tag Manager",
-      "GA4",
-      "Google Ads",
-      "Meta Conversions API",
       "Consent Mode v2",
-      "Google Merchant Center",
-      "Channable",
-      "Klaviyo",
+      "Meta Conversions API",
+      "Zenoti",
     ],
     category: "Tracking",
-    brands: [
+    liveUrl: "https://seasonly.fr",
+    keyPoints: [
       {
-        name: "Seasonly",
-        tasks: [
-          {
-            fr: "Migration du tracking checkout vers Shopify Customer Events.",
-            en: "Migrated checkout tracking to Shopify Customer Events.",
-          },
-          {
-            fr: "Suppression des pixels dupliqués.",
-            en: "Removed duplicate pixels.",
-          },
-          {
-            fr: "Implémentation de Consent Mode v2.",
-            en: "Implemented Consent Mode v2.",
-          },
-          {
-            fr: "Intégration de Meta Conversions API.",
-            en: "Integrated the Meta Conversions API.",
-          },
-          {
-            fr: "Tracking des réservations Zenoti avec leur valeur.",
-            en: "Tracked Zenoti bookings with their value.",
-          },
-          {
-            fr: "Préparation des données de marge et de stock.",
-            en: "Prepared margin and stock data.",
-          },
-        ],
+        fr: "Migration du tracking checkout vers Shopify Customer Events.",
+        en: "Migrated checkout tracking to Shopify Customer Events.",
       },
       {
-        name: "Rose Inc",
-        tasks: [
-          {
-            fr: "Configuration des intégrations Shopify Google et Meta.",
-            en: "Configured the Shopify Google and Meta integrations.",
-          },
-          {
-            fr: "Intégration de OneTrust avec règles US et Europe.",
-            en: "Integrated OneTrust with US and Europe rules.",
-          },
-          {
-            fr: "Optimisation du flux Google Merchant Center.",
-            en: "Optimised the Google Merchant Center feed.",
-          },
-          {
-            fr: "Intégration des avis Okendo dans Google Shopping.",
-            en: "Brought Okendo reviews into Google Shopping.",
-          },
-          {
-            fr: "Audit et suppression des apps et scripts inutilisés.",
-            en: "Audited and removed unused apps and scripts.",
-          },
-        ],
+        fr: "Suppression des pixels dupliqués.",
+        en: "Removed duplicate pixels.",
       },
       {
-        name: "Mimitika",
-        tasks: [
-          {
-            fr: "Intégration d’Axeptio et blocage des tags avant consentement.",
-            en: "Integrated Axeptio and blocked tags before consent.",
-          },
-          {
-            fr: "Correction du tracking Google Ads Purchase.",
-            en: "Fixed Google Ads Purchase tracking.",
-          },
-          {
-            fr: "Configuration de Meta Conversions API.",
-            en: "Configured the Meta Conversions API.",
-          },
-          {
-            fr: "Ajout des codes EAN, structured data et avis produits.",
-            en: "Added EAN codes, structured data and product reviews.",
-          },
-          {
-            fr: "Configuration SPF, DKIM et DMARC pour Klaviyo.",
-            en: "Configured SPF, DKIM and DMARC for Klaviyo.",
-          },
-        ],
+        fr: "Implémentation de Consent Mode v2.",
+        en: "Implemented Consent Mode v2.",
       },
       {
-        name: "Jane de Boy",
-        tasks: [
-          {
-            fr: "Nettoyage du conteneur Google Tag Manager.",
-            en: "Cleaned up the Google Tag Manager container.",
-          },
-          {
-            fr: "Migration du dataLayer vers GA4.",
-            en: "Migrated the dataLayer to GA4.",
-          },
-          {
-            fr: "Configuration du consentement pour Google Ads et Criteo.",
-            en: "Configured consent for Google Ads and Criteo.",
-          },
-          {
-            fr: "Déploiement de Meta Conversions API avec event deduplication.",
-            en: "Deployed the Meta Conversions API with event deduplication.",
-          },
-          {
-            fr: "Création du product feed Channable.",
-            en: "Built the Channable product feed.",
-          },
-          {
-            fr: "Optimisation des images en WebP et AVIF.",
-            en: "Optimised images to WebP and AVIF.",
-          },
-        ],
+        fr: "Intégration de Meta Conversions API.",
+        en: "Integrated the Meta Conversions API.",
       },
       {
-        name: "Laced",
-        tasks: [
-          {
-            fr: "Suppression des anciens tags Google Ads et Universal Analytics.",
-            en: "Removed legacy Google Ads and Universal Analytics tags.",
-          },
-          {
-            fr: "Correction de l’événement Purchase avec valeur, devise GBP et items.",
-            en: "Fixed the Purchase event with value, GBP currency and items.",
-          },
-          {
-            fr: "Activation de Google Enhanced Conversions.",
-            en: "Enabled Google Enhanced Conversions.",
-          },
-          {
-            fr: "Configuration de Channable comme source Merchant Center.",
-            en: "Set up Channable as the Merchant Center source.",
-          },
-          {
-            fr: "Gestion d’un catalogue produit à grande échelle.",
-            en: "Managed a large-scale product catalogue.",
-          },
-          {
-            fr: "Envoi des annulations et retours à Google Ads.",
-            en: "Sent cancellations and returns to Google Ads.",
-          },
-        ],
+        fr: "Tracking des réservations Zenoti avec leur valeur.",
+        en: "Tracked Zenoti bookings with their value.",
+      },
+      {
+        fr: "Préparation des données de marge et de stock.",
+        en: "Prepared margin and stock data.",
+      },
+    ],
+  },
+  {
+    title: "Rose Inc",
+    description: {
+      fr: "Intégrations publicitaires, consentement par région et flux produits d’une boutique Shopify.",
+      en: "Ad integrations, region-based consent and product feeds for a Shopify store.",
+    },
+    technologies: ["Shopify", "OneTrust", "Google Merchant Center", "Okendo"],
+    category: "Tracking",
+    liveUrl: "https://www.roseinc.com",
+    keyPoints: [
+      {
+        fr: "Configuration des intégrations Shopify Google et Meta.",
+        en: "Configured the Shopify Google and Meta integrations.",
+      },
+      {
+        fr: "Intégration de OneTrust avec règles US et Europe.",
+        en: "Integrated OneTrust with US and Europe rules.",
+      },
+      {
+        fr: "Optimisation du flux Google Merchant Center.",
+        en: "Optimised the Google Merchant Center feed.",
+      },
+      {
+        fr: "Intégration des avis Okendo dans Google Shopping.",
+        en: "Brought Okendo reviews into Google Shopping.",
+      },
+      {
+        fr: "Audit et suppression des apps et scripts inutilisés.",
+        en: "Audited and removed unused apps and scripts.",
+      },
+    ],
+  },
+  {
+    title: "Mimitika",
+    description: {
+      fr: "Consentement, conversions publicitaires, données produits et authentification des emails.",
+      en: "Consent, ad conversions, product data and email authentication.",
+    },
+    technologies: ["Axeptio", "Google Ads", "Meta Conversions API", "Klaviyo"],
+    category: "Tracking",
+    liveUrl: "https://www.mimitika.com",
+    keyPoints: [
+      {
+        fr: "Intégration d’Axeptio et blocage des tags avant consentement.",
+        en: "Integrated Axeptio and blocked tags before consent.",
+      },
+      {
+        fr: "Correction du tracking Google Ads Purchase.",
+        en: "Fixed Google Ads Purchase tracking.",
+      },
+      {
+        fr: "Configuration de Meta Conversions API.",
+        en: "Configured the Meta Conversions API.",
+      },
+      {
+        fr: "Ajout des codes EAN, structured data et avis produits.",
+        en: "Added EAN codes, structured data and product reviews.",
+      },
+      {
+        fr: "Configuration SPF, DKIM et DMARC pour Klaviyo.",
+        en: "Configured SPF, DKIM and DMARC for Klaviyo.",
+      },
+    ],
+  },
+  {
+    title: "Jane de Boy",
+    description: {
+      fr: "Refonte du tracking : conteneur GTM, GA4, consentement, conversions côté serveur et flux produits.",
+      en: "Tracking overhaul: GTM container, GA4, consent, server-side conversions and product feeds.",
+    },
+    technologies: [
+      "Google Tag Manager",
+      "GA4",
+      "Meta Conversions API",
+      "Channable",
+      "Criteo",
+    ],
+    category: "Tracking",
+    liveUrl: "https://www.janedeboy.com",
+    keyPoints: [
+      {
+        fr: "Nettoyage du conteneur Google Tag Manager.",
+        en: "Cleaned up the Google Tag Manager container.",
+      },
+      {
+        fr: "Migration du dataLayer vers GA4.",
+        en: "Migrated the dataLayer to GA4.",
+      },
+      {
+        fr: "Configuration du consentement pour Google Ads et Criteo.",
+        en: "Configured consent for Google Ads and Criteo.",
+      },
+      {
+        fr: "Déploiement de Meta Conversions API avec event deduplication.",
+        en: "Deployed the Meta Conversions API with event deduplication.",
+      },
+      {
+        fr: "Création du product feed Channable.",
+        en: "Built the Channable product feed.",
+      },
+      {
+        fr: "Optimisation des images en WebP et AVIF.",
+        en: "Optimised images to WebP and AVIF.",
+      },
+    ],
+  },
+  {
+    title: "Laced",
+    description: {
+      fr: "Fiabilisation des conversions Google Ads et d’un catalogue Merchant Center à grande échelle.",
+      en: "Reliable Google Ads conversions and a large-scale Merchant Center catalogue.",
+    },
+    technologies: ["Google Ads", "Google Merchant Center", "Channable"],
+    category: "Tracking",
+    liveUrl: "https://www.laced.com",
+    keyPoints: [
+      {
+        fr: "Suppression des anciens tags Google Ads et Universal Analytics.",
+        en: "Removed legacy Google Ads and Universal Analytics tags.",
+      },
+      {
+        fr: "Correction de l’événement Purchase avec valeur, devise GBP et items.",
+        en: "Fixed the Purchase event with value, GBP currency and items.",
+      },
+      {
+        fr: "Activation de Google Enhanced Conversions.",
+        en: "Enabled Google Enhanced Conversions.",
+      },
+      {
+        fr: "Configuration de Channable comme source Merchant Center.",
+        en: "Set up Channable as the Merchant Center source.",
+      },
+      {
+        fr: "Gestion d’un catalogue produit à grande échelle.",
+        en: "Managed a large-scale product catalogue.",
+      },
+      {
+        fr: "Envoi des annulations et retours à Google Ads.",
+        en: "Sent cancellations and returns to Google Ads.",
       },
     ],
   },

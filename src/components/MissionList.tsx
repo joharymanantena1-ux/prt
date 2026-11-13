@@ -5,7 +5,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useT, tx } from "@/i18n";
 import type { Project } from "@/data/projects";
 import { otherProfessionalProjects } from "@/data/caseStudies";
@@ -14,13 +14,7 @@ import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 
 const matches = (project: Project, query: string) =>
-  [
-    project.title,
-    project.category,
-    ...project.technologies,
-    ...(project.brands?.map((brand) => brand.name) ?? []),
-  ]
-    .join(" ")
+  `${project.title} ${project.category} ${project.technologies.join(" ")}`
     .toLocaleLowerCase()
     .includes(query);
 
@@ -35,6 +29,10 @@ const initials = (title: string) =>
     .join("");
 
 const pad = (n: number) => String(n).padStart(2, "0");
+
+/* Lignes affichées avant « Afficher les autres missions ». Une recherche
+   montre toujours tous ses résultats. */
+const SHOWN = 5;
 
 /** La marque du client, ou son monogramme quand elle manque. */
 function Mark({ project }: { project: Project }) {
@@ -64,6 +62,10 @@ export default function MissionList() {
     () => otherProfessionalProjects.filter((p) => matches(p, needle)),
     [needle],
   );
+  const [expanded, setExpanded] = useState(false);
+  const limited = !needle && !expanded && missions.length > SHOWN;
+  const visible = limited ? missions.slice(0, SHOWN) : missions;
+  const hidden = missions.length - SHOWN;
   /* Numéro d'origine : il ne change pas quand la recherche filtre. */
   const order = useMemo(
     () => new Map(otherProfessionalProjects.map((p, i) => [p.title, i + 1])),
@@ -199,12 +201,12 @@ export default function MissionList() {
       ) : (
         <Reveal className="mission-reveal" at={10}>
           <div className="mission-rows" ref={rows}>
-            {missions.map((project, index) => {
+            {visible.map((project, index) => {
               const link = project.liveUrl || project.githubUrl;
               const n = pad(order.get(project.title) ?? index + 1);
               return (
                 <details
-                  className="mission-row"
+                  className={`mission-row${index >= SHOWN ? " is-more" : ""}`}
                   key={project.title}
                   style={{ "--i": index } as CSSProperties}
                 >
@@ -226,65 +228,27 @@ export default function MissionList() {
                     {/* Aperçu au survol, hors du flux (souris seulement). */}
                     <span className="mission-preview" aria-hidden="true">
                       <span className="eyebrow mission-preview-num">{n}</span>
-                      {/* Mission multi-marques : les marques à la place du
-                          monogramme. */}
-                      <span
-                        className={`mission-mark${project.brands ? " mission-mark-brands" : ""}`}
-                      >
-                        {project.brands ? (
-                          project.brands.map((brand) => (
-                            <BrandMark
-                              key={brand.name}
-                              src={brandMarks[brand.name]}
-                              name={brand.name}
-                              decorative
-                            />
-                          ))
-                        ) : (
-                          <Mark project={project} />
-                        )}
+                      <span className="mission-mark">
+                        <Mark project={project} />
                       </span>
                       <span className="eyebrow mission-preview-meta">
                         {project.technologies.slice(0, 3).join(" · ")}
                       </span>
                     </span>
                   </summary>
-                  <div
-                    className={`mission-detail${project.brands ? " mission-detail-wide" : ""}`}
-                  >
+                  <div className="mission-detail">
                     <span className="mission-detail-mark" aria-hidden="true">
                       <Mark project={project} />
                     </span>
                     <div>
                       <p>{tx(project.description, lang)}</p>
-                      {/* Mission multi-marques : les tâches regroupées par
-                          marque, chaque marque avec son logo et son nom. */}
-                      {project.brands && (
-                        <div className="mission-brands">
-                          {project.brands.map((brand, b) => (
-                            <section
-                              key={brand.name}
-                              className="mission-brand"
-                              style={{ "--i": b } as CSSProperties}
-                            >
-                              <h4>
-                                {brandMarks[brand.name] && (
-                                  <BrandMark
-                                    src={brandMarks[brand.name]}
-                                    name={brand.name}
-                                    decorative
-                                  />
-                                )}
-                                <span className="eyebrow">{brand.name}</span>
-                              </h4>
-                              <ul>
-                                {brand.tasks.map((task, t) => (
-                                  <li key={t}>{tx(task, lang)}</li>
-                                ))}
-                              </ul>
-                            </section>
+                      {/* Les tâches techniques, quand la mission les détaille. */}
+                      {project.keyPoints && (
+                        <ul className="mission-tasks">
+                          {project.keyPoints.map((task, t) => (
+                            <li key={t}>{tx(task, lang)}</li>
                           ))}
-                        </div>
+                        </ul>
                       )}
                       <p className="eyebrow">
                         {project.technologies.join(" · ")}
@@ -311,6 +275,29 @@ export default function MissionList() {
               );
             })}
           </div>
+          {/* Hors recherche : 5 lignes, puis le reste à la demande. */}
+          {!needle && missions.length > SHOWN && (
+            <button
+              type="button"
+              className="mission-more"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((open) => !open)}
+            >
+              <span className="eyebrow mission-num">
+                {expanded ? "−" : `+${hidden}`}
+              </span>
+              <span>
+                {expanded
+                  ? lang === "fr"
+                    ? "Réduire la liste"
+                    : "Show fewer"
+                  : lang === "fr"
+                    ? `Afficher les ${hidden} autres missions`
+                    : `Show the ${hidden} other missions`}
+              </span>
+              <ChevronDown size={18} aria-hidden="true" />
+            </button>
+          )}
         </Reveal>
       )}
     </section>

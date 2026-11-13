@@ -46,7 +46,8 @@ for (const width of sizes) {
       ).toBe(true);
     }
     // La liste des missions vit sur la page : on déplie un détail au passage.
-    await expect(page.locator(".mission-row")).toHaveCount(11);
+    // Cinq missions affichées, le reste à la demande.
+    await expect(page.locator(".mission-row")).toHaveCount(5);
     await page.locator(".mission-row summary").first().click();
     expect(
       await page.evaluate(
@@ -197,7 +198,16 @@ test("professional missions stay on the page, coursework lives in the modal", as
   await expect(missions.getByRole("heading", { level: 3 })).toHaveText(
     "Autres missions professionnelles",
   );
-  await expect(missions.locator(".mission-row")).toHaveCount(11);
+  // Cinq lignes d'abord, les dix autres derrière un bouton, et repli possible.
+  await expect(missions.locator(".mission-row")).toHaveCount(5);
+  const more = missions.getByRole("button", {
+    name: "Afficher les 10 autres missions",
+  });
+  await more.click();
+  await expect(missions.locator(".mission-row")).toHaveCount(15);
+  await expect(more).toHaveAttribute("aria-expanded", "true");
+  await missions.getByRole("button", { name: "Réduire la liste" }).click();
+  await expect(missions.locator(".mission-row")).toHaveCount(5);
   // Les études de cas racontées au-dessus ne sont pas répétées ici.
   await expect(missions).not.toContainText("BeautyBay – Web & Mobile");
   // Aucun projet de formation sur la page.
@@ -215,13 +225,15 @@ test("professional missions stay on the page, coursework lives in the modal", as
 
   // La recherche filtre la liste.
   await page.getByRole("searchbox").fill("Shopify");
-  await expect(missions.locator(".mission-row")).toHaveCount(5);
-  await expect(missions.locator('[role="status"]')).toContainText("5 missions");
+  // Une recherche montre tous ses résultats, sans bouton.
+  await expect(missions.locator(".mission-row")).toHaveCount(6);
+  await expect(missions.locator('[role="status"]')).toContainText("6 missions");
+  await expect(missions.locator(".mission-more")).toHaveCount(0);
   await page.getByRole("searchbox").fill("aucune-mission");
   await expect(missions.locator(".mission-row")).toHaveCount(0);
   await expect(missions.locator(".archive-empty")).toBeVisible();
   await page.getByRole("searchbox").fill("");
-  await expect(missions.locator(".mission-row")).toHaveCount(11);
+  await expect(missions.locator(".mission-row")).toHaveCount(5);
 });
 
 test("the academic modal opens, filters, traps focus and closes three ways", async ({
@@ -385,8 +397,9 @@ test("brand marks load and keep the client names readable", async ({
   // Chaque mission professionnelle a son aperçu (marque, ou monogramme quand
   // elle manque) ; les projets académiques n'en ont pas.
   const missions = page.locator(".mission-list");
-  await expect(missions.locator(".mission-mark")).toHaveCount(11);
-  // 8 missions avec marque, plus les 5 marques de la mission multi-marques.
+  await missions.locator(".mission-more").click();
+  await expect(missions.locator(".mission-mark")).toHaveCount(15);
+  // 13 missions ont une marque ; deux ont un monogramme.
   await expect(missions.locator(".mission-mark .brand-mark")).toHaveCount(13);
 
   // Chaque masque doit vraiment se charger : un asset renommé ne casse rien

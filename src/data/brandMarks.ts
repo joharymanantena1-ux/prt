@@ -37,7 +37,7 @@ export const brandMarks: Record<string, string> = {
   "ERPNext Migration": erpnext,
   // L'outil convertit des fichiers XML Odoo : la marque situe l'écosystème.
   "bank-file-converter": odoo,
-  // Marques de la mission Paid Media Tracking (clé : nom de la marque).
+  // Missions de tracking paid media.
   Seasonly: seasonly,
   "Rose Inc": roseInc,
   Mimitika: mimitika,
