@@ -3,49 +3,12 @@ import { ArrowUpRight, Orbit } from "lucide-react";
 import Reveal from "@/components/motion/Reveal";
 import { useT } from "@/i18n";
 import Lines from "@/components/motion/Lines";
+import TechMarquee from "@/components/TechMarquee";
 
 /* La constellation (données de tous les projets + rendu SVG) reste hors du
    premier chargement : importée au premier clic, préchargée au survol. */
 const loadUniverse = () => import("@/components/universe/TechUniverse");
 const TechUniverse = lazy(loadUniverse);
-const skills = [
-  {
-    n: "01",
-    fr: "Interfaces & mobile",
-    en: "Interfaces & mobile",
-    tech: "React / TypeScript / React Native",
-    other: "Next.js · Vue.js · Angular · Tailwind CSS · Flutter",
-    frProof: "BeautyBay · EduContent",
-    enProof: "BeautyBay · EduContent",
-  },
-  {
-    n: "02",
-    fr: "Architecture & API",
-    en: "Architecture & APIs",
-    tech: "Node.js / Laravel / Spring Boot",
-    other: "GraphQL · REST · Symfony · Django · Java · C#",
-    frProof: "Levitation · OTA Server",
-    enProof: "Levitation · OTA Server",
-  },
-  {
-    n: "03",
-    fr: "Données & infrastructure",
-    en: "Data & infrastructure",
-    tech: "PostgreSQL / MySQL / AWS",
-    other: "Docker · Firebase · Linux · Git · Oracle · PostGIS",
-    frProof: "Konecta · DayByDay CRM",
-    enProof: "Konecta · DayByDay CRM",
-  },
-  {
-    n: "04",
-    fr: "Intégration & automatisation",
-    en: "Integration & automation",
-    tech: "Python / Shopify / n8n",
-    other: "Liquid · Shopify API · XML · CSV · Frappe",
-    frProof: "Paul Beuscher · The Cool Republic",
-    enProof: "Paul Beuscher · The Cool Republic",
-  },
-];
 export default function SkillsSection() {
   const { lang } = useT();
   /* `null` tant qu'elle n'a jamais été ouverte : le module reste à part. */
@@ -75,23 +38,7 @@ export default function SkillsSection() {
             : "A full-stack foundation, strengthened in practice. Every tool connects to a real use case."}
         </p>
       </Reveal>
-      <div className="skill-list">
-        {skills.map((s) => (
-          <Reveal key={s.n} at={12}>
-            <article className="skill-row">
-              <span className="eyebrow skill-number">{s.n}</span>
-              <h3>{s[lang]}</h3>
-              <div>
-                <p className="skill-tech">{s.tech}</p>
-                <p className="skill-other">{s.other}</p>
-                <a href="#projets" className="skill-proof eyebrow">
-                  ↗ {s[lang === "fr" ? "frProof" : "enProof"]}
-                </a>
-              </div>
-            </article>
-          </Reveal>
-        ))}
-      </div>
+      <TechMarquee />
       <Reveal className="universe-cta" at={10}>
         <p>
           {lang === "fr"
