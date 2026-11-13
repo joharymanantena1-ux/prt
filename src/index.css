@@ -1552,11 +1552,12 @@
   display: block;
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
+/* Un titre trop long passe à la ligne au lieu d'être tronqué ; la copie à
+   l'accent, de même largeur, se coupe aux mêmes endroits, et le roulement
+   (100 % de la hauteur) reste juste sur deux lignes. */
 .mission-roll > span {
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 .mission-roll > span + span {
   position: absolute;
@@ -1734,6 +1735,83 @@
   font-size: 10px;
   color: var(--paper-muted);
 }
+/* Mission multi-marques : un bloc par marque (logo, nom, tâches), deux
+   colonnes dès que la place le permet. Les blocs entrent l'un après l'autre
+   à l'ouverture, avec le geste des autres détails (`detail-in`). */
+/* Les blocs de marques prennent toute la largeur du détail ; le texte garde
+   sa mesure de lecture. */
+.mission-detail-wide {
+  grid-template-columns: 56px minmax(0, 1fr);
+}
+.mission-detail-wide > div > p:first-child {
+  max-width: 760px;
+}
+.mission-brands {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 26px 40px;
+  margin-top: 22px;
+}
+.mission-brand {
+  padding-top: 14px;
+  border-top: 1px solid var(--paper-line);
+}
+.mission-row[open] .mission-brand {
+  animation: detail-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms + 80ms);
+}
+.mission-brand h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.mission-brand .brand-mark {
+  width: 96px;
+  height: 30px;
+  color: var(--ink);
+  -webkit-mask-position: left center;
+  mask-position: left center;
+}
+.mission-brand h4 .eyebrow {
+  font-size: 10px;
+  color: var(--paper-muted);
+}
+.mission-brand ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mission-brand li {
+  position: relative;
+  padding: 5px 0 5px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--paper-muted);
+}
+.mission-brand li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.95em;
+  width: 7px;
+  height: 1px;
+  background: currentColor;
+}
+/* Dans l'aperçu : les marques en grille, à la place du monogramme. */
+.mission-preview .mission-mark-brands {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 6px 14px;
+}
+.mission-preview .mission-mark-brands .brand-mark {
+  width: 64px;
+  height: 22px;
+}
+
 .mission-detail .text-link {
   margin-top: 14px;
 }

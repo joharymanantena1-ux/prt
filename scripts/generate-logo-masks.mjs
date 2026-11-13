@@ -28,7 +28,12 @@ const LOGOS = [
   // qu'un logotype large.
   { file: "beautybay.webp", out: "beautybay", light: false, scale: 0.8 },
   // Typo noire sur aplat rouge (lum 112) : seuil haut pour ne garder que la typo.
-  { file: "paulbeaucher.png", out: "paul-beuscher", light: false, threshold: 200 },
+  {
+    file: "paulbeaucher.png",
+    out: "paul-beuscher",
+    light: false,
+    threshold: 200,
+  },
   { file: "musierparis.webp", out: "musier-paris", light: true },
   { file: "TCR.webp", out: "the-cool-republic", light: false },
   { file: "fingerinthenose.png", out: "finger-in-the-nose", light: true },
@@ -36,9 +41,53 @@ const LOGOS = [
   { file: "OTA.avif", out: "ota", light: true, scale: 0.82 },
   { file: "daybyday.png", out: "daybyday", light: false },
   // « E » blanc sur aplat bleu (lum 128) : on ne garde que le E.
-  { file: "erpnext_official_logo.jpeg", out: "erpnext", light: true, threshold: 185, scale: 0.8 },
+  {
+    file: "erpnext_official_logo.jpeg",
+    out: "erpnext",
+    light: true,
+    threshold: 185,
+    scale: 0.8,
+  },
   // « odoo » blanc sur aplat violet (lum 94).
   { file: "odoo.svg", out: "odoo", light: true, threshold: 175, scale: 0.9 },
+  // Marques du suivi Paid Media : logos officiels vectoriels, sur fond
+  // transparent (d'où `flatten`) et à petite taille native (d'où `density`,
+  // pour un rendu net avant la mise en boîte).
+  {
+    file: "seasonly.svg",
+    out: "seasonly",
+    light: false,
+    flatten: true,
+    density: 150,
+  },
+  {
+    file: "rose-inc.svg",
+    out: "rose-inc",
+    light: false,
+    flatten: true,
+    density: 600,
+  },
+  {
+    file: "mimitika.svg",
+    out: "mimitika",
+    light: false,
+    flatten: true,
+    density: 450,
+  },
+  {
+    file: "jane-de-boy.svg",
+    out: "jane-de-boy",
+    light: false,
+    flatten: true,
+    density: 650,
+  },
+  {
+    file: "laced.svg",
+    out: "laced",
+    light: false,
+    flatten: true,
+    density: 300,
+  },
 ];
 
 // Toutes les marques sont posées dans la même boîte 3:1 : le CSS n'a plus qu'à
@@ -49,14 +98,26 @@ const LOGOS = [
 const BOX_W = 360;
 const BOX_H = 120;
 
-for (const { file, out, light, threshold = 62, scale = 1 } of LOGOS) {
+for (const {
+  file,
+  out,
+  light,
+  threshold = 62,
+  scale = 1,
+  flatten = false,
+  density,
+} of LOGOS) {
   await mkdir(OUT, { recursive: true });
   const input = await readFile(path.join(SRC, file));
 
   // Luminance → canal alpha, calculée à la main : sharp applique `threshold`
   // avant `negate` quel que soit l'ordre d'appel, ce qui vidait les masques.
   // Rampe douce (±18) autour du seuil : bords lissés sur les traits fins.
-  const { data, info } = await sharp(input)
+  // Source transparente : on pose un fond de la couleur « vide » (blanc pour
+  // une marque sombre), sinon le transparent serait lu comme du noir.
+  let source = sharp(input, density ? { density } : {});
+  if (flatten) source = source.flatten({ background: light ? "#000" : "#fff" });
+  const { data, info } = await source
     .grayscale()
     .toColourspace("b-w")
     .raw()
@@ -64,7 +125,9 @@ for (const { file, out, light, threshold = 62, scale = 1 } of LOGOS) {
   const { width, height } = info;
   const alpha = Buffer.alloc(width * height);
   for (let i = 0; i < alpha.length; i++) {
-    const value = light ? data[i * info.channels] : 255 - data[i * info.channels];
+    const value = light
+      ? data[i * info.channels]
+      : 255 - data[i * info.channels];
     alpha[i] = Math.max(
       0,
       Math.min(255, Math.round(((value - (threshold - 18)) / 36) * 255)),

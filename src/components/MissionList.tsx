@@ -14,7 +14,13 @@ import BrandMark from "@/components/BrandMark";
 import Reveal from "@/components/motion/Reveal";
 
 const matches = (project: Project, query: string) =>
-  `${project.title} ${project.category} ${project.technologies.join(" ")}`
+  [
+    project.title,
+    project.category,
+    ...project.technologies,
+    ...(project.brands?.map((brand) => brand.name) ?? []),
+  ]
+    .join(" ")
     .toLocaleLowerCase()
     .includes(query);
 
@@ -220,20 +226,66 @@ export default function MissionList() {
                     {/* Aperçu au survol, hors du flux (souris seulement). */}
                     <span className="mission-preview" aria-hidden="true">
                       <span className="eyebrow mission-preview-num">{n}</span>
-                      <span className="mission-mark">
-                        <Mark project={project} />
+                      {/* Mission multi-marques : les marques à la place du
+                          monogramme. */}
+                      <span
+                        className={`mission-mark${project.brands ? " mission-mark-brands" : ""}`}
+                      >
+                        {project.brands ? (
+                          project.brands.map((brand) => (
+                            <BrandMark
+                              key={brand.name}
+                              src={brandMarks[brand.name]}
+                              name={brand.name}
+                              decorative
+                            />
+                          ))
+                        ) : (
+                          <Mark project={project} />
+                        )}
                       </span>
                       <span className="eyebrow mission-preview-meta">
                         {project.technologies.slice(0, 3).join(" · ")}
                       </span>
                     </span>
                   </summary>
-                  <div className="mission-detail">
+                  <div
+                    className={`mission-detail${project.brands ? " mission-detail-wide" : ""}`}
+                  >
                     <span className="mission-detail-mark" aria-hidden="true">
                       <Mark project={project} />
                     </span>
                     <div>
                       <p>{tx(project.description, lang)}</p>
+                      {/* Mission multi-marques : les tâches regroupées par
+                          marque, chaque marque avec son logo et son nom. */}
+                      {project.brands && (
+                        <div className="mission-brands">
+                          {project.brands.map((brand, b) => (
+                            <section
+                              key={brand.name}
+                              className="mission-brand"
+                              style={{ "--i": b } as CSSProperties}
+                            >
+                              <h4>
+                                {brandMarks[brand.name] && (
+                                  <BrandMark
+                                    src={brandMarks[brand.name]}
+                                    name={brand.name}
+                                    decorative
+                                  />
+                                )}
+                                <span className="eyebrow">{brand.name}</span>
+                              </h4>
+                              <ul>
+                                {brand.tasks.map((task, t) => (
+                                  <li key={t}>{tx(task, lang)}</li>
+                                ))}
+                              </ul>
+                            </section>
+                          ))}
+                        </div>
+                      )}
                       <p className="eyebrow">
                         {project.technologies.join(" · ")}
                       </p>
