@@ -2169,39 +2169,108 @@
 .skills-section {
   border-top: 1px solid hsl(var(--border));
 }
-.skill-row {
-  display: grid;
-  grid-template-columns: 55px 1fr 1.2fr;
-  gap: 24px;
+/* ── Expertise : bandeau de logos ─────────────────────────────────────────
+   Les technologies des projets, logo et nom, en défilement lent et continu
+   (TechMarquee). Deux suites identiques dans la piste, qui glisse d'une
+   moitié : la boucle ne saute pas. Le dégradé des bords est peint par-dessus
+   (pseudo-éléments), pas un `mask-image` sur la piste animée. */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  margin-top: clamp(40px, 5vw, 72px);
+  padding-block: clamp(30px, 3.4vw, 46px);
   border-top: 1px solid hsl(var(--border));
-  padding: 32px 0;
-  align-items: baseline;
+  border-bottom: 1px solid hsl(var(--border));
+  --gap: clamp(40px, 5vw, 76px);
+  --logo: clamp(26px, 2.4vw, 34px);
 }
-.skill-number {
-  color: hsl(var(--muted-foreground));
+.marquee::before,
+.marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: clamp(40px, 9vw, 140px);
+  pointer-events: none;
 }
-.skill-row h3 {
-  font-size: 24px;
-  letter-spacing: -0.04em;
+.marquee::before {
+  left: 0;
+  background: linear-gradient(to right, hsl(var(--background)), transparent);
 }
-.skill-tech {
-  font-size: 18px;
-  letter-spacing: -0.035em;
+.marquee::after {
+  right: 0;
+  background: linear-gradient(to left, hsl(var(--background)), transparent);
 }
-.skill-other {
-  font-size: 12px;
-  line-height: 1.7;
-  color: hsl(var(--muted-foreground));
-  margin-top: 12px;
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 90s) linear infinite;
 }
-.skill-proof {
-  display: inline-flex;
+/* Survol, onglet caché, bandeau hors écran : on s'arrête. */
+.marquee:hover .marquee-track,
+.marquee[data-paused] .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee-list {
+  display: flex;
   align-items: center;
-  min-height: 44px;
-  color: hsl(var(--primary));
-  margin-top: 8px;
-  font-size: 10px;
+  gap: var(--gap);
+  margin: 0;
+  /* L'écart après le dernier logo : les deux moitiés font la même largeur. */
+  padding: 0 var(--gap) 0 0;
+  list-style: none;
 }
+.marquee-item {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.3s;
+}
+.marquee-item:hover {
+  color: hsl(var(--foreground));
+}
+.marquee-logo {
+  display: block;
+  height: calc(var(--logo) * var(--size, 1));
+  width: auto;
+  fill: currentColor;
+  overflow: visible;
+}
+.marquee-name {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.5vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+/* Mouvement réduit : une liste fixe, centrée, sans la copie. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee::before,
+  .marquee::after {
+    display: none;
+  }
+  .marquee-track {
+    width: auto;
+  }
+  .marquee-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 22px var(--gap);
+    padding: 0;
+  }
+  .marquee-list[aria-hidden] {
+    display: none;
+  }
+}
+
 .experience-layout {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
@@ -2610,16 +2679,6 @@ summary::-webkit-details-marker {
   .section-space {
     padding-block: 96px;
   }
-  .skill-row {
-    grid-template-columns: 35px 1fr 1.25fr;
-    gap: 15px;
-  }
-  .skill-row h3 {
-    font-size: 21px;
-  }
-  .skill-tech {
-    font-size: 16px;
-  }
   .footer-note {
     display: none;
   }
@@ -2915,24 +2974,6 @@ summary::-webkit-details-marker {
     font-size: 13px;
     margin-top: 9px;
   }
-  .skill-row {
-    grid-template-columns: 24px 1fr;
-    gap: 8px 16px;
-    padding: 25px 0;
-  }
-  .skill-row > div {
-    grid-column: 2;
-  }
-  .skill-row h3 {
-    font-size: 21px;
-  }
-  .skill-tech {
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  .skill-other {
-    font-size: 11px;
-  }
   .experience-layout {
     display: block;
   }
@@ -3202,64 +3243,6 @@ summary::-webkit-details-marker {
   transform: translateY(14px);
 }
 
-/* ── Expertise : filet tracé à l'entrée, filet d'accent au survol ─────────── */
-.skill-row {
-  position: relative;
-  border-top-color: transparent;
-}
-.skill-row::before,
-.skill-row::after {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  height: 1px;
-  transform-origin: left;
-  pointer-events: none;
-}
-.skill-row::before {
-  background: hsl(var(--border));
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal[data-revealed="false"] > .skill-row::before {
-  transform: scaleX(0);
-}
-/* Au survol (ou au clavier), la ligne s'allume : son filet se trace en
-   accent, le numéro prend la couleur, le titre avance, le détail s'éclaire. */
-.skill-row::after {
-  background: hsl(var(--primary));
-  transform: scaleX(0);
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.skill-row h3,
-.skill-number,
-.skill-other {
-  transition:
-    color 0.3s,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.skill-row:focus-within::after {
-  transform: scaleX(1);
-}
-.skill-row:focus-within .skill-number {
-  color: hsl(var(--primary));
-}
-@media (hover: hover) {
-  .skill-row:hover::after {
-    transform: scaleX(1);
-  }
-  .skill-row:hover .skill-number {
-    color: hsl(var(--primary));
-  }
-  .skill-row:hover h3 {
-    transform: translateX(8px);
-  }
-  .skill-row:hover .skill-other {
-    color: hsl(var(--foreground) / 0.8);
-  }
-}
-
 /* ── Parcours : la frise, affirmée ─────────────────────────────────────────
    Ligne d'encre de 2 px sur la frise grise ; une étape atteinte prend un
    anneau. Sans défilement lié (Firefox) : la frise grise d'origine. */
@@ -3524,8 +3507,7 @@ summary::-webkit-details-marker {
   .reveal[data-revealed="false"],
   .reveal[data-revealed="false"] .title-line > span,
   .approach-principles[data-revealed="false"] > div > *,
-  .approach-principles[data-revealed="false"] > div::before,
-  .reveal[data-revealed="false"] > .skill-row::before {
+  .approach-principles[data-revealed="false"] > div::before {
     opacity: 1;
     transform: none;
   }

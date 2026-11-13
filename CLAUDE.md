@@ -53,8 +53,8 @@ One primitive: [Reveal](src/components/motion/Reveal.tsx) — a single
 reveals immediately; the global `prefers-reduced-motion` block in `index.css` kills
 every transition and animation. Keep entrances transform/opacity only, one per block;
 `delay` staggers siblings. `at` (default 6) is how far above the bottom edge, in %,
-the block must be before it plays: headings use 15, the Approche sequence 25, skill
-rows 12 — a sequence that fires at the very bottom edge plays unseen, which is why
+the block must be before it plays: headings use 15, the Approche sequence 25, the
+mission index 10 — a sequence that fires at the very bottom edge plays unseen, which is why
 the first round of section effects read as "nothing changed". Opening a `<details>`
 animates its panel (`detail-in`), never the element itself — `details` has no
 native transition.
@@ -116,10 +116,24 @@ Section effects (amplitudes reduced under 768 px):
 - **Approche** (IO) — three hairline segments in the principles' accent colour,
   split by the column gutter, draw one after another; each principle's text rises
   behind its line. The block itself no longer fades as a whole.
-- **Expertise** — each row's top rule draws on entry; on hover (and on keyboard
-  focus) an accent rule draws over it, the number takes the accent, the title moves
-  8 px, the stack line brightens. A tinted hover band was tried and rejected — its
-  hard edge read as a selected cell, and it overflowed the gutter under 768 px.
+- **Expertise** — a **logo marquee** ([TechMarquee](src/components/TechMarquee.tsx))
+  replaced the four vague skill rows: every technology actually used (official
+  logo + name, muted, full ink on hover) scrolls slowly and continuously. The
+  track holds the list twice and slides by half (`translate3d(-50%)`) — the
+  two halves are identical, each with a trailing gap, so the loop never jumps;
+  the second copy is `aria-hidden`. Duration = list width / 38 px/s (measured,
+  so the speed is the same at every width). Paused on hover, when off screen
+  (IntersectionObserver — read the **last** entry: mount-offscreen and
+  scrolled-into-view can arrive in one batch) and when the tab is hidden.
+  Reduced motion: a static centred wrap, without the copy. Edge fades are
+  gradient pseudo-elements, not a mask on the moving track. Logos come from
+  one local SVG sprite (`<use>`, `currentColor`, follows the theme) built by
+  [generate-tech-sprite.mjs](scripts/generate-tech-sprite.mjs), which also
+  writes [src/data/techStack.ts](src/data/techStack.ts): Simple Icons (CC0)
+  plus official Oracle, AWS (Wikimedia Commons) and Klaviyo (klaviyo.com)
+  files; wordmarks don't repeat their name on screen (it stays as sr-only
+  text). Selection rule and exclusions (Java, C#, Channable… no official logo
+  available) are documented in the script.
 - **Parcours** (scroll-linked) — a 2 px ink progress line (`.timeline::after`,
   `scaleY`) draws down to a reading line at 40 % of the viewport; each step's 12 px
   dot fills and takes a ring as the line reaches it, and its dates darken (one
@@ -153,7 +167,7 @@ Hover conventions, colour/transform only and ≤ 0.3s unless drawing a line: arr
 translate `2px,-2px` (the Contact arrow 10 px), the primary button lifts 2px, nav
 links grow an underline, icon buttons take a `color-mix(currentColor 12%)` ground,
 archive rows nudge 3px and their brand mark goes to full ink, the archive toggle
-gains inner padding, skill rows draw an accent rule. Modals fade the backdrop and
+gains inner padding, marquee logos go from muted to full ink. Modals fade the backdrop and
 lift the panel 16px (`modal-in` / `backdrop-in`).
 
 ### Welcome screen
@@ -309,7 +323,7 @@ either back.
 
 ### Tech universe
 
-Under the Expertise list, "Explore my tech universe" opens
+Under the Expertise marquee, "Explore my tech universe" opens
 [TechUniverse](src/components/universe/TechUniverse.tsx) — a full-screen
 constellation of every technology used in the projects, **lazy-loaded on the
 first click** (preloaded on hover/focus) with its own stylesheet
